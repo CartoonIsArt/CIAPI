@@ -1,0 +1,31 @@
+{
+  "name": "koa-restful",
+  "version": "1.0.0",
+  "description": "koa restful example",
+  "main": "app.js",
+  "dependencies": {
+    "@types/node": "^8.0.47",
+    "koa": "^2.3.0",
+    "koa-logger": "^3.1.0",
+    "koa-router": "^7.2.1",
+    "koa-views": "^6.1.1",
+    "tslint": "^5.8.0",
+    "typescript": "^2.6.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "lint": "tslint src/*.ts",
+    "lint-fix": "tslint --fix src/*.ts",
+    "start": "tsc && node src/app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://gitlab.com/CartoonIsArt/koa-example.git"
+  },
+  "author": "Sungwoo Kim",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://gitlab.com/CartoonIsArt/koa-example/issues"
+  },
+  "homepage": "https://gitlab.com/CartoonIsArt/koa-example#README"
+}
