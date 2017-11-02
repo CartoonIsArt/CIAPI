@@ -8,6 +8,7 @@ import { router } from "./route"
 const app = new Koa()
 
 /* DB와 연결을 맺고 Connection Pool을 생성함 */
+// tslint:disable-next-line
 createConnection().catch(e => console.log(e))
 
 /* 메소드, 응답시간을 콘솔에 로깅 */
