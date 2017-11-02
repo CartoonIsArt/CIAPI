@@ -1,0 +1,12 @@
+{
+  "type": "sqlite",
+  "database": "db/test.sql",
+  "synchronize": true,
+  "logging": false,
+  "entities": [ 
+    "src/entities/*.js"
+  ],
+  "cli": {
+    "entitiesDir": "src/entities"
+  }
+}
