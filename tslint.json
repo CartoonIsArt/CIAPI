@@ -1,10 +1,16 @@
 {
     "defaultSeverity": "error",
     "extends": [
-        "tslint:recommended"
+        "tslint:recommended",
+        "tslint-eslint-rules"
     ],
     "jsRules": {},
     "rules": {
+        "one-line":[true, "never"],
+        "ter-func-call-spacing": [true, "never"],
+        "space-before-function-paren": [true, "always"],
+        "arrow-parens": false,
+        "object-curly-spacing": [true, "always"],
         "semicolon": [true, "never"]
     },
     "rulesDirectory": []
