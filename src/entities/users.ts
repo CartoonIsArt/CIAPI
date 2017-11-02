@@ -10,6 +10,6 @@ export default class Users {
 
   /* 유저 이름 */
   @Column("text")
-  public firstname: string;
+  public firstname: string
 
 }

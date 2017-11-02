@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/CartoonIsArt/CIAPI.svg?branch=master)](https://travis-ci.org/CartoonIsArt/CIAPI)
+
 # CIA Backend API
 
 [CIA Frontend App](https://github.com/CartoonIsArt/eevee)과 호환되는 Restful 백엔드 API  
