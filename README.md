@@ -11,6 +11,25 @@ yarn start
 ```
 localhost:3000에서 실행
 
+## 프로젝트 트리
+```
+CIAPI
+├── LICENSE
+├── ormconfig.json
+├── package.json
+├── README.md
+├── src
+│   ├── app.ts
+│   ├── controllers
+│   │   └── users.ts
+│   ├── entities
+│   │   └── users.ts
+│   └── route.ts
+├── tsconfig.json
+├── tslint.json
+└── yarn.lock
+```
+
 ## 테스트
 
 ```
