@@ -1,6 +1,6 @@
 import * as Router from "koa-router"
-import * as Users from "./controllers/users"
 import * as Documents from "./controllers/documents"
+import * as Users from "./controllers/users"
 
 export const router = new Router()
 
