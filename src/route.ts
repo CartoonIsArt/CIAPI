@@ -1,4 +1,5 @@
 import * as Router from "koa-router"
+import * as Documents from "./controllers/documents"
 import * as Users from "./controllers/users"
 
 export const router = new Router()
@@ -27,3 +28,5 @@ router.get("/", (ctx) => {
 */
 router.get("/users", Users.Get)
 router.post("/users", Users.Post)
+router.get("/documents", Documents.Get)
+router.post("/documents", Documents.Post)
