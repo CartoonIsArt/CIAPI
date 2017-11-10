@@ -1,6 +1,8 @@
 import * as Koa from "koa"
 import * as bodyParser from "koa-bodyparser"
 import * as logger from "koa-logger"
+import * as Serve from "koa-static"
+import * as path from "path"
 import "reflect-metadata"
 import { Connection, createConnection } from "typeorm"
 import { router } from "./route"
@@ -16,6 +18,9 @@ app.use(logger())
 
 /* POST JSON인자를 파싱하여 ctx.request.body에 저장해주는 미들웨어 */
 app.use(bodyParser())
+
+/* 정적파일 서빙 */
+app.use(Serve(path.join("test-restful", "dist")))
 
 /* 라우팅 */
 app.use(router.routes())

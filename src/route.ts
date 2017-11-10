@@ -4,12 +4,6 @@ import * as Users from "./controllers/users"
 
 export const router = new Router()
 
-/* 접속 상태 확인 테스트 경로 - 변경예정 */
-router.get("/", (ctx) => {
-  /* body에 Object를 그냥 줘도 JSON string으로 변환해줌! */
-  ctx.body = { m: "Hello, world!" }
-})
-
 /* router 등록방법: router.메소드("경로", 함수)
 
    메소드: get, post, put, delete, option 등등

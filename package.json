@@ -16,10 +16,12 @@
     "typeorm": "^0.1.1",
     "typescript": "^2.6.1"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "koa-static": "^4.0.1"
+  },
   "scripts": {
-    "lint": "tslint src/*.ts",
-    "lint-fix": "tslint --fix src/*.ts",
+    "lint": "tslint src/**/*.ts",
+    "lint-fix": "tslint --fix src/**/*.ts",
     "start": "tsc && node src/app.js"
   },
   "repository": {
