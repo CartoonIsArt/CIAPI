@@ -20,7 +20,9 @@ app.use(logger())
 app.use(bodyParser())
 
 /* 정적파일 서빙 */
-app.use(Serve(path.join("test-restful", "dist")))
+if (process.env.NODE_ENV !== "production") {
+  app.use(Serve(path.join("test-restful", "dist")))
+}
 
 /* 라우팅 */
 app.use(router.routes())
