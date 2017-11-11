@@ -4,7 +4,7 @@ import { Column, Entity, PrimaryGeneratedColumn, CreateDateColumn } from "typeor
 @Entity()
 export default class Documents {
 
-  /* 게시글 작성자의 pk */
+  /* 게시글의 pk */
   @PrimaryGeneratedColumn()
   public id: number
 
