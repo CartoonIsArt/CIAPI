@@ -1,4 +1,4 @@
-import { Column, Entity, PrimaryGeneratedColumn, CreateDateColumn } from "typeorm"
+import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from "typeorm"
 
 /* 게시글 테이블 스키마 */
 @Entity()
@@ -14,6 +14,7 @@ export default class Documents {
 
   /* 작성된 시간 */
   @CreateDateColumn()
-  public created_at: Date
+  public createdAt: Date
 
 }
+ 

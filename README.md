@@ -3,6 +3,7 @@
 # CIA Backend API
 
 [CIA Frontend App](https://github.com/CartoonIsArt/eevee)과 호환되는 Restful 백엔드 API  
+[스펙문서](https://github.com/CartoonIsArt/eevee/wiki)  
 
 ## 설치
 ```
