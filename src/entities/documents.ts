@@ -11,10 +11,9 @@ export default class Documents {
   /* 게시글 내용 */
   @Column("text")
   public text: string
-  
+
   /* 작성된 시간 */
   @CreateDateColumn()
   public createdAt: Date
 
 }
- 
