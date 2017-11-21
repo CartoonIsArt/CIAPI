@@ -33,3 +33,18 @@ export const Post = async (ctx, next) => {
     ctx.throw(400, "firstname required")
   }
 }
+export const Delete =  async (ctx, next) => {
+  const conn: Connection = getConnection()
+
+  try {
+    const user = await conn
+                      .getRepository(Users)
+                      .findOneById(ctx.params.id)
+    await conn.manager.remove(user)
+    ctx.response.status = 204
+  }
+  catch (e) {
+    ctx.throw(400, e)
+  }
+
+}
