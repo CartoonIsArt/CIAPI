@@ -43,6 +43,7 @@ export const Delete =  async (ctx, next) => {
     await conn.manager.remove(user)
     ctx.response.status = 204
   }
+  
   catch (e) {
     ctx.throw(400, e)
   }
