@@ -5,9 +5,13 @@ import Users from "../entities/users"
 /* Documents 테이블의 모든 값을 리턴함. */
 export const Get = async (ctx, next) => {
   const conn: Connection = getConnection()
-  ctx.body = await conn
+  const document = await conn
     .getRepository(Documents)
-    .find({ relations: ["author"] })
+    .createQueryBuilder("document")
+    .leftJoinAndSelect("document.author", "author")
+    .leftJoinAndSelect("author.profileImage", "profileImage")
+    .getMany()
+  ctx.body = document
 }
 
 /* text를 POST 인자로 받아 DB에 저장함. */
@@ -19,7 +23,9 @@ export const Post = async (ctx, next) => {
   const conn: Connection = getConnection()
   const userRepository = conn.getRepository(Users)
   const user: Users = await userRepository.findOneById(data.userId)
-
+  ctx.body.file = await conn
+  .getRepository(Users)
+  .find({ relations: ["profileImage"] })
     /* documents 테이블 ORM 인스턴스 생성 */
   const documents: Documents = new Documents()
   documents.text = data.text
