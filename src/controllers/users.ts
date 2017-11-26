@@ -1,10 +1,13 @@
 import { Connection, getConnection, getManager } from "typeorm"
+import Files from "../entities/files"
 import Users from "../entities/users"
 
 /* 유저 테이블의 모든 값을 리턴함. */
 export const Get = async (ctx, next) => {
-  const entityManager = getManager()
-  ctx.body = await entityManager.find(Users)
+  const conn: Connection = getConnection()
+  ctx.body = await conn
+    .getRepository(Users)
+    .find({ relations: ["profileImage"] })
 }
 
 /* firstname을 POST 인자로 받아 DB에 저장함. */
@@ -21,7 +24,13 @@ export const Post = async (ctx, next) => {
     /* Users 테이블 ORM 인스턴스 생성 */
     const user: Users = new Users()
     user.firstname = data.firstname
-
+    if (data.profileImage !== undefined){
+      const profile: Files = new Files()
+      profile.file = data.profileImage
+      profile.savedPath = "MIKI"
+      await conn.manager.save(profile)
+      user.profileImage = profile
+    }
     /* DB에 저장 - 비동기 */
     await conn.manager.save(user)
 
