@@ -7,8 +7,10 @@ import Files from "./files"
 @Entity()
 export default class Users {
   /*  유저의 작성글 리스트 */
-  @OneToMany(type => Documents, document => document.author, { nullable: false } as RelationOptions)
-  @JoinColumn()
+  @OneToMany(
+    type => Documents,
+     document => document.author,
+    )
   public document: Documents[]
 
   /* Users table pk */
@@ -16,7 +18,12 @@ export default class Users {
   public id: number
 
   /* 유저 프로필 이미지 */
-  @OneToOne(type => Files, { nullable: false })
+  @OneToOne(
+    type => Files,
+    {
+      nullable: false,
+    },
+  )
   @JoinColumn()
   public profileImage: Files
 
@@ -33,7 +40,12 @@ export default class Users {
   public phoneNumber: string
 
   /* 유저의 가입허용 여부 */
-  @Column("boolean", { default: false })
+  @Column(
+    "boolean",
+    {
+      default: false,
+    },
+  )
   public isAnon: boolean
 
   /* 유저 생일 */
@@ -41,27 +53,57 @@ export default class Users {
   public dateOfBirth: Date
 
   /* 유저 프로필 */
-  @Column("text", { default: "" })
+  @Column(
+    "text",
+    {
+      default: "",
+     },
+    )
   public profileText:	string
 
   /* 유저 DB관리 권한 유무 */
-  @Column("boolean", { default: false })
+  @Column(
+    "boolean",
+     {
+        default: false,
+       },
+      )
   public isSuperUser:	boolean
 
   /* 유저 임원진 여부 */
-  @Column("boolean", { default: false })
+  @Column(
+    "boolean",
+     {
+        default: false,
+       },
+      )
   public isStaff:	boolean
 
   /* 유저 활동인구 여부 */
-  @Column("boolean", { default: false })
+  @Column(
+    "boolean",
+     {
+        default: false,
+       },
+      )
   public isActivated:	boolean
 
   /* 유저 졸업여부 */
-  @Column("boolean", { default: false })
+  @Column(
+    "boolean",
+     {
+        default: false,
+       },
+      )
   public isGraduated:	boolean
 
   /* 유저 정회원 여부 */
-  @Column("boolean", { default: false })
+  @Column(
+    "boolean",
+     {
+        default: false,
+       },
+      )
   public isRegularMember:	boolean
 
   /* 유저 학번 */
@@ -81,22 +123,47 @@ export default class Users {
   public department:	string
 
   /* 유저 게시글 수 */
-  @Column("int", { default: 0 })
+  @Column(
+    "int",
+     {
+        default: 0,
+       },
+      )
   public numberOfDocuments:	number
 
   /* 유저 댓글 수 */
-  @Column("int", { default: 0 })
+  @Column(
+    "int",
+     {
+        default: 0,
+       },
+      )
   public numberOfComments:	number
 
   /* 유저 좋아요 수 */
-  @Column("int", { default: 0 })
+  @Column(
+    "int",
+     {
+        default: 0,
+       },
+      )
   public numberOfLikes:	number
 
   /* 유저가 좋아하는 만화 */
-  @Column("text", { default: "" })
+  @Column(
+    "text",
+     {
+        default: "",
+       },
+      )
   public favoriteComic:	string
 
   /* 유저가 좋아하는 캐릭터 */
-  @Column("text", { default: "" })
+  @Column(
+    "text",
+     {
+        default: "",
+       },
+      )
   public favoriteCharacter:	string
 }
