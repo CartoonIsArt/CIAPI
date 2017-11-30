@@ -32,12 +32,13 @@ export const Post = async (ctx, next) => {
   documents.author = user
 
     /* DB에 저장 - 비동기 */
-  try{
-      await conn.manager.save(documents)
-    } catch (e){
+  try {
+    await conn.manager.save(documents)
+  }
+  catch (e) {
       /* text가 인자에 없을 경우 400에러 리턴 */
-      ctx.throw(400, "text required")
-    }
+    ctx.throw(400, "text required")
+  }
     /* id와 created_at을 포함하여 body에 응답 */
   ctx.body = documents
 }

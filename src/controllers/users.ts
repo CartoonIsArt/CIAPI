@@ -41,10 +41,11 @@ export const Post = async (ctx, next) => {
   /* id를 포함하여 body에 응답 */
   ctx.body = user
 
-  try{
+  try {
     /* DB에 저장 - 비동기 */
     await conn.manager.save(user)
-  } catch (e){
+  }
+  catch (e) {
     /* required member중 하나라도 인자에 없을 경우 400에러 리턴 */
     ctx.throw(400, "has NULL required member")
   }

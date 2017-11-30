@@ -10,7 +10,7 @@ export default class Users {
   @OneToMany(
     type => Documents,
     document => document.author,
-    )
+  )
   public document: Documents[]
 
   /* Users table pk */
@@ -127,7 +127,7 @@ export default class Users {
     "int",
     {
       default: 0,
-      },
+    },
   )
   public numberOfDocuments:	number
 
