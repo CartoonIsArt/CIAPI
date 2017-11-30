@@ -41,17 +41,6 @@ export const Post = async (ctx, next) => {
     user.favoriteComic = data.favoriteComic
     user.favoriteCharacter = data.favoriteCharacter
 
-    /* 회원 가입시 기본적으로 고정값 초기화 할 것들 */
-    user.numberOfComments = 0
-    user.numberOfDocuments = 0
-    user.numberOfLikes = 0
-    user.isActivated = false
-    user.isAnon = false
-    user.isGraduated = false
-    user.isRegularMember = false
-    user.isStaff = false
-    user.isSuperUser = false
-
     /* DB에 저장 - 비동기 */
     await conn.manager.save(user)
 
