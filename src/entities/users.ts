@@ -1,4 +1,5 @@
-import { Column, CreateDateColumn, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm"
+import { Column, CreateDateColumn, Entity, JoinColumn, OneToMany,
+  OneToOne, PrimaryGeneratedColumn, RelationOptions } from "typeorm"
 import Documents from "./documents"
 import Files from "./files"
 
@@ -6,7 +7,7 @@ import Files from "./files"
 @Entity()
 export default class Users {
   /*  유저의 작성글 리스트 */
-  @OneToMany(type => Documents, document => document.author)
+  @OneToMany(type => Documents, document => document.author, { nullable: false } as RelationOptions)
   @JoinColumn()
   public document: Documents[]
 
@@ -15,7 +16,7 @@ export default class Users {
   public id: number
 
   /* 유저 프로필 이미지 */
-  @OneToOne(type => Files)
+  @OneToOne(type => Files, { nullable: false })
   @JoinColumn()
   public profileImage: Files
 
