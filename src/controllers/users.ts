@@ -10,7 +10,7 @@ export const Get = async (ctx, next) => {
     .find({ relations: ["profileImage"] })
 }
 
-/* fullname을 POST 인자로 받아 DB에 저장함. */
+/* user와 user정보를 POST 인자로 받아 DB에 저장함. */
 export const Post = async (ctx, next) => {
   /* POST 인자를 data변수로 받음 */
   const data = ctx.request.body
@@ -26,12 +26,18 @@ export const Post = async (ctx, next) => {
   const profile: Files = new Files()
   profile.file = data.profileImage
   profile.savedPath = "MIKI"
-  await conn.manager.save(profile)
+  try {
+    await conn.manager.save(profile)
+  }
+  catch (e){
+    ctx.throw(400, e)
+  }
   user.username = data.username
   user.profileImage = profile
   user.dateOfBirth = data.dateOfBirth
   user.department = data.department
   user.studentNumber = data.studentNumber
+  user.email = data.email
   user.nTh = data.nTh
   user.profileText = data.profileText
   user.phoneNumber = data.phoneNumber
@@ -47,9 +53,10 @@ export const Post = async (ctx, next) => {
   }
   catch (e) {
     /* required member중 하나라도 인자에 없을 경우 400에러 리턴 */
-    ctx.throw(400, "has NULL required member")
+    ctx.throw(400, e)
   }
 }
+
 export const Delete =  async (ctx, next) => {
   const conn: Connection = getConnection()
 
@@ -64,4 +71,46 @@ export const Delete =  async (ctx, next) => {
     ctx.throw(400, e)
   }
 
+}
+
+export const Patch = async (ctx, next) => {
+  const conn: Connection = getConnection()
+  const data: Users = ctx.data
+
+  try{
+    const user = await conn
+                      .getRepository(Users)
+                      .findOneById(ctx.params.id)
+    if (data.fullname !== undefined) {
+      user.fullname = data.fullname
+    }
+    if (data.nTh !== undefined) {
+      user.nTh = data.nTh
+    }
+    if (data.dateOfBirth !== undefined) {
+      user.dateOfBirth = data.dateOfBirth
+    }
+    if (data.department !== undefined) {
+      user.department = data.department
+    }
+    if (data.studentNumber !== undefined) {
+      user.studentNumber = data.studentNumber
+    }
+    if (data.email !== undefined) {
+      user.email = data.email
+    }
+    if (data.phoneNumber !== undefined) {
+      user.phoneNumber = data.phoneNumber
+    }
+    if (data.favoriteComic !== undefined) {
+      user.favoriteComic = data.favoriteComic
+    }
+    if (data.favoriteCharacter !== undefined) {
+      user.favoriteCharacter = data.favoriteCharacter
+    }
+    await conn.manager.save(user)
+  }
+  catch (e) {
+    ctx.throw(400, e)
+  }
 }

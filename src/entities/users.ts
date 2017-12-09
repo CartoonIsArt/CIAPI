@@ -122,6 +122,10 @@ export default class Users {
   @Column("text")
   public department:	string
 
+  /* 유저 이메일 */
+  @Column("text")
+  public email: string
+
   /* 유저 게시글 수 */
   @Column(
     "int",
