@@ -1,36 +1,53 @@
 import { Connection, getConnection, getManager } from "typeorm"
+import Files from "../entities/files"
 import Users from "../entities/users"
 
 /* 유저 테이블의 모든 값을 리턴함. */
 export const Get = async (ctx, next) => {
-  const entityManager = getManager()
-  ctx.body = await entityManager.find(Users)
+  const conn: Connection = getConnection()
+  ctx.body = await conn
+    .getRepository(Users)
+    .find({ relations: ["profileImage"] })
 }
 
-/* firstname을 POST 인자로 받아 DB에 저장함. */
+/* fullname을 POST 인자로 받아 DB에 저장함. */
 export const Post = async (ctx, next) => {
   /* POST 인자를 data변수로 받음 */
   const data = ctx.request.body
 
-  /* firstname이 인자로 들어왔을 경우 */
-  if (data.firstname !== undefined) {
-
     /* DB 커넥션풀에서 커넥션을 하나 가져옴. */
-    const conn: Connection = getConnection()
+  const conn: Connection = getConnection()
 
     /* Users 테이블 ORM 인스턴스 생성 */
-    const user: Users = new Users()
-    user.firstname = data.firstname
+  const user: Users = new Users()
+  user.fullname = data.fullname
 
+    /*프로필 이미지를 DB에 포함 및 relation을 구성 */
+  const profile: Files = new Files()
+  profile.file = data.profileImage
+  profile.savedPath = "MIKI"
+  await conn.manager.save(profile)
+  user.username = data.username
+  user.profileImage = profile
+  user.dateOfBirth = data.dateOfBirth
+  user.department = data.department
+  user.studentNumber = data.studentNumber
+  user.nTh = data.nTh
+  user.profileText = data.profileText
+  user.phoneNumber = data.phoneNumber
+  user.favoriteComic = data.favoriteComic
+  user.favoriteCharacter = data.favoriteCharacter
+
+  /* id를 포함하여 body에 응답 */
+  ctx.body = user
+
+  try {
     /* DB에 저장 - 비동기 */
     await conn.manager.save(user)
-
-    /* id를 포함하여 body에 응답 */
-    ctx.body = user
   }
-  else {
-    /* firstname이 인자에 없을 경우 400에러 리턴 */
-    ctx.throw(400, "firstname required")
+  catch (e) {
+    /* required member중 하나라도 인자에 없을 경우 400에러 리턴 */
+    ctx.throw(400, "has NULL required member")
   }
 }
 export const Delete =  async (ctx, next) => {
