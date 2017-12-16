@@ -3,3 +3,5 @@ node_modules
 *.js.map
 .vscode
 yarn-error.log
+db
+.idea
