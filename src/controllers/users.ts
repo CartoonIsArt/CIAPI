@@ -26,7 +26,12 @@ export const Post = async (ctx, next) => {
   const profile: Files = new Files()
   profile.file = data.profileImage
   profile.savedPath = "MIKI"
-  await conn.manager.save(profile)
+  try{
+    await conn.manager.save(profile)
+  }
+  catch (e){
+    ctx.throw(400, e)
+  }
   user.username = data.username
   user.profileImage = profile
   user.dateOfBirth = data.dateOfBirth
@@ -47,7 +52,7 @@ export const Post = async (ctx, next) => {
   }
   catch (e) {
     /* required member중 하나라도 인자에 없을 경우 400에러 리턴 */
-    ctx.throw(400, "has NULL required member")
+    ctx.throw(400, e)
   }
 }
 export const Delete =  async (ctx, next) => {
