@@ -35,3 +35,20 @@ export const Post = async (ctx, next) => {
     ctx.throw(400, "file required")
   }
 }
+
+    /* */
+export const Delete =  async (ctx, next) => {
+  const conn: Connection = getConnection()
+
+  try {
+    const file = await conn
+                      .getRepository(Files)
+                      .findOneById(ctx.params.id)
+    await conn.manager.remove(file)
+    ctx.response.status = 204
+  }
+  catch (e) {
+    ctx.throw(400, e)
+  }
+
+}

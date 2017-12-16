@@ -26,7 +26,6 @@ export const Post = async (ctx, next) => {
   const profile: Files = new Files()
   profile.file = data.profileImage
   profile.savedPath = "MIKI"
-  await conn.manager.save(profile)
   user.username = data.username
   user.profileImage = profile
   user.dateOfBirth = data.dateOfBirth
@@ -43,11 +42,19 @@ export const Post = async (ctx, next) => {
 
   try {
     /* DB에 저장 - 비동기 */
+    await conn.manager.save(profile)
+  }
+  catch (e){
+    ctx.throw(400, e)
+  }
+
+  try {
+    /* DB에 저장 - 비동기 */
     await conn.manager.save(user)
   }
   catch (e) {
-    /* required member중 하나라도 인자에 없을 경우 400에러 리턴 */
-    ctx.throw(400, "has NULL required member")
+    /* required member중 하나라도 인자에 없을 경우 400에러 리턴 - 수정*/
+    ctx.throw(400, e)
   }
 }
 export const Delete =  async (ctx, next) => {
