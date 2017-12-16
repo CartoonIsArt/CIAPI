@@ -1,8 +1,12 @@
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from "typeorm"
+import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm"
+import Users from "./users"
 
 /* 게시글 테이블 스키마 */
 @Entity()
 export default class Documents {
+
+  @ManyToOne( type => Users, author => author.document, { nullable : false })
+  public author: Users
 
   /* 게시글 작성자의 pk */
   @PrimaryGeneratedColumn()
