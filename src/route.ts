@@ -28,6 +28,7 @@ router.delete("/users/:id", Users.Delete)
 
 router.get("/comments", Comments.Get)
 router.post("/comments", Comments.Post)
+   /* please add this code */
 // router.delete("/comments", Comments.Delete)
 
 router.get("/documents", Documents.Get)
