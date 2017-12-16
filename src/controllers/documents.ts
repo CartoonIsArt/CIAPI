@@ -42,3 +42,19 @@ export const Post = async (ctx, next) => {
     /* id와 created_at을 포함하여 body에 응답 */
   ctx.body = documents
 }
+/* documents 테이블에 존재하는 게시글 삭제 */
+export const Delete =  async (ctx, next) => {
+  const conn: Connection = getConnection()
+
+  try {
+    const document = await conn
+                      .getRepository(Documents)
+                      .findOneById(ctx.params.id)
+    await conn.manager.remove(document)
+    ctx.response.status = 204
+  }
+  catch (e) {
+    ctx.throw(400, e)
+  }
+
+}
