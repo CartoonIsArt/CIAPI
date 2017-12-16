@@ -26,6 +26,12 @@ export const Post = async (ctx, next) => {
   const profile: Files = new Files()
   profile.file = data.profileImage
   profile.savedPath = "MIKI"
+  try{
+    await conn.manager.save(profile)
+  }
+  catch (e){
+    ctx.throw(400, e)
+  }
   user.username = data.username
   user.profileImage = profile
   user.dateOfBirth = data.dateOfBirth

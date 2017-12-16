@@ -1,4 +1,5 @@
 import * as Router from "koa-router"
+import * as Comments from "./controllers/comments"
 import * as Documents from "./controllers/documents"
 import * as Files from "./controllers/files"
 import * as Users from "./controllers/users"
@@ -24,8 +25,14 @@ export const router = new Router()
 router.get("/users", Users.Get)
 router.post("/users", Users.Post)
 router.delete("/users/:id", Users.Delete)
+
+router.get("/comments", Comments.Get)
+router.post("/comments", Comments.Post)
+router.delete("/comments/:id", Comments.Delete)
+
 router.get("/documents", Documents.Get)
 router.post("/documents", Documents.Post)
+
 router.get("/files", Files.Get)
 router.post("/files", Files.Post)
 router.delete("/files/:id", Files.Delete)
