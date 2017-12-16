@@ -3,6 +3,7 @@ import * as Comments from "./controllers/comments"
 import * as Documents from "./controllers/documents"
 import * as Files from "./controllers/files"
 import * as Users from "./controllers/users"
+import * as Cia from "./controllers/cia"
 
 export const router = new Router()
 
@@ -37,3 +38,5 @@ router.delete("/documents/:id", Documents.Delete)
 router.get("/files", Files.Get)
 router.post("/files", Files.Post)
 router.delete("/files/:id", Files.Delete)
+
+router.post("/cia",Cia.Post)
