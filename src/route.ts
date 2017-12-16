@@ -35,3 +35,4 @@ router.post("/documents", Documents.Post)
 
 router.get("/files", Files.Get)
 router.post("/files", Files.Post)
+router.delete("/files/:id", Files.Delete)

@@ -48,10 +48,18 @@ export const Post = async (ctx, next) => {
 
   try {
     /* DB에 저장 - 비동기 */
+    await conn.manager.save(profile)
+  }
+  catch (e){
+    ctx.throw(400, e)
+  }
+
+  try {
+    /* DB에 저장 - 비동기 */
     await conn.manager.save(user)
   }
   catch (e) {
-    /* required member중 하나라도 인자에 없을 경우 400에러 리턴 */
+    /* required member중 하나라도 인자에 없을 경우 400에러 리턴 - 수정*/
     ctx.throw(400, e)
   }
 }

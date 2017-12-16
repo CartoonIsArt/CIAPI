@@ -33,3 +33,20 @@ export const Post = async (ctx, next) => {
       /* id를 포함하여 body에 응답 */
   ctx.body = files
 }
+
+    /* */
+export const Delete =  async (ctx, next) => {
+  const conn: Connection = getConnection()
+
+  try {
+    const file = await conn
+                      .getRepository(Files)
+                      .findOneById(ctx.params.id)
+    await conn.manager.remove(file)
+    ctx.response.status = 204
+  }
+  catch (e) {
+    ctx.throw(400, e)
+  }
+
+}
