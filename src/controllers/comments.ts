@@ -51,7 +51,7 @@ export const Delete =  async (ctx, next) => {
   try {
     const comment = await conn
                           .getRepository(Comments)
-                          .findOneById(ctx.request.body.id)
+                          .findOneById(ctx.params.id)
     await conn.manager.remove(comment)
     ctx.response.status = 204
   }
