@@ -32,6 +32,7 @@ router.delete("/comments/:id", Comments.Delete)
 
 router.get("/documents", Documents.Get)
 router.post("/documents", Documents.Post)
+router.delete("/documents/:id", Documents.Delete)
 
 router.get("/files", Files.Get)
 router.post("/files", Files.Post)
