@@ -22,10 +22,8 @@ export const Post = async (ctx, next) => {
      /* DB 커넥션풀에서 커넥션을 하나 가져옴. */
   const conn: Connection = getConnection()
   const userRepository = conn.getRepository(Users)
-  const user: Users = await userRepository.findOneById(data.userId)
-  ctx.body.file = await conn
-  .getRepository(Users)
-  .find({ relations: ["profileImage"] })
+  const user: Users = await userRepository.findOneById(1)
+
     /* documents 테이블 ORM 인스턴스 생성 */
   const documents: Documents = new Documents()
   documents.text = data.text
@@ -37,8 +35,24 @@ export const Post = async (ctx, next) => {
   }
   catch (e) {
       /* text가 인자에 없을 경우 400에러 리턴 */
-    ctx.throw(400, "text required")
+    ctx.throw(400, e)
   }
     /* id와 created_at을 포함하여 body에 응답 */
   ctx.body = documents
+}
+/* documents 테이블에 존재하는 게시글 삭제 */
+export const Delete =  async (ctx, next) => {
+  const conn: Connection = getConnection()
+
+  try {
+    const document = await conn
+                      .getRepository(Documents)
+                      .findOneById(ctx.params.id)
+    await conn.manager.remove(document)
+    ctx.response.status = 204
+  }
+  catch (e) {
+    ctx.throw(400, e)
+  }
+
 }
