@@ -1,4 +1,5 @@
 import { Connection, getConnection, getConnectionManager, getManager } from "typeorm"
+import { ConnectionManager } from "typeorm/connection/ConnectionManager"
 import Documents from "../entities/documents"
 import Users from "../entities/users"
 
@@ -10,6 +11,7 @@ export const Get = async (ctx, next) => {
     .createQueryBuilder("document")
     .leftJoinAndSelect("document.author", "author")
     .leftJoinAndSelect("author.profileImage", "profileImage")
+    .leftJoinAndSelect("document.likedBy", "likedBy")
     .getMany()
   ctx.body = document
 }
@@ -55,4 +57,56 @@ export const Delete =  async (ctx, next) => {
     ctx.throw(400, e)
   }
 
+}
+
+export const LikedBy = async (ctx, next) => {
+  const conn: Connection = getConnection()
+
+  try {
+    const document: Documents[] = await conn
+                        .getRepository(Documents)
+                        .find({
+                          where: {
+                            id: ctx.params.id,
+                          },
+                          relations: ["likedBy"],
+                        })
+
+    const user = await conn
+                        .getRepository(Users)
+                        .findOneById(1)
+
+    console.log(document[0])
+    //document.likedBy = document.likedBy.concat(user)
+    //document.likedBy = [ ...document.likedBy, user]
+
+   // await conn.manager.save(document)
+
+    ctx.response.status = 201
+  }
+  catch (e) {
+    ctx.throw(400, e)
+  }
+}
+
+export const UnlikedBy = async (ctx, next) => {
+  const conn: Connection = getConnection()
+
+  try {
+    const document = await conn
+                        .getRepository(Documents)
+                        .findOneById(ctx.params.id)
+
+    const user = await conn
+                        .getRepository(Users)
+                        .findOneById(1)
+
+    document.likedBy = document.likedBy
+        .filter(e => e.id !== ctx.params.id)
+
+    conn.manager.save(document)
+  }
+  catch (e) {
+    ctx.throw(400, e)
+  }
 }
