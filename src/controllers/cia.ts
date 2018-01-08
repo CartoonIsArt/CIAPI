@@ -39,16 +39,20 @@ export const Patch = async (ctx, next) => {
 
   try{
     /* name 문서를 찾아서 가져옴 */
-    const cia = await conn.getRepository(Cia).createQueryBuilder("cia").where("cia.name = :name", {name : ctx.params.name}).getOne();
+    const cia = await conn
+    .getRepository(Cia)
+    .createQueryBuilder("cia")
+    .where("cia.name = :name", { name : ctx.params.name })
+    .getOne()
 
     /* 입력받은 값으로 수정 */
     cia.value = data.value
 
     await conn.manager.save(cia)
     /* id를 포함하여 body에 응답 */
-    ctx.body=cia
+    ctx.body = cia
   }
-  catch(e){
+  catch (e){
     /* cia에 인자가 없을 경우 400에러 리턴 */
     ctx.throw(400, e)
   }
