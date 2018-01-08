@@ -78,15 +78,6 @@ export default class Users {
   )
   public isSuperUser:	boolean
 
-  /* 유저 임원진 여부 */
-  @Column(
-    "boolean",
-    {
-      default: false,
-    },
-  )
-  public isStaff:	boolean
-
   /* 유저 활동인구 여부 */
   @Column(
     "boolean",
