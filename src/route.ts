@@ -40,3 +40,4 @@ router.post("/files", Files.Post)
 router.delete("/files/:id", Files.Delete)
 
 router.post("/cia",Cia.Post)
+router.patch("/cia/:name", Cia.Patch)
