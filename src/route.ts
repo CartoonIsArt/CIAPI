@@ -1,4 +1,5 @@
 import * as Router from "koa-router"
+import * as Cia from "./controllers/cia"
 import * as Comments from "./controllers/comments"
 import * as Documents from "./controllers/documents"
 import * as Files from "./controllers/files"
@@ -37,3 +38,6 @@ router.delete("/documents/:id", Documents.Delete)
 router.get("/files", Files.Get)
 router.post("/files", Files.Post)
 router.delete("/files/:id", Files.Delete)
+
+router.post("/cia", Cia.Post)
+router.patch("/cia/:name", Cia.Patch)
