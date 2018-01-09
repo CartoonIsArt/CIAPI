@@ -40,6 +40,7 @@ export default class Sessions {
 
   @Column({
     type: "bigint",
+    nullable: true,
   })
   public ipv6: number
 

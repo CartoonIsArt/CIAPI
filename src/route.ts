@@ -3,6 +3,7 @@ import * as Cia from "./controllers/cia"
 import * as Comments from "./controllers/comments"
 import * as Documents from "./controllers/documents"
 import * as Files from "./controllers/files"
+import * as Sessions from "./controllers/sessions"
 import * as Users from "./controllers/users"
 
 export const router = new Router()
@@ -23,6 +24,9 @@ export const router = new Router()
          }
 
 */
+router.post("/login", Sessions.Login)
+router.post("/logout", Sessions.Logout)
+
 router.get("/users", Users.Get)
 router.post("/users", Users.Post)
 router.delete("/users/:id", Users.Delete)
