@@ -17,7 +17,7 @@ export default class Users {
   /*  유저의 작성글 리스트 */
   @OneToMany(
     type => Comments,
-    comment => comment.author,
+    comment => comment.user,
   )
   public comment: Comments[]
 
