@@ -6,6 +6,7 @@ import * as path from "path"
 import "reflect-metadata"
 import { Connection, createConnection } from "typeorm"
 import { router } from "./route"
+import session from "./session"
 
 const app = new Koa()
 
@@ -23,6 +24,9 @@ app.use(bodyParser())
 if (process.env.NODE_ENV !== "production") {
   app.use(Serve(path.join("test-restful", "dist")))
 }
+
+/* 세션 */
+// app.use(session)
 
 /* 라우팅 */
 app.use(router.routes())
