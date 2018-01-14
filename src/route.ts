@@ -3,6 +3,7 @@ import * as Cia from "./controllers/cia"
 import * as Comments from "./controllers/comments"
 import * as Documents from "./controllers/documents"
 import * as Files from "./controllers/files"
+import * as Sessions from "./controllers/sessions"
 import * as Users from "./controllers/users"
 
 export const router = new Router()
@@ -13,16 +14,19 @@ export const router = new Router()
 
    함수: (ctx, next)를 인자로 받는 함수.
    ctx: 현재 컨텍스트. 리퀘스트 1개당 컨텍스트 1개가 생성됨.
-        리퀘스트 + 리스폰스 = 컨텍스트 인 것 같음.
-   next: 잘 모르겠음ㅎ 아마 다른 미들웨어가 실행된 후에 추가로
-         실행하고 싶은 소스가 있을 경우 사용하는 것 같음.
+        리퀘스트 + 리스폰스 = 컨텍스트.
+   next: 다른 미들웨어가 실행될 때 까지 현재 미들웨어가 기다림.
+         실행하고 싶은 다른 미들웨어가 있을 경우 사용.
          async (ctx, next) => {
-           // 원래 이 미들웨어 순서에 맞게 실행
+           // app.use에 등록한 순서대로 실행
            await next()
-           // 다른 미들웨어 실행 후 실행
+           // 역순으로 실행
          }
 
 */
+router.post("/login", Sessions.Login)
+router.post("/logout", Sessions.Logout)
+
 router.get("/users", Users.Get)
 router.post("/users", Users.Post)
 router.delete("/users/:id", Users.Delete)

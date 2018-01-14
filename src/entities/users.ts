@@ -1,5 +1,5 @@
-import { Column, CreateDateColumn, Entity, JoinColumn, OneToMany,
-  OneToOne, PrimaryGeneratedColumn, RelationOptions } from "typeorm"
+import { Column, CreateDateColumn, Entity, Index, JoinColumn,
+  OneToMany, OneToOne, PrimaryGeneratedColumn, RelationOptions } from "typeorm"
 import Comments from "./comments"
 import Documents from "./documents"
 import Files from "./files"
@@ -36,8 +36,12 @@ export default class Users {
   public profileImage: Files
 
   /* 유저 로그인시 사용할 이름 */
-  @Column("text")
+  @Column("varchar", { unique: true })
   public username: string
+
+  /* 유저 패스워드 */
+  @Column("text")
+  public password: string
 
   /* 유저 회원 가입 일자 */
   @CreateDateColumn()
