@@ -37,11 +37,8 @@ router.delete("/documents/:id", Documents.Delete)
 
 router.get("/files", Files.Get)
 router.post("/files", Files.Post)
-<<<<<<< HEAD
 router.patch("/users/:id", Users.Patch)
-=======
 router.delete("/files/:id", Files.Delete)
 
 router.post("/cia", Cia.Post)
 router.patch("/cia/:name", Cia.Patch)
->>>>>>> c7b13be7aa074d9cc16c27909ad39233e2fafa8d
