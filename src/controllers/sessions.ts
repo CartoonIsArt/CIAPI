@@ -24,7 +24,7 @@ export const Login = async (ctx, next) => {
 
     ctx.session = await conn.manager.save(session)
     ctx.set("CIASESSIONID", session.data)
-    ctx.redirect(to)
+    ctx.response.body = session.user 
   }
   catch (e){
     ctx.throw(400, e)
