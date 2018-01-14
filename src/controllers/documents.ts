@@ -63,24 +63,17 @@ export const LikedBy = async (ctx, next) => {
   const conn: Connection = getConnection()
 
   try {
-    const document: Documents[] = await conn
-                        .getRepository(Documents)
-                        .find({
-                          where: {
-                            id: ctx.params.id,
-                          },
-                          relations: ["likedBy"],
-                        })
+    const document: Documents = await conn
+      .getRepository(Documents)
+      .findOneById(ctx.params.id, { relations: ["likedBy"] })
+    
 
     const user = await conn
                         .getRepository(Users)
                         .findOneById(1)
 
-    console.log(document[0])
-    //document.likedBy = document.likedBy.concat(user)
-    //document.likedBy = [ ...document.likedBy, user]
-
-   // await conn.manager.save(document)
+    document.likedBy.push(user)
+    await conn.manager.save(document)
 
     ctx.response.status = 201
   }
@@ -93,18 +86,23 @@ export const UnlikedBy = async (ctx, next) => {
   const conn: Connection = getConnection()
 
   try {
-    const document = await conn
-                        .getRepository(Documents)
-                        .findOneById(ctx.params.id)
-
     const user = await conn
-                        .getRepository(Users)
-                        .findOneById(1)
+    .getRepository(Users)
+    .findOneById(1)
 
-    document.likedBy = document.likedBy
-        .filter(e => e.id !== ctx.params.id)
+    const document = await conn
+                        .createQueryBuilder()
+                        .relation(Documents,"likedBy")
+                        .of(Documents)
+                        .remove(user);
+                        //.getRepository(Documents)
+                        //.findOneById(ctx.params.id)
+                        
 
-    conn.manager.save(document)
+
+
+    //document.likedBy = document.likedBy
+    //    .filter(e => e.id !== ctx.params.id)
   }
   catch (e) {
     ctx.throw(400, e)
