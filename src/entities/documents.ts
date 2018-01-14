@@ -19,5 +19,4 @@ export default class Documents {
   /* 작성된 시간 */
   @CreateDateColumn()
   public createdAt: Date
-
 }

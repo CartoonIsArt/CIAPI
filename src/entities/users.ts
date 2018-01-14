@@ -1,5 +1,6 @@
 import { Column, CreateDateColumn, Entity, JoinColumn, OneToMany,
   OneToOne, PrimaryGeneratedColumn, RelationOptions } from "typeorm"
+import Comments from "./comments"
 import Documents from "./documents"
 import Files from "./files"
 
@@ -12,6 +13,13 @@ export default class Users {
     document => document.author,
   )
   public document: Documents[]
+
+  /*  유저의 작성글 리스트 */
+  @OneToMany(
+    type => Comments,
+    comment => comment.author,
+  )
+  public comment: Comments[]
 
   /* Users table pk */
   @PrimaryGeneratedColumn()
@@ -69,15 +77,6 @@ export default class Users {
     },
   )
   public isSuperUser:	boolean
-
-  /* 유저 임원진 여부 */
-  @Column(
-    "boolean",
-    {
-      default: false,
-    },
-  )
-  public isStaff:	boolean
 
   /* 유저 활동인구 여부 */
   @Column(
