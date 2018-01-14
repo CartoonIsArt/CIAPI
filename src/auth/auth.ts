@@ -8,8 +8,8 @@ export default async function Auth (username: string, password: string): Promise
     .getRepository(Users)
     .find({
       where: {
-        username,
         password,
+        username,
       },
     })
   return users[0]
