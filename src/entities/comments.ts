@@ -1,5 +1,6 @@
 import { Column, CreateDateColumn, Entity, JoinTable,
-  ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm"
+  ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm"
+import Documents from "./documents"
 import Users from "./users"
 
 /* 댓글 테이블 스키마 */
@@ -14,11 +15,13 @@ export default class Comments {
   public rootComment: Comments
 
     /* 현재 댓글이 가지고 있는 대댓글 리스트 */
-  @OneToMany(type => Comments, replies => replies.rootComment)
-  public replies: Comments[] = new Array<Comments>()
+  @OneToMany(type => Comments, comments => comments.rootComment)
+  public replies: Comments[]
 
-  @Column({ default: 0 })
-  public replyCount: number
+  /* 댓글이 달린 글과 relation 구현 필요
+  @OnetoOne(type => Documents, documents => documents.)
+  public rootDocument: Documents
+  */
 
     /* 댓글이 달린 시각 */
   @CreateDateColumn()

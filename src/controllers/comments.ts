@@ -40,18 +40,11 @@ export const Post = async (ctx, next) => {
     /* commentId를 인자로 전달하면 대댓글 relation 설정 */
   if (data.commentId !== undefined){
     try{
-      let motherComment: Comments
+      const parent: Comments
                           = await conn.getRepository(Comments)
                                       .findOneById(data.commentId)
-      do {
-        motherComment.replies.push(data)
-        await conn.manager.save(motherComment)
-        comments.rootComment = motherComment
-
-        if (motherComment.rootComment !== undefined){
-          motherComment = motherComment.rootComment
-        }
-      } while (motherComment.rootComment !== undefined)
+      await conn.manager.save(parent)
+      comments.rootComment = parent
     }
     catch (e){
       /* 대댓글 relation설정 오류 시 400에러 리턴 */
