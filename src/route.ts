@@ -27,7 +27,7 @@ export const router = new Router()
 router.post("/login", Sessions.Login)
 router.post("/logout", Sessions.Logout)
 
-router.get("/users", Users.Get)
+router.get("/users/:id", Users.Get)
 router.post("/users", Users.Post)
 router.delete("/users/:id", Users.Delete)
 
@@ -35,7 +35,7 @@ router.get("/comments/:id", Comments.Get)
 router.post("/comments", Comments.Post)
 router.delete("/comments/:id", Comments.Delete)
 
-router.get("/documents", Documents.Get)
+router.get("/documents/:id", Documents.Get)
 router.post("/documents", Documents.Post)
 router.delete("/documents/:id", Documents.Delete)
 
