@@ -22,7 +22,7 @@ export const router = new Router()
          }
 
 */
-router.get("/users", Users.Get)
+router.get("/users/:id", Users.Get)
 router.post("/users", Users.Post)
 router.delete("/users/:id", Users.Delete)
 
