@@ -16,7 +16,7 @@ export const Get = async (ctx, next) => {
     ctx.body = document
     ctx.response.status = 200
   }
-  catch(e){
+  catch (e) {
     ctx.throw(400, e)
   }
 }

@@ -9,8 +9,8 @@ export const Get = async (ctx, next) => {
   try{
     ctx.body = await conn
       .getRepository(Users)
-      .findOneById(ctx.params.id, ({ relations: ["profileImage"]}))
-      ctx.response.status = 201
+      .findOneById(ctx.params.id, ({ relations: ["profileImage"] }))
+    ctx.response.status = 201
   }
   catch (e) {
     ctx.throw(400, e)
