@@ -30,7 +30,7 @@ router.get("/comments", Comments.Get)
 router.post("/comments", Comments.Post)
 router.delete("/comments/:id", Comments.Delete)
 
-router.get("/documents", Documents.Get)
+router.get("/documents/:id", Documents.Get)
 router.post("/documents", Documents.Post)
 router.delete("/documents/:id", Documents.Delete)
 
