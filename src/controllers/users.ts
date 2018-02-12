@@ -49,6 +49,7 @@ export const Post = async (ctx, next) => {
   user.phoneNumber = data.phoneNumber
   user.favoriteComic = data.favoriteComic
   user.favoriteCharacter = data.favoriteCharacter
+  user.password = data.password
 
   /* id를 포함하여 body에 응답 */
   ctx.body = user

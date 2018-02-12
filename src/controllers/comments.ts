@@ -2,15 +2,20 @@ import { Connection, getConnection, getConnectionManager, getManager } from "typ
 import Comments from "../entities/comments"
 import Users from "../entities/users"
 
+// 3중 이상으로 중첩 시, 앞에 댓글들이 연결되지 않는 문제
+// 대댓글을 1개밖에 갖지 못하는 문제
+
 /* Comments 테이블의 모든 값을 리턴함. */
 export const Get = async (ctx, next) => {
   const conn: Connection = getConnection()
   const comment = await conn
     .getRepository(Comments)
     .createQueryBuilder("comment")
-    .leftJoinAndSelect("comment.author", "author")
-    .leftJoinAndSelect("author.profileImage", "profileImage")
-    .getMany()
+    .leftJoinAndSelect("comment.user", "user")
+    .leftJoinAndSelect("user.profileImage", "profileImage")
+    .leftJoinAndSelect("comment.replies", "replies")
+    .where("comment.id = :id", { id: ctx.params.id })
+    .getOne()
   ctx.body = comment
 }
 
@@ -27,11 +32,25 @@ export const Post = async (ctx, next) => {
     /* comments 테이블 ORM 인스턴스 생성 */
   const comments: Comments = new Comments()
   comments.id = data.id
-  comments.documentId = data.documentId
-  comments.commentId = data.commentId ? data.commentId : 0
+  comments.rootComment = null
   comments.createdAt = data.createdAt
   comments.text = data.text
-  comments.author = user
+  comments.user = user
+
+    /* commentId를 인자로 전달하면 대댓글 relation 설정 */
+  if (data.commentId !== undefined){
+    try{
+      const parent: Comments
+                          = await conn.getRepository(Comments)
+                                      .findOneById(data.commentId)
+      await conn.manager.save(parent)
+      comments.rootComment = parent
+    }
+    catch (e){
+      /* 대댓글 relation설정 오류 시 400에러 리턴 */
+      ctx.throw(400, e)
+    }
+  }
 
     /* DB에 저장 - 비동기 */
   try {
@@ -52,10 +71,12 @@ export const Delete =  async (ctx, next) => {
     const comment = await conn
                           .getRepository(Comments)
                           .findOneById(ctx.params.id)
-    await conn.manager.remove(comment)
+    await conn.manager.save(comment)
     ctx.response.status = 204
   }
   catch (e) {
     ctx.throw(400, e)
   }
 }
+
+/* 댓댓글 스펙문서 작성하면 좋음! */
