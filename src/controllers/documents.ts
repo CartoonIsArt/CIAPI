@@ -82,7 +82,6 @@ export const LikedBy = async (ctx, next) => {
     const document: Documents = await conn
       .getRepository(Documents)
       .findOneById(ctx.params.id, { relations: ["likedBy"] })
-    
 
     const user = await conn
                         .getRepository(Users)
@@ -112,16 +111,16 @@ export const UnlikedBy = async (ctx, next) => {
                         .from(LikedBy)
                         .where("id = :id", { LikedBy })
                         .execute()
-                        //.relation(Documents,"likedBy")
-                        //.of(Documents)
-                        //.remove(user)
-                        
-                        //.getRepository(Documents)
-                        //.findOneById(ctx.params.id)
+                        // .relation(Documents,"likedBy")
+                        // .of(Documents)
+                        // .remove(user)
 
-    //await conn.manager.save(document)
+                        // .getRepository(Documents)
+                        // .findOneById(ctx.params.id)
 
-    //document.likedBy = document.likedBy
+    // await conn.manager.save(document)
+
+    // document.likedBy = document.likedBy
     //    .filter(e => e.id !== ctx.params.id)
     ctx.response.status = 201
   }
