@@ -6,14 +6,20 @@ import Users from "../entities/users"
 /* Documents 테이블의 모든 값을 리턴함. */
 export const Get = async (ctx, next) => {
   const conn: Connection = getConnection()
-  const document = await conn
-    .getRepository(Documents)
-    .createQueryBuilder("document")
-    .leftJoinAndSelect("document.author", "author")
-    .leftJoinAndSelect("author.profileImage", "profileImage")
-    .leftJoinAndSelect("document.likedBy", "likedBy")
-    .getMany()
-  ctx.body = document
+  try{
+    const document = await conn
+      .getRepository(Documents)
+      .createQueryBuilder("document")
+      .leftJoinAndSelect("document.author", "author")
+      .leftJoinAndSelect("author.profileImage", "profileImage")
+      .where("document.id = :id", { id: ctx.params.id })
+      .getOne()
+    ctx.body = document
+    ctx.response.status = 200
+  }
+  catch (e) {
+    ctx.throw(400, e)
+  }
 }
 
 /* text를 POST 인자로 받아 DB에 저장함. */
