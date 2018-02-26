@@ -2,9 +2,6 @@ import { Connection, getConnection, getConnectionManager, getManager } from "typ
 import Comments from "../entities/comments"
 import Users from "../entities/users"
 
-// 3중 이상으로 중첩 시, 앞에 댓글들이 연결되지 않는 문제
-// 대댓글을 1개밖에 갖지 못하는 문제
-
 /* Comments 테이블의 모든 값을 리턴함. */
 export const Get = async (ctx, next) => {
   const conn: Connection = getConnection()
@@ -46,8 +43,8 @@ export const Post = async (ctx, next) => {
       await conn.manager.save(parent)
       comments.rootComment = parent
     }
+    /* 대댓글 relation설정 오류 시 400에러 리턴 */
     catch (e){
-      /* 대댓글 relation설정 오류 시 400에러 리턴 */
       ctx.throw(400, e)
     }
   }
@@ -78,5 +75,3 @@ export const Delete =  async (ctx, next) => {
     ctx.throw(400, e)
   }
 }
-
-/* 댓댓글 스펙문서 작성하면 좋음! */
