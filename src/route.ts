@@ -38,6 +38,7 @@ router.delete("/comments/:id", Comments.Delete)
 router.get("/documents", Documents.Get)
 router.post("/documents", Documents.Post)
 router.delete("/documents/:id", Documents.Delete)
+router.get("/documents/:id/likedBy", Documents.GetLikedBy)
 router.post("/documents/:id/likedBy", Documents.LikedBy)
 router.delete("/documents/:id/likedBy", Documents.UnlikedBy)
 

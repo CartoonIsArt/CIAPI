@@ -59,6 +59,16 @@ export const Delete =  async (ctx, next) => {
 
 }
 
+export const GetLikedBy = async (ctx, next) => {
+  const conn: Connection = getConnection()
+  const likedBy = await conn
+    .getRepository(Documents)
+    .createQueryBuilder("document")
+    .leftJoinAndSelect("document.likedBy", "likedBy")
+    .getMany()
+  ctx.body = likedBy
+}
+
 export const LikedBy = async (ctx, next) => {
   const conn: Connection = getConnection()
 
@@ -87,22 +97,27 @@ export const UnlikedBy = async (ctx, next) => {
 
   try {
     const user = await conn
-    .getRepository(Users)
-    .findOneById(1)
+      .getRepository(Users)
+      .findOneById(1)
 
     const document = await conn
                         .createQueryBuilder()
-                        .relation(Documents,"likedBy")
-                        .of(Documents)
-                        .remove(user);
+                        .delete()
+                        .from(LikedBy)
+                        .where("id = :id", { LikedBy })
+                        .execute()
+                        //.relation(Documents,"likedBy")
+                        //.of(Documents)
+                        //.remove(user)
+                        
                         //.getRepository(Documents)
                         //.findOneById(ctx.params.id)
-                        
 
-
+    //await conn.manager.save(document)
 
     //document.likedBy = document.likedBy
     //    .filter(e => e.id !== ctx.params.id)
+    ctx.response.status = 201
   }
   catch (e) {
     ctx.throw(400, e)
