@@ -97,36 +97,33 @@ export const LikedBy = async (ctx, next) => {
   }
 }
 
-// export const UnlikedBy = async (ctx, next) => {
-  // const conn: Connection = getConnection()
+/* export const UnlikedBy = async (ctx, next) => {
+  const conn: Connection = getConnection()
 
-  // try {
-    // const user = await conn
-      // .getRepository(Users)
-      // .findOneById(1)
+  try {
+    const user = await conn
+      .getRepository(Users)
+      .findOneById(1)
 
-    // const document = await conn
-                        // .createQueryBuilder()
-                        // .delete()
-                        // .from(LikedBy)
-                        // .where("id = :id", { LikedBy })
-                        // .execute()
-                        
+    const document = await conn
+                        .createQueryBuilder()
+                        .delete()
+                        .from(LikedBy)
+                        .where("id = :id", { LikedBy })
+                        .execute()
                         // .relation(Documents,"likedBy")
                         // .of(Documents)
                         // .remove(user)
-
                         // .getRepository(Documents)
                         // .findOneById(ctx.params.id)
 
-    // await conn.manager.save(document)
+    await conn.manager.save(document)
 
-    // document.likedBy = document.likedBy
-    //    .filter(e => e.id !== ctx.params.id)
-    
-    // ctx.response.status = 201
-  // }
-  // catch (e) {
-    // ctx.throw(400, e)
-  // }
-// }
+    document.likedBy = document.likedBy
+    .filter(e => e.id !== ctx.params.id)
+    ctx.response.status = 201
+  }
+  catch (e) {
+    ctx.throw(400, e)
+  }
+} */
