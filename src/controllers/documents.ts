@@ -12,6 +12,7 @@ export const Get = async (ctx, next) => {
       .createQueryBuilder("document")
       .leftJoinAndSelect("document.author", "author")
       .leftJoinAndSelect("author.profileImage", "profileImage")
+      .leftJoinAndSelect("document.comments", "comments")
       .where("document.id = :id", { id: ctx.params.id })
       .getOne()
     ctx.body = document
@@ -96,33 +97,27 @@ export const LikedBy = async (ctx, next) => {
   }
 }
 
-/* export const UnlikedBy = async (ctx, next) => {
+export const UnlikedBy = async (ctx, next) => {
   const conn: Connection = getConnection()
 
   try {
-    const user = await conn
-      .getRepository(Users)
-      .findOneById(1)
-
     const document = await conn
-                        .createQueryBuilder()
-                        .delete()
-                        .from(LikedBy)
-                        .where("id = :id", { LikedBy })
-                        .execute()
-                        // .relation(Documents,"likedBy")
-                        // .of(Documents)
-                        // .remove(user)
-                        // .getRepository(Documents)
-                        // .findOneById(ctx.params.id)
+      .getRepository(Documents)
+      .findOneById(ctx.params.id)
 
-    await conn.manager.save(document)
+    const user = await conn
+    .getRepository(Users)
+    .findOneById(1)
 
-    document.likedBy = document.likedBy
-    .filter(e => e.id !== ctx.params.id)
+    await conn
+    .createQueryBuilder()
+    .relation(Documents, "likedBy")
+    .of(document)
+    .remove(user)
+
     ctx.response.status = 201
   }
   catch (e) {
     ctx.throw(400, e)
   }
-} */
+}

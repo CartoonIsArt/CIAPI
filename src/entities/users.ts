@@ -1,5 +1,15 @@
-import { Column, CreateDateColumn, Entity, Index, JoinColumn,
-  OneToMany, OneToOne, PrimaryGeneratedColumn, RelationOptions } from "typeorm"
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  Index,
+  JoinColumn,
+  ManyToMany,
+  OneToMany,
+  OneToOne,
+  PrimaryGeneratedColumn,
+  RelationOptions,
+} from "typeorm"
 import Comments from "./comments"
 import Documents from "./documents"
 import Files from "./files"
@@ -14,12 +24,19 @@ export default class Users {
   )
   public document: Documents[]
 
-  /*  유저의 작성글 리스트 */
+  /*  유저의 작성 댓글 리스트 */
   @OneToMany(
     type => Comments,
     comment => comment.user,
   )
   public comment: Comments[]
+
+  /* 유저가 좋아요 누른 글 리스트 */
+  @ManyToMany(
+    type => Documents,
+    document => document.likedBy,
+  )
+  public likedDocuments: Documents[]
 
   /* Users table pk */
   @PrimaryGeneratedColumn()

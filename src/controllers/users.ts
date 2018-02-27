@@ -84,5 +84,4 @@ export const Delete =  async (ctx, next) => {
   catch (e) {
     ctx.throw(400, e)
   }
-
 }
