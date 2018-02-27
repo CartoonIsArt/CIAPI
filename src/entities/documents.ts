@@ -1,4 +1,4 @@
-import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm"
+import { Column, CreateDateColumn, Entity, JoinTable, ManyToMany, ManyToOne, PrimaryGeneratedColumn } from "typeorm"
 import Users from "./users"
 
 /* 게시글 테이블 스키마 */
@@ -19,4 +19,9 @@ export default class Documents {
   /* 작성된 시간 */
   @CreateDateColumn()
   public createdAt: Date
+
+  /*좋아요 받은 갯수*/
+  @ManyToMany(type => Users)
+  @JoinTable()
+  public likedBy: Users[]
 }

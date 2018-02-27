@@ -1,4 +1,5 @@
 import { Connection, getConnection, getConnectionManager, getManager } from "typeorm"
+import { ConnectionManager } from "typeorm/connection/ConnectionManager"
 import Documents from "../entities/documents"
 import Users from "../entities/users"
 
@@ -62,3 +63,66 @@ export const Delete =  async (ctx, next) => {
     ctx.throw(400, e)
   }
 }
+
+export const GetLikedBy = async (ctx, next) => {
+  const conn: Connection = getConnection()
+  const likedBy = await conn
+    .getRepository(Documents)
+    .createQueryBuilder("document")
+    .leftJoinAndSelect("document.likedBy", "likedBy")
+    .getMany()
+  ctx.body = likedBy
+}
+
+export const LikedBy = async (ctx, next) => {
+  const conn: Connection = getConnection()
+
+  try {
+    const document: Documents = await conn
+      .getRepository(Documents)
+      .findOneById(ctx.params.id, { relations: ["likedBy"] })
+
+    const user = await conn
+                        .getRepository(Users)
+                        .findOneById(1)
+
+    document.likedBy.push(user)
+    await conn.manager.save(document)
+
+    ctx.response.status = 201
+  }
+  catch (e) {
+    ctx.throw(400, e)
+  }
+}
+
+/* export const UnlikedBy = async (ctx, next) => {
+  const conn: Connection = getConnection()
+
+  try {
+    const user = await conn
+      .getRepository(Users)
+      .findOneById(1)
+
+    const document = await conn
+                        .createQueryBuilder()
+                        .delete()
+                        .from(LikedBy)
+                        .where("id = :id", { LikedBy })
+                        .execute()
+                        // .relation(Documents,"likedBy")
+                        // .of(Documents)
+                        // .remove(user)
+                        // .getRepository(Documents)
+                        // .findOneById(ctx.params.id)
+
+    await conn.manager.save(document)
+
+    document.likedBy = document.likedBy
+    .filter(e => e.id !== ctx.params.id)
+    ctx.response.status = 201
+  }
+  catch (e) {
+    ctx.throw(400, e)
+  }
+} */
