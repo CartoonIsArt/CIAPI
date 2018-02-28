@@ -22,14 +22,14 @@ export default class Users {
     type => Documents,
     document => document.author,
   )
-  public document: Documents[]
+  public documents: Documents[]
 
   /* 작성 댓글 리스트 */
   @OneToMany(
     type => Comments,
     comment => comment.user,
   )
-  public comment: Comments[]
+  public comments: Comments[]
 
   /* 좋아요 누른 글 리스트 */
   @ManyToMany(

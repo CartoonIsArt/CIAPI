@@ -81,14 +81,32 @@ export const Delete =  async (ctx, next) => {
   const conn: Connection = getConnection()
 
   try {
+    /* DB에서 댓글 불러오기 */
     const comment = await conn
     .getRepository(Comments)
     .findOneById(ctx.params.id)
 
-    // comment.replies = []
+    await conn
+    .createQueryBuilder()
+    .relation(Comments, "rootDocument")
+    .of(comment)
+    .set(null)
 
-    await conn.manager.save(comment)
+    await conn
+    .createQueryBuilder()
+    .relation(Comments, "rootComment")
+    .of(comment)
+    .set(null)
 
+    /* 대댓글 모두 삭제 */
+    await conn
+    .createQueryBuilder()
+    .delete()
+    .from(Comments)
+    .where("rootCommentId = :root", { root: comment.id })
+    .execute()
+
+    /* DB에서 댓글 삭제 */
     await conn
     .createQueryBuilder()
     .delete()
@@ -96,6 +114,7 @@ export const Delete =  async (ctx, next) => {
     .where("id = :id", { id: comment.id })
     .execute()
 
+    /* 삭제 완료 응답 */
     ctx.response.status = 204
   }
   catch (e) {

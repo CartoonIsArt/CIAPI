@@ -42,6 +42,6 @@ export default class Comments {
   public text: string
 
   /* 댓글을 작성한 유저 */
-  @ManyToOne( type => Users, author => author.comment, { nullable : false })
+  @ManyToOne( type => Users, author => author.comments, { nullable : false })
   public user: Users
 }

@@ -1,5 +1,6 @@
 import { Connection, getConnection, getConnectionManager, getManager } from "typeorm"
 import { ConnectionManager } from "typeorm/connection/ConnectionManager"
+import Comments from "../entities/comments"
 import Documents from "../entities/documents"
 import Users from "../entities/users"
 
@@ -49,15 +50,51 @@ export const Post = async (ctx, next) => {
     /* id와 created_at을 포함하여 body에 응답 */
   ctx.body = documents
 }
+
 /* documents 테이블에 존재하는 게시글 삭제 */
 export const Delete =  async (ctx, next) => {
   const conn: Connection = getConnection()
 
   try {
+    /* DB에서 게시글 불러오기 */
     const document = await conn
-                      .getRepository(Documents)
-                      .findOneById(ctx.params.id)
-    await conn.manager.remove(document)
+    .getRepository(Documents)
+    .findOneById(ctx.params.id)
+
+    const user = await conn
+    .getRepository(Users)
+    .findOneById(1)
+
+    /* 게시글의 relation 해제 */
+    await conn
+    .createQueryBuilder()
+    .relation(Documents, "likedBy")
+    .of(document)
+    .remove(user)
+
+    await conn
+    .createQueryBuilder()
+    .relation(Documents, "author")
+    .of(document)
+    .set(user)
+
+    /* 댓글 모두 삭제 */
+    await conn
+    .createQueryBuilder()
+    .delete()
+    .from(Comments)
+    .where("rootDocumentId = :id", { id: document.id })
+    .execute()
+
+    /* DB에서 게시글 삭제 */
+    await conn
+    .createQueryBuilder()
+    .delete()
+    .from(Documents)
+    .where("id = :id", { id: document.id })
+    .execute()
+
+    /* 삭제 완료 응답 */
     ctx.response.status = 204
   }
   catch (e) {
@@ -101,20 +138,24 @@ export const UnlikedBy = async (ctx, next) => {
   const conn: Connection = getConnection()
 
   try {
+    /* DB에서 게시글 불러오기 */
     const document = await conn
-      .getRepository(Documents)
-      .findOneById(ctx.params.id)
+    .getRepository(Documents)
+    .findOneById(ctx.params.id)
 
+    /* DB에서 유저 불러오기 */
     const user = await conn
     .getRepository(Users)
     .findOneById(1)
 
+    /* 게시글과 유저의 좋아요 relation 해제 */
     await conn
     .createQueryBuilder()
     .relation(Documents, "likedBy")
     .of(document)
     .remove(user)
 
+    /* 해제 완료 응답 */
     ctx.response.status = 201
   }
   catch (e) {

@@ -1,4 +1,6 @@
 import { Connection, getConnection, getManager } from "typeorm"
+import Comments from "../entities/comments"
+import Documents from "../entities/documents"
 import Files from "../entities/files"
 import Users from "../entities/users"
 
@@ -77,10 +79,56 @@ export const Delete =  async (ctx, next) => {
   const conn: Connection = getConnection()
 
   try {
+    /* DB에서 유저 불러오기 */
     const user = await conn
-                      .getRepository(Users)
-                      .findOneById(ctx.params.id)
-    await conn.manager.remove(user)
+    .getRepository(Users)
+    .findOneById(ctx.params.id)
+
+    /* DB에서 모든 게시글 불러오기 */
+    const likedDocuments = await conn
+    .createQueryBuilder()
+    .relation(Documents, "likedBy")
+    .of(user.documents)
+    .loadMany()
+
+    /* 모든 게시글의 좋아요 해제 */
+    await conn
+    .createQueryBuilder()
+    .relation(Documents, "likedBy")
+    .of(likedDocuments)
+    .remove(user)
+
+    /* relation 모두 삭제 */
+    await conn
+    .createQueryBuilder()
+    .delete()
+    .from(Documents)
+    .where("authorId = :id", { id: user.id })
+    .execute()
+
+    await conn
+    .createQueryBuilder()
+    .delete()
+    .from(Comments)
+    .where("userId = :id", { id: user.id })
+    .execute()
+
+    await conn
+    .createQueryBuilder()
+    .delete()
+    .from(Users)
+    .where("profileImageId = :id", { id: user.id })
+    .execute()
+
+    /* DB에서 유저 삭제 */
+    await conn
+    .createQueryBuilder()
+    .delete()
+    .from(Users)
+    .where("id = :id", { id: user.id })
+    .execute()
+
+    /* 삭제 완료 응답 */
     ctx.response.status = 204
   }
   catch (e) {

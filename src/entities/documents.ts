@@ -15,7 +15,7 @@ import Users from "./users"
 @Entity()
 export default class Documents {
 
-  @ManyToOne( type => Users, author => author.document, { nullable : false })
+  @ManyToOne( type => Users, author => author.documents, { nullable : false })
   public author: Users
 
     /* 현재 게시글에 달린 댓글 */
