@@ -27,7 +27,6 @@ export const Post = async (ctx, next) => {
 
     /* Users 테이블 ORM 인스턴스 생성 */
   const user: Users = new Users()
-  user.fullname = data.fullname
 
     /*프로필 이미지를 DB에 포함 및 relation을 구성 */
   const profile: Files = new Files()
@@ -39,17 +38,19 @@ export const Post = async (ctx, next) => {
   catch (e){
     ctx.throw(400, e)
   }
-  user.username = data.username
   user.profileImage = profile
+  user.fullname = data.fullname
+  user.nTh = data.nTh
   user.dateOfBirth = data.dateOfBirth
+  user.username = data.username
+  user.password = data.password
   user.department = data.department
   user.studentNumber = data.studentNumber
-  user.nTh = data.nTh
-  user.profileText = data.profileText
+  user.email = data.email
   user.phoneNumber = data.phoneNumber
+  user.profileText = data.profileText
   user.favoriteComic = data.favoriteComic
   user.favoriteCharacter = data.favoriteCharacter
-  user.password = data.password
 
   /* id를 포함하여 body에 응답 */
   ctx.body = user
