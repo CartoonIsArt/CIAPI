@@ -47,7 +47,11 @@ export default class Users {
   //
 
   /* 프로필 이미지 */
-  @OneToOne(type => Files, { nullable: false })
+  @OneToOne(
+    type => Files,
+    files => files.users,
+    { nullable: false },
+  )
   @JoinColumn()
   public profileImage: Files
 
