@@ -17,14 +17,14 @@ import Files from "./files"
 /* 유저정보 테이블 스키마 */
 @Entity()
 export default class Users {
-  /*  작성글 리스트 */
+  /* 작성글 리스트 */
   @OneToMany(
     type => Documents,
     document => document.author,
   )
   public document: Documents[]
 
-  /*  작성 댓글 리스트 */
+  /* 작성 댓글 리스트 */
   @OneToMany(
     type => Comments,
     comment => comment.user,
@@ -49,8 +49,7 @@ export default class Users {
   /* 프로필 이미지 */
   @OneToOne(
     type => Files,
-    files => files.users,
-    { nullable: false },
+    files => files.user,
   )
   @JoinColumn()
   public profileImage: Files

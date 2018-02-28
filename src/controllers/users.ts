@@ -27,23 +27,26 @@ export const Post = async (ctx, next) => {
 
   /* Users 테이블 ORM 인스턴스 생성 */
   const user: Users = new Users()
+  user.profileImage = null
 
   /* 프로필 이미지를 DB에 포함 및 relation을 구성 */
-  const profile = new Files()
-  profile.file = data.profileImage
-  profile.savedPath = "MIKI"
+  if (data.profileImage !== undefined) {
+    const profile = new Files()
+    profile.file = data.profileImage
+    profile.savedPath = "MIKI"
 
-  try {
-    /* DB에 저장 - 비동기 */
-    await conn.manager.save(profile)
-  }
-  catch (e) {
-    /* profile 저장 실패 시 400에러 리턴 */
-    ctx.throw(400, e)
+    try {
+      /* DB에 저장 - 비동기 */
+      await conn.manager.save(profile)
+    }
+    catch (e) {
+      /* profile 저장 실패 시 400에러 리턴 */
+      ctx.throw(400, e)
+    }
+    user.profileImage = profile
   }
 
   /* 나머지 데이터를 DB에 저장 */
-  user.profileImage = profile
   user.fullname = data.fullname
   user.nTh = data.nTh
   user.dateOfBirth = data.dateOfBirth

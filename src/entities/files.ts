@@ -4,9 +4,9 @@ import Users from "./users"
 /* 파일 테이블 스키마 */
 @Entity()
 export default class Files{
-
-  @OneToOne(type => Users, users => users.profileImage)
-  public users: Users
+  /* 파일 소유 유저 */
+  @OneToOne(type => Users, user => user.profileImage)
+  public user: Users
 
   /* 파일들의 pk */
   @PrimaryGeneratedColumn()
