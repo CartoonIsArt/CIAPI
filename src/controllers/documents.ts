@@ -32,7 +32,7 @@ export const Post = async (ctx, next) => {
      /* DB 커넥션풀에서 커넥션을 하나 가져옴. */
   const conn: Connection = getConnection()
   const userRepository = conn.getRepository(Users)
-  const user: Users = await userRepository.findOneById(1)
+  const user: Users = await userRepository.findOne(1)
 
     /* documents 테이블 ORM 인스턴스 생성 */
   const documents: Documents = new Documents()
@@ -59,11 +59,11 @@ export const Delete =  async (ctx, next) => {
     /* DB에서 게시글 불러오기 */
     const document = await conn
     .getRepository(Documents)
-    .findOneById(ctx.params.id)
+    .findOne(ctx.params.id)
 
     const user = await conn
     .getRepository(Users)
-    .findOneById(1)
+    .findOne(1)
 
     /* 게시글의 relation 해제 */
     await conn
@@ -118,11 +118,11 @@ export const LikedBy = async (ctx, next) => {
   try {
     const document: Documents = await conn
       .getRepository(Documents)
-      .findOneById(ctx.params.id, { relations: ["likedBy"] })
+      .findOne(ctx.params.id, { relations: ["likedBy"] })
 
     const user = await conn
                         .getRepository(Users)
-                        .findOneById(1)
+                        .findOne(1)
 
     document.likedBy.push(user)
     await conn.manager.save(document)
@@ -141,12 +141,12 @@ export const UnlikedBy = async (ctx, next) => {
     /* DB에서 게시글 불러오기 */
     const document = await conn
     .getRepository(Documents)
-    .findOneById(ctx.params.id)
+    .findOne(ctx.params.id)
 
     /* DB에서 유저 불러오기 */
     const user = await conn
     .getRepository(Users)
-    .findOneById(1)
+    .findOne(1)
 
     /* 게시글과 유저의 좋아요 relation 해제 */
     await conn

@@ -174,7 +174,7 @@ chalk@^2.0.1, chalk@^2.3.0:
     escape-string-regexp "^1.0.5"
     supports-color "^5.2.0"
 
-cli-highlight@^1.1.4:
+cli-highlight@^1.2.3:
   version "1.2.3"
   resolved "https://registry.yarnpkg.com/cli-highlight/-/cli-highlight-1.2.3.tgz#b200f97ed0e43d24633e89de0f489a48bb87d2bf"
   dependencies:
@@ -1558,13 +1558,13 @@ type-is@^1.5.5, type-is@^1.6.14:
     media-typer "0.3.0"
     mime-types "~2.1.18"
 
-typeorm@^0.1.7:
-  version "0.1.14"
-  resolved "https://registry.yarnpkg.com/typeorm/-/typeorm-0.1.14.tgz#3147bedb3f4120a5ed3dcca73bf6d200f06fff9e"
+typeorm@next:
+  version "0.2.0-alpha.24"
+  resolved "https://registry.yarnpkg.com/typeorm/-/typeorm-0.2.0-alpha.24.tgz#f001d4eeb712dbac3a7cd21fcd23d52ca8bad542"
   dependencies:
     app-root-path "^2.0.1"
     chalk "^2.0.1"
-    cli-highlight "^1.1.4"
+    cli-highlight "^1.2.3"
     debug "^3.1.0"
     dotenv "^4.0.0"
     glob "^7.1.2"

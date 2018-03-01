@@ -36,7 +36,7 @@ export const Login = async (ctx, next) => {
 export const Logout =  async (ctx, next) => {
   try {
     const conn: Connection = getConnection()
-    await conn.manager.deleteById(Sessions, ctx.session.id)
+    await conn.manager.delete(Sessions, ctx.session.id)
 
     ctx.status = 204
     ctx.redirect("/")

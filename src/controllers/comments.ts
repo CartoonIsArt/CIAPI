@@ -26,7 +26,7 @@ export const Post = async (ctx, next) => {
   /* DB 커넥션풀에서 커넥션을 하나 가져옴. */
   const conn: Connection = getConnection()
   const userRepository = conn.getRepository(Users)
-  const user: Users = await userRepository.findOneById(1)
+  const user: Users = await userRepository.findOne(1)
 
   /* comments 테이블 ORM 인스턴스 생성 */
   const comments: Comments = new Comments()
@@ -42,7 +42,7 @@ export const Post = async (ctx, next) => {
     try {
       const parent = await conn
       .getRepository(Comments)
-      .findOneById(data.commentId)
+      .findOne(data.commentId)
 
       comments.rootComment = parent
     }
@@ -56,7 +56,7 @@ export const Post = async (ctx, next) => {
   try {
     const document = await conn
     .getRepository(Documents)
-    .findOneById(data.documentId)
+    .findOne(data.documentId)
 
     comments.rootDocument = document
   }
@@ -84,7 +84,7 @@ export const Delete =  async (ctx, next) => {
     /* DB에서 댓글 불러오기 */
     const comment = await conn
     .getRepository(Comments)
-    .findOneById(ctx.params.id)
+    .findOne(ctx.params.id)
 
     await conn
     .createQueryBuilder()
