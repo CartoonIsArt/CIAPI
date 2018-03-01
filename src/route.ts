@@ -41,7 +41,7 @@ router.delete("/documents/:id", Documents.Delete)
 
 router.get("/documents/:id/likedBy", Documents.GetLikedBy)
 router.post("/documents/:id/likedBy", Documents.LikedBy)
-// router.delete("/documents/:id/likedBy", Documents.UnlikedBy)
+router.delete("/documents/:id/likedBy", Documents.UnlikedBy)
 
 router.get("/files", Files.Get)
 router.post("/files", Files.Post)
