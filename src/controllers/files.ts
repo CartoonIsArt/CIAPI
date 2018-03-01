@@ -1,5 +1,6 @@
 import { Connection, getConnection, getManager } from "typeorm"
 import Files from "../entities/files"
+import Users from "../entities/users"
 
 /* 파일 테이블의 모든 값을 리턴함. */
 export const Get = async (ctx, next) => {
@@ -34,15 +35,35 @@ export const Post = async (ctx, next) => {
   ctx.body = files
 }
 
-    /* */
 export const Delete =  async (ctx, next) => {
   const conn: Connection = getConnection()
 
   try {
+    /* DB에서 파일 불러오기 */
     const file = await conn
-                      .getRepository(Files)
-                      .findOneById(ctx.params.id)
-    await conn.manager.remove(file)
+    .getRepository(Files)
+    .findOneById(ctx.params.id)
+
+    const user = await conn
+    .getRepository(Users)
+    .findOneById(1)
+
+    /* 파일의 relation 해제 */
+    await conn
+    .createQueryBuilder()
+    .relation(Files, "user")
+    .of(file)
+    .set(null)
+
+    /* DB에서 파일 삭제 */
+    await conn
+    .createQueryBuilder()
+    .delete()
+    .from(Files)
+    .where("id = :id", { id: file.id })
+    .execute()
+
+    /* 삭제 완료 응답 */
     ctx.response.status = 204
   }
   catch (e) {
