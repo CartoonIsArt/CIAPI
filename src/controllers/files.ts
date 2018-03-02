@@ -45,7 +45,7 @@ export const Delete =  async (ctx, next) => {
     /* DB에서 파일 불러오기 */
     const file = await conn
     .getRepository(Files)
-    .findOneById(ctx.params.id)
+    .findOne(ctx.params.id)
 
     /* 파일의 relation 해제 */
     await conn

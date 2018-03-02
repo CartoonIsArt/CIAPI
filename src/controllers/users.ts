@@ -11,7 +11,7 @@ export const Get = async (ctx, next) => {
   try{
     ctx.body = await conn
       .getRepository(Users)
-      .findOneById(ctx.params.id, ({ relations: ["profileImage"] }))
+      .findOne(ctx.params.id, ({ relations: ["profileImage"] }))
     ctx.response.status = 201
   }
   catch (e) {
@@ -85,7 +85,7 @@ export const Delete =  async (ctx, next) => {
     /* DB에서 유저 불러오기 */
     const user = await conn
     .getRepository(Users)
-    .findOneById(ctx.params.id)
+    .findOne(ctx.params.id)
 
     /* DB에서 모든 게시글 불러오기 */
     const likedDocuments = await conn
