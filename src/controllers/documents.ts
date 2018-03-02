@@ -14,10 +14,13 @@ export const Get = async (ctx, next) => {
       .leftJoinAndSelect("document.author", "author")
       .leftJoinAndSelect("author.profileImage", "profileImage")
       .leftJoinAndSelect("document.comments", "comments")
+      .leftJoinAndSelect("document.likedBy", "likedBy")
       .where("document.id = :id", { id: ctx.params.id })
       .getOne()
     ctx.body = document
-    ctx.response.status = 200
+
+    /* Get 완료 응답 */
+    ctx.response.status = 201
   }
   catch (e) {
     ctx.throw(400, e)
@@ -32,12 +35,11 @@ export const Post = async (ctx, next) => {
      /* DB 커넥션풀에서 커넥션을 하나 가져옴. */
   const conn: Connection = getConnection()
   const userRepository = conn.getRepository(Users)
-  const user: Users = await userRepository.findOneById(1)
 
     /* documents 테이블 ORM 인스턴스 생성 */
   const documents: Documents = new Documents()
   documents.text = data.text
-  documents.author = user
+  documents.author = ctx.session
 
     /* DB에 저장 - 비동기 */
   try {
@@ -49,6 +51,9 @@ export const Post = async (ctx, next) => {
   }
     /* id와 created_at을 포함하여 body에 응답 */
   ctx.body = documents
+
+  /* Post 완료 응답 */
+  ctx.response.status = 201
 }
 
 /* documents 테이블에 존재하는 게시글 삭제 */
@@ -63,7 +68,7 @@ export const Delete =  async (ctx, next) => {
 
     const user = await conn
     .getRepository(Users)
-    .findOneById(1)
+    .findOneById(document.author.id)
 
     /* 게시글의 relation 해제 */
     await conn
@@ -110,6 +115,9 @@ export const GetLikedBy = async (ctx, next) => {
     .leftJoinAndSelect("document.likedBy", "likedBy")
     .getMany()
   ctx.body = likedBy
+
+  /* Get 완료 응답 */
+  ctx.response.status = 200
 }
 
 export const LikedBy = async (ctx, next) => {
@@ -120,11 +128,7 @@ export const LikedBy = async (ctx, next) => {
       .getRepository(Documents)
       .findOneById(ctx.params.id, { relations: ["likedBy"] })
 
-    const user = await conn
-                        .getRepository(Users)
-                        .findOneById(1)
-
-    document.likedBy.push(user)
+    document.likedBy.push(ctx.session)
     await conn.manager.save(document)
 
     ctx.response.status = 201
@@ -132,6 +136,9 @@ export const LikedBy = async (ctx, next) => {
   catch (e) {
     ctx.throw(400, e)
   }
+
+  /* Post 완료 응답 */
+  ctx.response.status = 201
 }
 
 export const UnlikedBy = async (ctx, next) => {
@@ -143,20 +150,15 @@ export const UnlikedBy = async (ctx, next) => {
     .getRepository(Documents)
     .findOneById(ctx.params.id)
 
-    /* DB에서 유저 불러오기 */
-    const user = await conn
-    .getRepository(Users)
-    .findOneById(1)
-
     /* 게시글과 유저의 좋아요 relation 해제 */
     await conn
     .createQueryBuilder()
     .relation(Documents, "likedBy")
     .of(document)
-    .remove(user)
+    .remove(ctx.session)
 
     /* 해제 완료 응답 */
-    ctx.response.status = 201
+    ctx.response.status = 204
   }
   catch (e) {
     ctx.throw(400, e)

@@ -17,6 +17,9 @@ export const Get = async (ctx, next) => {
   catch (e) {
     ctx.throw(400, e)
   }
+
+  /* Get 완료 응답 */
+  ctx.response.status = 201
 }
 
 /* fullname을 POST 인자로 받아 DB에 저장함. */
