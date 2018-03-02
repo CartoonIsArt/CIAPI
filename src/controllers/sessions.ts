@@ -30,6 +30,9 @@ export const Login = async (ctx, next) => {
     ctx.throw(400, e)
     // ctx.throw(400, "Login failed")
   }
+
+  /* 로그인 완료 응답 */
+  ctx.response.status = 201
 }
 
 /* 로그아웃 */
@@ -44,4 +47,7 @@ export const Logout =  async (ctx, next) => {
   catch (e) {
     ctx.throw(400, e)
   }
+
+  /* 로그아웃 완료 응답 */
+  ctx.response.status = 204
 }

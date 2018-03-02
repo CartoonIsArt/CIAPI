@@ -33,6 +33,9 @@ export const Post = async (ctx, next) => {
   }
       /* id를 포함하여 body에 응답 */
   ctx.body = files
+
+  /* Post 완료 응답 */
+  ctx.response.status = 201
 }
 
 export const Delete =  async (ctx, next) => {
@@ -43,10 +46,6 @@ export const Delete =  async (ctx, next) => {
     const file = await conn
     .getRepository(Files)
     .findOne(ctx.params.id)
-
-    const user = await conn
-    .getRepository(Users)
-    .findOne(1)
 
     /* 파일의 relation 해제 */
     await conn

@@ -3,6 +3,7 @@ import {
   CreateDateColumn,
   Entity,
   JoinTable,
+  ManyToMany,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
@@ -44,4 +45,9 @@ export default class Comments {
   /* 댓글을 작성한 유저 */
   @ManyToOne( type => Users, author => author.comments, { nullable : false })
   public user: Users
+
+  /*좋아요 받은 갯수*/
+  @ManyToMany(type => Users)
+  @JoinTable()
+  public likedBy: Users[]
 }

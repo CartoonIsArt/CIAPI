@@ -26,6 +26,9 @@ export const Post = async (ctx, next) => {
   }
   /* id를 포함하여 body에 응답 */
   ctx.body = cia
+
+  /* Post 완료 응답 */
+  ctx.response.status = 201
 }
 
 /* cia를 PATCH인자로 받아 DB에 저장함 */
@@ -57,4 +60,6 @@ export const Patch = async (ctx, next) => {
     ctx.throw(400, e)
   }
 
+  /* Patch 완료 응답 */
+  ctx.response.status = 200
 }

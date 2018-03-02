@@ -13,9 +13,13 @@ export const Get = async (ctx, next) => {
     .leftJoinAndSelect("user.profileImage", "profileImage")
     .leftJoinAndSelect("comment.rootDocument", "rootDocument")
     .leftJoinAndSelect("comment.replies", "replies")
+    .leftJoinAndSelect("comment.likedBy", "likedBy")
     .where("comment.id = :id", { id: ctx.params.id })
     .getOne()
   ctx.body = comment
+
+  /* Get 완료 응답 */
+  ctx.response.status = 200
 }
 
 /* text를 POST 인자로 받아 DB에 저장함. */
@@ -25,8 +29,6 @@ export const Post = async (ctx, next) => {
 
   /* DB 커넥션풀에서 커넥션을 하나 가져옴. */
   const conn: Connection = getConnection()
-  const userRepository = conn.getRepository(Users)
-  const user: Users = await userRepository.findOne(1)
 
   /* comments 테이블 ORM 인스턴스 생성 */
   const comments: Comments = new Comments()
@@ -35,7 +37,7 @@ export const Post = async (ctx, next) => {
   comments.rootComment = null
   comments.createdAt = data.createdAt
   comments.text = data.text
-  comments.user = user
+  comments.user = ctx.session
 
   /* commentId를 인자로 전달하면 대댓글 relation 설정 */
   if (data.commentId !== undefined) {
@@ -75,6 +77,9 @@ export const Post = async (ctx, next) => {
 
   /* id와 created_at을 포함하여 body에 응답 */
   ctx.body = comments
+
+  /* Post 완료 응답 */
+  ctx.response.status = 201
 }
 
 export const Delete =  async (ctx, next) => {
@@ -115,6 +120,64 @@ export const Delete =  async (ctx, next) => {
     .execute()
 
     /* 삭제 완료 응답 */
+    ctx.response.status = 204
+  }
+  catch (e) {
+    ctx.throw(400, e)
+  }
+}
+
+export const GetLikedBy = async (ctx, next) => {
+  const conn: Connection = getConnection()
+  const likedBy = await conn
+    .getRepository(Documents)
+    .createQueryBuilder("comment")
+    .leftJoinAndSelect("comment.likedBy", "likedBy")
+    .getMany()
+  ctx.body = likedBy
+
+  /* Get 완료 응답 */
+  ctx.response.status = 200
+}
+
+export const LikedBy = async (ctx, next) => {
+  const conn: Connection = getConnection()
+
+  try {
+    const comment: Comments = await conn
+      .getRepository(Comments)
+      .findOneById(ctx.params.id, { relations: ["likedBy"] })
+
+    comment.likedBy.push(ctx.session)
+    await conn.manager.save(comment)
+
+    ctx.response.status = 201
+  }
+  catch (e) {
+    ctx.throw(400, e)
+  }
+
+  /* Post 완료 응답 */
+  ctx.response.status = 201
+}
+
+export const UnlikedBy = async (ctx, next) => {
+  const conn: Connection = getConnection()
+
+  try {
+    /* DB에서 댓글 불러오기 */
+    const comment = await conn
+    .getRepository(Comments)
+    .findOneById(ctx.params.id)
+
+    /* 댓글과 유저의 좋아요 relation 해제 */
+    await conn
+    .createQueryBuilder()
+    .relation(Comments, "likedBy")
+    .of(comment)
+    .remove(ctx.session)
+
+    /* 해제 완료 응답 */
     ctx.response.status = 204
   }
   catch (e) {

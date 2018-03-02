@@ -35,6 +35,10 @@ router.get("/comments/:id", Comments.Get)
 router.post("/comments", Comments.Post)
 router.delete("/comments/:id", Comments.Delete)
 
+router.get("/comments/:id/likedBy", Comments.GetLikedBy)
+router.post("/comments/:id/likedBy", Comments.LikedBy)
+router.delete("/comments/:id/likedBy", Comments.UnlikedBy)
+
 router.get("/documents/:id", Documents.Get)
 router.post("/documents", Documents.Post)
 router.delete("/documents/:id", Documents.Delete)
