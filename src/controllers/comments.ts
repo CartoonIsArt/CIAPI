@@ -13,7 +13,7 @@ export const Get = async (ctx, next) => {
     .leftJoinAndSelect("user.profileImage", "profileImage")
     .leftJoinAndSelect("comment.rootDocument", "rootDocument")
     .leftJoinAndSelect("comment.replies", "replies")
-    .leftJoinAndSelect("comment.likedBy","likedBy")
+    .leftJoinAndSelect("comment.likedBy", "likedBy")
     .where("comment.id = :id", { id: ctx.params.id })
     .getOne()
   ctx.body = comment
