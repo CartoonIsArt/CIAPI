@@ -126,7 +126,7 @@ export const LikedBy = async (ctx, next) => {
     const document: Documents = await conn
       .getRepository(Documents)
       .findOne(ctx.params.id, { relations: ["likedBy"] })
-    
+
     document.likedBy.push(ctx.session)
     await conn.manager.save(document)
 

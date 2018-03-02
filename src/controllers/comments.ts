@@ -146,7 +146,7 @@ export const LikedBy = async (ctx, next) => {
   try {
     const comment: Comments = await conn
       .getRepository(Comments)
-      .findOneById(ctx.params.id, { relations: ["likedBy"] })
+      .findOne(ctx.params.id, { relations: ["likedBy"] })
 
     comment.likedBy.push(ctx.session)
     await conn.manager.save(comment)
@@ -168,7 +168,7 @@ export const UnlikedBy = async (ctx, next) => {
     /* DB에서 댓글 불러오기 */
     const comment = await conn
     .getRepository(Comments)
-    .findOneById(ctx.params.id)
+    .findOne(ctx.params.id)
 
     /* 댓글과 유저의 좋아요 relation 해제 */
     await conn
