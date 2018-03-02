@@ -32,12 +32,16 @@ export const Post = async (ctx, next) => {
 
   /* comments 테이블 ORM 인스턴스 생성 */
   const comments: Comments = new Comments()
+  const user: Users = await conn
+  .getRepository(Users)
+  .findOne(ctx.session)
+
   comments.id = data.id
   comments.documentId = data.documentId
   comments.rootComment = null
   comments.createdAt = data.createdAt
   comments.text = data.text
-  comments.user = ctx.session
+  comments.user = user
 
   /* commentId를 인자로 전달하면 대댓글 relation 설정 */
   if (data.commentId !== undefined) {
