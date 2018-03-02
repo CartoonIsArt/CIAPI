@@ -14,6 +14,7 @@ export const Get = async (ctx, next) => {
       .leftJoinAndSelect("document.author", "author")
       .leftJoinAndSelect("author.profileImage", "profileImage")
       .leftJoinAndSelect("document.comments", "comments")
+      .leftJoinAndSelect("document.likedBy","likedBy")
       .where("document.id = :id", { id: ctx.params.id })
       .getOne()
     ctx.body = document

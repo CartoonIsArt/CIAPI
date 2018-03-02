@@ -13,6 +13,7 @@ export const Get = async (ctx, next) => {
     .leftJoinAndSelect("user.profileImage", "profileImage")
     .leftJoinAndSelect("comment.rootDocument", "rootDocument")
     .leftJoinAndSelect("comment.replies", "replies")
+    .leftJoinAndSelect("comment.likedBy","likedBy")
     .where("comment.id = :id", { id: ctx.params.id })
     .getOne()
   ctx.body = comment
@@ -120,6 +121,64 @@ export const Delete =  async (ctx, next) => {
     .execute()
 
     /* 삭제 완료 응답 */
+    ctx.response.status = 204
+  }
+  catch (e) {
+    ctx.throw(400, e)
+  }
+}
+
+export const GetLikedBy = async (ctx, next) => {
+  const conn: Connection = getConnection()
+  const likedBy = await conn
+    .getRepository(Documents)
+    .createQueryBuilder("comment")
+    .leftJoinAndSelect("comment.likedBy", "likedBy")
+    .getMany()
+  ctx.body = likedBy
+
+  /* Get 완료 응답 */
+  ctx.response.status = 200
+}
+
+export const LikedBy = async (ctx, next) => {
+  const conn: Connection = getConnection()
+
+  try {
+    const comment: Comments = await conn
+      .getRepository(Comments)
+      .findOneById(ctx.params.id, { relations: ["likedBy"] })
+
+    comment.likedBy.push(ctx.session)
+    await conn.manager.save(comment)
+
+    ctx.response.status = 201
+  }
+  catch (e) {
+    ctx.throw(400, e)
+  }
+
+  /* Post 완료 응답 */
+  ctx.response.status = 201
+}
+
+export const UnlikedBy = async (ctx, next) => {
+  const conn: Connection = getConnection()
+
+  try {
+    /* DB에서 댓글 불러오기 */
+    const comment = await conn
+    .getRepository(Comments)
+    .findOneById(ctx.params.id)
+
+    /* 댓글과 유저의 좋아요 relation 해제 */
+    await conn
+    .createQueryBuilder()
+    .relation(Comments, "likedBy")
+    .of(comment)
+    .remove(ctx.session)
+
+    /* 해제 완료 응답 */
     ctx.response.status = 204
   }
   catch (e) {
