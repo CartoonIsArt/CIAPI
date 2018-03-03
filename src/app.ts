@@ -26,7 +26,7 @@ if (process.env.NODE_ENV !== "production") {
 }
 
 /* 세션 */
-// app.use(session)
+app.use(session)
 
 /* 라우팅 */
 app.use(router.routes())

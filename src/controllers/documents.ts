@@ -37,8 +37,12 @@ export const Post = async (ctx, next) => {
 
     /* documents 테이블 ORM 인스턴스 생성 */
   const documents: Documents = new Documents()
+  const author: Users = await conn
+  .getRepository(Users)
+  .findOne(ctx.session)
+
   documents.text = data.text
-  documents.author = ctx.session
+  documents.author = author
 
     /* DB에 저장 - 비동기 */
   try {
