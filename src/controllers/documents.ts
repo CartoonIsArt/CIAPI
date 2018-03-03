@@ -37,15 +37,14 @@ export const Post = async (ctx, next) => {
 
     /* documents 테이블 ORM 인스턴스 생성 */
   const documents: Documents = new Documents()
-  const author: Users = await conn
-  .getRepository(Users)
-  .findOne(ctx.session)
 
   documents.text = data.text
-  documents.author = author
 
     /* DB에 저장 - 비동기 */
   try {
+    const user: Users = ctx.session.user
+    documents.author = user
+
     await conn.manager.save(documents)
   }
   catch (e) {
@@ -53,7 +52,6 @@ export const Post = async (ctx, next) => {
     ctx.throw(400, e)
   }
     /* id와 created_at을 포함하여 body에 응답 */
-  ctx.body = documents
 
   /* Post 완료 응답 */
   ctx.response.status = 201
