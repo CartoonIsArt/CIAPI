@@ -139,6 +139,7 @@ export const Delete =  async (ctx, next) => {
   }
 }
 
+/* 유저가 쓴 게시글 불러오기 */
 export const GetDocuments = async (ctx, next) => {
   const conn: Connection = getConnection()
 
@@ -158,6 +159,7 @@ export const GetDocuments = async (ctx, next) => {
   ctx.response.status = 200
 }
 
+/* 유저가 쓴 댓글 불러오기 */
 export const GetComments = async (ctx, next) => {
   const conn: Connection = getConnection()
 
