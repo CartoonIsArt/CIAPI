@@ -187,7 +187,7 @@ export const Patch = async (ctx, next) => {
   try{
     const user = await conn
                       .getRepository(Users)
-                      .findOneById(ctx.params.id)
+                      .findOne(ctx.params.id)
     if (data.fullname !== undefined) {
       user.fullname = data.fullname
     }
