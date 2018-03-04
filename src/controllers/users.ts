@@ -70,7 +70,7 @@ export const Post = async (ctx, next) => {
     await conn.manager.save(user)
   }
   catch (e) {
-    /* required member중 하나라도 인자에 없을 경우 400에러 리턴 - 수정*/
+    /* required member중 하나라도 인자에 없을 경우 400에러 리턴 */
     ctx.throw(400, e)
   }
 
@@ -178,4 +178,46 @@ export const GetComments = async (ctx, next) => {
 
   /* Get 완료 응답 */
   ctx.response.status = 200
+}
+
+export const Patch = async (ctx, next) => {
+  const conn: Connection = getConnection()
+  const data: Users = ctx.data
+
+  try{
+    const user = await conn
+                      .getRepository(Users)
+                      .findOneById(ctx.params.id)
+    if (data.fullname !== undefined) {
+      user.fullname = data.fullname
+    }
+    if (data.nTh !== undefined) {
+      user.nTh = data.nTh
+    }
+    if (data.dateOfBirth !== undefined) {
+      user.dateOfBirth = data.dateOfBirth
+    }
+    if (data.department !== undefined) {
+      user.department = data.department
+    }
+    if (data.studentNumber !== undefined) {
+      user.studentNumber = data.studentNumber
+    }
+    if (data.email !== undefined) {
+      user.email = data.email
+    }
+    if (data.phoneNumber !== undefined) {
+      user.phoneNumber = data.phoneNumber
+    }
+    if (data.favoriteComic !== undefined) {
+      user.favoriteComic = data.favoriteComic
+    }
+    if (data.favoriteCharacter !== undefined) {
+      user.favoriteCharacter = data.favoriteCharacter
+    }
+    await conn.manager.save(user)
+  }
+  catch (e) {
+    ctx.throw(400, e)
+  }
 }
