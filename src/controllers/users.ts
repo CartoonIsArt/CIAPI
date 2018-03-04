@@ -149,7 +149,7 @@ export const GetDocuments = async (ctx, next) => {
     .createQueryBuilder("document")
     .leftJoinAndSelect("document.author", "author")
     .where("author.id = :id", { id: ctx.params.id })
-    .getMany();
+    .getMany()
   }
   catch (e) {
     ctx.throw(400, e)
@@ -169,7 +169,7 @@ export const GetComments = async (ctx, next) => {
     .createQueryBuilder("comment")
     .leftJoinAndSelect("comment.user", "user")
     .where("user.id = :id", { id: ctx.params.id })
-    .getMany();
+    .getMany()
   }
   catch (e) {
     ctx.throw(400, e)
