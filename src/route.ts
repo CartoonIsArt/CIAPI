@@ -24,6 +24,8 @@ export const router = new Router()
          }
 
 */
+
+// params를 전달하면 post대신 put사용
 router.post("/login", Sessions.Login)
 router.post("/logout", Sessions.Logout)
 
