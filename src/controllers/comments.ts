@@ -34,7 +34,7 @@ export const Post = async (ctx, next) => {
 
     /* commentId를 인자로 전달하면 대댓글 relation 설정 */
     if (typeof(data.commentId) === "number") {
-      const parent = await conn
+      const parent: Comments = await conn
       .getRepository(Comments)
       .findOne(data.commentId)
 
@@ -68,7 +68,7 @@ export const Delete =  async (ctx, next) => {
 
   try {
     /* DB에서 댓글 불러오기 */
-    const comment = await conn
+    const comment: Comments = await conn
     .getRepository(Comments)
     .findOne(ctx.params.id)
 
@@ -131,7 +131,7 @@ export const UnlikedBy = async (ctx, next) => {
 
   try {
     /* DB에서 댓글 불러오기 */
-    const comment = await conn
+    const comment: Comments = await conn
     .getRepository(Comments)
     .findOne(ctx.params.id)
 
