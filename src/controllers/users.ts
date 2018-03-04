@@ -139,3 +139,43 @@ export const Delete =  async (ctx, next) => {
     ctx.throw(400, e)
   }
 }
+
+/* 유저가 쓴 게시글 불러오기 */
+export const GetDocuments = async (ctx, next) => {
+  const conn: Connection = getConnection()
+
+  try{
+    ctx.body = await conn
+    .getRepository(Documents)
+    .createQueryBuilder("document")
+    .leftJoinAndSelect("document.author", "author")
+    .where("author.id = :id", { id: ctx.params.id })
+    .getMany()
+  }
+  catch (e) {
+    ctx.throw(400, e)
+  }
+
+  /* Get 완료 응답 */
+  ctx.response.status = 200
+}
+
+/* 유저가 쓴 댓글 불러오기 */
+export const GetComments = async (ctx, next) => {
+  const conn: Connection = getConnection()
+
+  try{
+    ctx.body = await conn
+    .getRepository(Comments)
+    .createQueryBuilder("comment")
+    .leftJoinAndSelect("comment.author", "author")
+    .where("author.id = :id", { id: ctx.params.id })
+    .getMany()
+  }
+  catch (e) {
+    ctx.throw(400, e)
+  }
+
+  /* Get 완료 응답 */
+  ctx.response.status = 200
+}
