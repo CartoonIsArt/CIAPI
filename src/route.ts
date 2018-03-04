@@ -63,6 +63,7 @@ router.delete("/documents/:id/likedBy", Documents.UnlikedBy)
 
 router.get("/files", Files.Get)
 router.post("/files", Files.Post)
+router.patch("/users/:id", Users.Patch)
 router.delete("/files/:id", Files.Delete)
 
 router.post("/cia", Cia.Post)
