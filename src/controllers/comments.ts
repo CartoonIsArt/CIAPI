@@ -101,15 +101,9 @@ export const GetLikedBy = async (ctx, next) => {
   const conn: Connection = getConnection()
   const comment: Comments = await conn
   .getRepository(Comments)
-  .createQueryBuilder("comment")
-  .leftJoinAndSelect("comment.likedBy", "likedBy")
-  .where("comment.id = :id", { id: ctx.params.id })
-  .getOne()
+  .findOne(ctx.params.id, { relations: ["likedBy"] })
 
-  /* body에 응답 */
   ctx.body = comment.likedBy
-
-  /* Get 완료 응답 */
   ctx.response.status = 200
 }
 
@@ -128,9 +122,7 @@ export const LikedBy = async (ctx, next) => {
   catch (e) {
     ctx.throw(400, e)
   }
-
-  /* Post 완료 응답 */
-  ctx.response.status = 201
+  ctx.response.status = 200
 }
 
 /* 해당 댓글 좋아요 DELETE */
