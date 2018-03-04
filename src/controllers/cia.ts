@@ -12,8 +12,8 @@ export const Post = async (ctx, next) => {
 
   /* Cia 테이블 ORM 인스턴스 생성*/
   const cia: Cia = new Cia()
-  cia.name = data.name
 
+  cia.name = data.name
   cia.value = data.value
 
   /* DB에 저장 - 비동기 */
@@ -21,11 +21,14 @@ export const Post = async (ctx, next) => {
     await conn.manager.save(cia)
   }
   catch (e){
-    /* cia에 인자가 없을 경우 400에러 리턴 */
     ctx.throw(400, e)
   }
-  /* id를 포함하여 body에 응답 */
+
+  /* body에 응답 */
   ctx.body = cia
+
+  /* Post 완료 응답 */
+  ctx.response.status = 201
 }
 
 /* cia를 PATCH인자로 받아 DB에 저장함 */
@@ -57,4 +60,6 @@ export const Patch = async (ctx, next) => {
     ctx.throw(400, e)
   }
 
+  /* Patch 완료 응답 */
+  ctx.response.status = 200
 }
