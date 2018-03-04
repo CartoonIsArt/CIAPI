@@ -4,7 +4,7 @@ import Documents from "../entities/documents"
 import Files from "../entities/files"
 import Users from "../entities/users"
 
-/* 유저 테이블의 모든 값을 리턴함. */
+/* 해당 유저 GET */
 export const Get = async (ctx, next) => {
   const conn: Connection = getConnection()
 
@@ -22,7 +22,7 @@ export const Get = async (ctx, next) => {
   ctx.response.status = 201
 }
 
-/* fullname을 POST 인자로 받아 DB에 저장함. */
+/* 유저 POST */
 export const Post = async (ctx, next) => {
   /* POST 인자를 data변수로 받음 */
   const data = ctx.request.body
@@ -78,6 +78,7 @@ export const Post = async (ctx, next) => {
   ctx.body = user
 }
 
+/* 해당 유저 DELETE */
 export const Delete =  async (ctx, next) => {
   const conn: Connection = getConnection()
 
