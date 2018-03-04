@@ -31,12 +31,19 @@ export default class Users {
   )
   public comments: Comments[]
 
-  /* 좋아요 누른 글 리스트 */
+  /* 좋아요한 게시글 리스트 */
   @ManyToMany(
     type => Documents,
     document => document.likedBy,
   )
   public likedDocuments: Documents[]
+
+  /* 좋아요한 댓글 리스트 */
+  @ManyToMany(
+    type => Comments,
+    comments => comments.likedBy,
+  )
+  public likedComments: Comments[]
 
   /* Users table pk */
   @PrimaryGeneratedColumn()

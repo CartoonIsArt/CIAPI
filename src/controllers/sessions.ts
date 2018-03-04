@@ -23,7 +23,8 @@ export const Login = async (ctx, next) => {
     session.ipv4 = ipToInt(String(ctx.ip))
 
     ctx.session = await conn.manager.save(session)
-    ctx.set("CIASESSIONID", session.data)
+    // ctx.set("CIASESSIONID", session.data)
+    ctx.cookies.set("CIASESSIONID", session.data)
     ctx.response.body = session.user
   }
   catch (e){
@@ -39,6 +40,7 @@ export const Login = async (ctx, next) => {
 export const Logout =  async (ctx, next) => {
   try {
     const conn: Connection = getConnection()
+    // await conn.manager.delete(Sessions, ctx.session.id)
     await conn.manager.delete(Sessions, ctx.session)
 
     ctx.status = 204
