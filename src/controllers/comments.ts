@@ -8,15 +8,15 @@ export const Get = async (ctx, next) => {
   const conn: Connection = getConnection()
   const comment = await conn
   .getRepository(Comments)
-  .createQueryBuilder("comment")
-  .where("comment.id = :id", { id: ctx.params.id })
-  .leftJoinAndSelect("comment.author", "author")
-  .leftJoinAndSelect("author.profileImage", "profileImage")
-  .leftJoinAndSelect("comment.rootDocument", "rootDocument")
-  .leftJoinAndSelect("comment.likedBy", "likedBy")
-  .leftJoinAndSelect("comment.replies", "replies")
-  .leftJoinAndSelect("comment.rootComment", "rootComment")
-  .getOne()
+  .findOne(ctx.params.id, {
+    relations: [
+      "author",
+      "author.profileImage",
+      "rootDocument",
+      "likedBy",
+      "replies",
+      "rootComment",
+    ]})
 
   ctx.body = comment
   ctx.response.status = 200
