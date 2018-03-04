@@ -18,14 +18,14 @@ export const Post = async (ctx, next) => {
   const conn: Connection = getConnection()
 
   /* Files 테이블 ORM 인스턴스 생성 */
-  const files: Files = new Files()
-  files.file = data.file
+  const file: Files = new Files()
+  file.file = data.file
 
-  files.savedPath = "YO"
+  file.savedPath = "YO"
 
   /* DB에 저장 - 비동기 */
   try{
-    await conn.manager.save(files)
+    await conn.manager.save(file)
   }
   catch (e){
     /* files가 인자에 없을 경우 400에러 리턴 */
@@ -33,7 +33,7 @@ export const Post = async (ctx, next) => {
   }
 
   /* id를 포함하여 body에 응답 */
-  ctx.body = files
+  ctx.body = file
 
   /* Post 완료 응답 */
   ctx.response.status = 201

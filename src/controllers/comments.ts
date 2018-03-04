@@ -31,11 +31,11 @@ export const Post = async (ctx, next) => {
   const conn: Connection = getConnection()
 
   /* comments 테이블 ORM 인스턴스 생성 */
-  const comments: Comments = new Comments()
+  const comment: Comments = new Comments()
 
   /* 세션의 유저와 relation 설정 */
   try{
-    comments.author = ctx.session.user
+    comment.author = ctx.session.user
   }
   catch (e){
     /* session에 user가 없으면 400에러 리턴 */
@@ -43,11 +43,11 @@ export const Post = async (ctx, next) => {
   }
 
   /* 나머지 required 정보 입력 */
-  comments.id = data.id
-  comments.documentId = data.documentId
-  comments.rootComment = null
-  comments.createdAt = data.createdAt
-  comments.text = data.text
+  comment.id = data.id
+  comment.documentId = data.documentId
+  comment.rootComment = null
+  comment.createdAt = data.createdAt
+  comment.text = data.text
 
   /* commentId를 인자로 전달하면 대댓글 relation 설정 */
   if (data.commentId !== undefined) {
@@ -56,7 +56,7 @@ export const Post = async (ctx, next) => {
       .getRepository(Comments)
       .findOne(data.commentId)
 
-      comments.rootComment = parent
+      comment.rootComment = parent
     }
     catch (e) {
       ctx.throw(400, e)
@@ -69,7 +69,7 @@ export const Post = async (ctx, next) => {
     .getRepository(Documents)
     .findOne(data.documentId)
 
-    comments.rootDocument = document
+    comment.rootDocument = document
   }
   catch (e) {
     ctx.throw(400, e)
@@ -77,7 +77,7 @@ export const Post = async (ctx, next) => {
 
   /* DB에 저장 - 비동기 */
   try {
-    await conn.manager.save(comments)
+    await conn.manager.save(comment)
   }
   catch (e) {
     /* 하나라도 인자에 없을 경우 400에러 리턴 */
@@ -85,7 +85,7 @@ export const Post = async (ctx, next) => {
   }
 
   /* body에 응답 */
-  ctx.body = comments
+  ctx.body = comment
 
   /* Post 완료 응답 */
   ctx.response.status = 201
