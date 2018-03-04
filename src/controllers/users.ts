@@ -10,8 +10,8 @@ export const Get = async (ctx, next) => {
 
   try{
     ctx.body = await conn
-      .getRepository(Users)
-      .findOne(ctx.params.id, ({ relations: ["profileImage"] }))
+    .getRepository(Users)
+    .findOne(ctx.params.id, ({ relations: ["profileImage"] }))
     ctx.response.status = 201
   }
   catch (e) {

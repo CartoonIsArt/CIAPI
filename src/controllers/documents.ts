@@ -112,10 +112,10 @@ export const Delete =  async (ctx, next) => {
 export const GetLikedBy = async (ctx, next) => {
   const conn: Connection = getConnection()
   const likedBy = await conn
-    .getRepository(Documents)
-    .createQueryBuilder("document")
-    .leftJoinAndSelect("document.likedBy", "likedBy")
-    .getMany()
+  .getRepository(Documents)
+  .createQueryBuilder("document")
+  .leftJoinAndSelect("document.likedBy", "likedBy")
+  .getMany()
   ctx.body = likedBy
 
   /* Get 완료 응답 */
@@ -128,8 +128,8 @@ export const LikedBy = async (ctx, next) => {
 
   try {
     const document: Documents = await conn
-      .getRepository(Documents)
-      .findOne(ctx.params.id, { relations: ["likedBy"] })
+    .getRepository(Documents)
+    .findOne(ctx.params.id, { relations: ["likedBy"] })
 
     document.likedBy.push(ctx.session.user)
     await conn.manager.save(document)
