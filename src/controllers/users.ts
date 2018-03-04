@@ -167,8 +167,8 @@ export const GetComments = async (ctx, next) => {
     ctx.body = await conn
     .getRepository(Comments)
     .createQueryBuilder("comment")
-    .leftJoinAndSelect("comment.user", "user")
-    .where("user.id = :id", { id: ctx.params.id })
+    .leftJoinAndSelect("comment.author", "author")
+    .where("author.id = :id", { id: ctx.params.id })
     .getMany()
   }
   catch (e) {
