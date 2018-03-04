@@ -9,12 +9,11 @@ export const Get = async (ctx, next) => {
   const comment = await conn
   .getRepository(Comments)
   .createQueryBuilder("comment")
+  .where("comment.id = :id", { id: ctx.params.id })
   .leftJoinAndSelect("comment.author", "author")
   .leftJoinAndSelect("author.profileImage", "profileImage")
   .leftJoinAndSelect("comment.rootDocument", "rootDocument")
-  .leftJoinAndSelect("comment.replies", "replies")
   .leftJoinAndSelect("comment.likedBy", "likedBy")
-  .where("comment.id = :id", { id: ctx.params.id })
   .getOne()
   ctx.body = comment
 
@@ -44,10 +43,9 @@ export const Post = async (ctx, next) => {
 
   /* 나머지 required 정보 입력 */
   comment.id = data.id
-  comment.documentId = data.documentId
-  comment.rootComment = null
   comment.createdAt = data.createdAt
   comment.text = data.text
+  comment.rootComment = null
 
   /* commentId를 인자로 전달하면 대댓글 relation 설정 */
   if (data.commentId !== undefined) {
@@ -122,8 +120,6 @@ export const Delete =  async (ctx, next) => {
     .execute()
 
     /* DB에서 댓글 삭제 */
-    await conn.manager.delete(Comments, comment)
-    /*
     await conn
     .createQueryBuilder()
     .delete()

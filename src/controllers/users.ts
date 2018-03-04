@@ -2,6 +2,7 @@ import { Connection, getConnection, getManager } from "typeorm"
 import Comments from "../entities/comments"
 import Documents from "../entities/documents"
 import Files from "../entities/files"
+import Sessions from "../entities/sessions"
 import Users from "../entities/users"
 
 /* 해당 유저 GET */
@@ -34,23 +35,6 @@ export const Post = async (ctx, next) => {
   const user: Users = new Users()
   user.profileImage = null
 
-  /* 프로필 이미지를 DB에 포함 및 relation을 구성 */
-  if (data.profileImage !== undefined) {
-    const profile = new Files()
-    profile.file = data.profileImage
-    profile.savedPath = "MIKI"
-
-    try {
-      /* DB에 저장 - 비동기 */
-      await conn.manager.save(profile)
-    }
-    catch (e) {
-      /* profile 저장 실패 시 400에러 리턴 */
-      ctx.throw(400, e)
-    }
-    user.profileImage = profile
-  }
-
   /* 나머지 데이터를 DB에 저장 */
   user.fullname = data.fullname
   user.nTh = data.nTh
@@ -64,6 +48,24 @@ export const Post = async (ctx, next) => {
   user.profileText = data.profileText
   user.favoriteComic = data.favoriteComic
   user.favoriteCharacter = data.favoriteCharacter
+
+  /* 프로필 이미지를 DB에 포함 및 relation을 구성 */
+  if (data.profileImage !== undefined) {
+    const profile = new Files()
+    profile.file = data.profileImage
+    profile.savedPath = "MIKI"
+    profile.user = user
+    user.profileImage = profile
+
+    try {
+      /* DB에 저장 - 비동기 */
+      await conn.manager.save(profile)
+    }
+    catch (e) {
+      /* profile 저장 실패 시 400에러 리턴 */
+      ctx.throw(400, e)
+    }
+  }
 
   try {
     /* DB에 저장 - 비동기 */
@@ -114,17 +116,24 @@ export const Delete =  async (ctx, next) => {
     .createQueryBuilder()
     .delete()
     .from(Comments)
-    .where("userId = :id", { id: user.id })
+    .where("authorId = :id", { id: user.id })
     .execute()
 
     await conn
     .createQueryBuilder()
     .delete()
-    .from(Users)
-    .where("profileImageId = :id", { id: user.id })
+    .from(Files)
+    .where("userId = :id", { id: user.id })
     .execute()
 
     /* DB에서 유저 삭제 */
+    await conn
+    .createQueryBuilder()
+    .delete()
+    .from(Sessions)
+    .where("userId = :id", { id: user.id })
+    .execute()
+
     await conn
     .createQueryBuilder()
     .delete()

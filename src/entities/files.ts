@@ -1,6 +1,7 @@
 import {
   Column,
   Entity,
+  JoinColumn,
   OneToOne,
   PrimaryGeneratedColumn,
 } from "typeorm"
@@ -23,5 +24,6 @@ export default class Files{
 
   /* 파일 소유 유저 */
   @OneToOne(type => Users, user => user.profileImage)
+  @JoinColumn()
   public user: Users
 }
