@@ -4,19 +4,19 @@ import Comments from "../entities/comments"
 import Documents from "../entities/documents"
 import Users from "../entities/users"
 
-/* Documents 테이블의 모든 값을 리턴함. */
+/* 해당 댓글 GET */
 export const Get = async (ctx, next) => {
   const conn: Connection = getConnection()
   try{
     const document = await conn
-      .getRepository(Documents)
-      .createQueryBuilder("document")
-      .leftJoinAndSelect("document.author", "author")
-      .leftJoinAndSelect("author.profileImage", "profileImage")
-      .leftJoinAndSelect("document.comments", "comments")
-      .leftJoinAndSelect("document.likedBy", "likedBy")
-      .where("document.id = :id", { id: ctx.params.id })
-      .getOne()
+    .getRepository(Documents)
+    .createQueryBuilder("document")
+    .leftJoinAndSelect("document.author", "author")
+    .leftJoinAndSelect("author.profileImage", "profileImage")
+    .leftJoinAndSelect("document.comments", "comments")
+    .leftJoinAndSelect("document.likedBy", "likedBy")
+    .where("document.id = :id", { id: ctx.params.id })
+    .getOne()
     ctx.body = document
 
     /* Get 완료 응답 */
@@ -27,35 +27,37 @@ export const Get = async (ctx, next) => {
   }
 }
 
-/* text를 POST 인자로 받아 DB에 저장함. */
+/* 게시글 POST */
 export const Post = async (ctx, next) => {
   /* POST 인자를 data변수로 받음 */
   const data = ctx.request.body
 
-     /* DB 커넥션풀에서 커넥션을 하나 가져옴. */
+  /* DB 커넥션풀에서 커넥션을 하나 가져옴. */
   const conn: Connection = getConnection()
 
-    /* documents 테이블 ORM 인스턴스 생성 */
-  const documents: Documents = new Documents()
+  /* document 테이블 ORM 인스턴스 생성 */
+  const document: Documents = new Documents()
 
-  documents.text = data.text
+  document.text = data.text
 
-    /* DB에 저장 - 비동기 */
+  /* DB에 저장 - 비동기 */
   try {
-    documents.author = ctx.session.user
-    await conn.manager.save(documents)
+    document.author = ctx.session.user
+    await conn.manager.save(document)
   }
   catch (e) {
-      /* text가 인자에 없을 경우 400에러 리턴 */
+    /* text나 session.user가 없으면 400에러 리턴 */
     ctx.throw(400, e)
   }
-    /* id와 created_at을 포함하여 body에 응답 */
+
+  /* id와 created_at을 포함하여 body에 응답 */
+  ctx.body = document
 
   /* Post 완료 응답 */
   ctx.response.status = 201
 }
 
-/* documents 테이블에 존재하는 게시글 삭제 */
+/* 해당 게시글 DELETE */
 export const Delete =  async (ctx, next) => {
   const conn: Connection = getConnection()
 
@@ -106,26 +108,28 @@ export const Delete =  async (ctx, next) => {
   }
 }
 
+/* 해당 게시글 좋아요 GET */
 export const GetLikedBy = async (ctx, next) => {
   const conn: Connection = getConnection()
   const likedBy = await conn
-    .getRepository(Documents)
-    .createQueryBuilder("document")
-    .leftJoinAndSelect("document.likedBy", "likedBy")
-    .getMany()
+  .getRepository(Documents)
+  .createQueryBuilder("document")
+  .leftJoinAndSelect("document.likedBy", "likedBy")
+  .getMany()
   ctx.body = likedBy
 
   /* Get 완료 응답 */
   ctx.response.status = 200
 }
 
+/* 해당 게시글 좋아요 POST */
 export const LikedBy = async (ctx, next) => {
   const conn: Connection = getConnection()
 
   try {
     const document: Documents = await conn
-      .getRepository(Documents)
-      .findOne(ctx.params.id, { relations: ["likedBy"] })
+    .getRepository(Documents)
+    .findOne(ctx.params.id, { relations: ["likedBy"] })
 
     document.likedBy.push(ctx.session.user)
     await conn.manager.save(document)
@@ -140,6 +144,7 @@ export const LikedBy = async (ctx, next) => {
   ctx.response.status = 201
 }
 
+/* 해당 게시글 좋아요 DELETE */
 export const UnlikedBy = async (ctx, next) => {
   const conn: Connection = getConnection()
 

@@ -18,36 +18,44 @@ export default class Comments {
   @PrimaryGeneratedColumn()
   public id: number
 
-  /* 댓글이 달린 게시물의 pk */
-  @Column("int", { nullable: false })
+  /* 댓글이 달린 게시물 pk */
+  @Column("int", {
+    nullable: false,
+  })
   public documentId: number
 
-  /* 현재 댓글이 달린 게시물 */
-  @ManyToOne(type => Documents, documents => documents.comments)
-  public rootDocument: Documents
-
-  /* 현재 대댓글이 달린 댓글 */
-  @ManyToOne(type => Comments, comments => comments.replies)
-  public rootComment: Comments
-
-  /* 현재 댓글이 가지고 있는 대댓글 리스트 */
-  @OneToMany(type => Comments, comments => comments.rootComment)
-  public replies: Comments[]
-
-  /* 댓글이 달린 시각 */
-  @CreateDateColumn()
-  public createdAt: Date
-
-  /* 댓글 내용 */
+  /* 내용 */
   @Column("text")
   public text: string
 
-  /* 댓글을 작성한 유저 */
-  @ManyToOne( type => Users, author => author.comments, { nullable : false })
-  public user: Users
+  /* 작성 시각 */
+  @CreateDateColumn()
+  public createdAt: Date
 
-  /*좋아요 받은 갯수*/
+  /* 작성자 */
+  @ManyToOne(type => Users, author => author.comments, {
+    nullable : false,
+  })
+  public author: Users
+
+  /* 댓글이 달린 게시물 */
+  @ManyToOne(type => Documents, documents => documents.comments, {
+    nullable: false,
+  })
+  public rootDocument: Documents
+
+  /* 좋아요 수 */
   @ManyToMany(type => Users)
   @JoinTable()
   public likedBy: Users[]
+
+  // 이하 대댓글 옵션
+
+  /* 이 대댓글이 달린 댓글 */
+  @ManyToOne(type => Comments, comments => comments.replies)
+  public rootComment: Comments
+
+  /* 가지고 있는 대댓글 리스트 */
+  @OneToMany(type => Comments, comments => comments.rootComment)
+  public replies: Comments[]
 }
