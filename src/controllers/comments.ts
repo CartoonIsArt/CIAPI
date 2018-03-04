@@ -97,18 +97,22 @@ export const Delete =  async (ctx, next) => {
 }
 
 /* 해당 댓글 좋아요 GET */
-export const GetLikedBy = async (ctx, next) => {
+export const GetLikes = async (ctx, next) => {
   const conn: Connection = getConnection()
   const comment: Comments = await conn
   .getRepository(Comments)
-  .findOne(ctx.params.id, { relations: ["likedBy"] })
+  .createQueryBuilder("comment")
+  .where("comment.id = :id", { id: ctx.params.id })
+  .leftJoinAndSelect("comment.likedBy", "likedBy")
+  .leftJoinAndSelect("likedBy.profileImage", "profileImage")
+  .getOne()
 
-  ctx.body = comment.likedBy
+  ctx.body = comment
   ctx.response.status = 200
 }
 
 /* 해당 댓글 좋아요 POST */
-export const LikedBy = async (ctx, next) => {
+export const PostLikes = async (ctx, next) => {
   const conn: Connection = getConnection()
 
   try {
@@ -126,7 +130,7 @@ export const LikedBy = async (ctx, next) => {
 }
 
 /* 해당 댓글 좋아요 DELETE */
-export const UnlikedBy = async (ctx, next) => {
+export const DeleteLikes = async (ctx, next) => {
   const conn: Connection = getConnection()
 
   try {

@@ -109,7 +109,7 @@ export const Delete =  async (ctx, next) => {
 }
 
 /* 해당 게시글 좋아요 GET */
-export const GetLikedBy = async (ctx, next) => {
+export const GetLikes = async (ctx, next) => {
   const conn: Connection = getConnection()
   const likedBy = await conn
   .getRepository(Documents)
@@ -123,7 +123,7 @@ export const GetLikedBy = async (ctx, next) => {
 }
 
 /* 해당 게시글 좋아요 POST */
-export const LikedBy = async (ctx, next) => {
+export const PostLikes = async (ctx, next) => {
   const conn: Connection = getConnection()
 
   try {
@@ -145,7 +145,7 @@ export const LikedBy = async (ctx, next) => {
 }
 
 /* 해당 게시글 좋아요 DELETE */
-export const UnlikedBy = async (ctx, next) => {
+export const DeleteLikes = async (ctx, next) => {
   const conn: Connection = getConnection()
 
   try {

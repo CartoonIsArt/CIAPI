@@ -49,17 +49,17 @@ router.get("/comments/:id", Comments.Get)
 router.post("/comments", Comments.Post)
 router.delete("/comments/:id", Comments.Delete)
 
-router.get("/comments/:id/likedBy", Comments.GetLikedBy)
-router.post("/comments/:id/likedBy", Comments.LikedBy)
-router.delete("/comments/:id/likedBy", Comments.UnlikedBy)
+router.get("/comments/:id/likeIt", Comments.GetLikes)
+router.post("/comments/:id/likeIt", Comments.PostLikes)
+router.delete("/comments/:id/likeIt", Comments.DeleteLikes)
 
 router.get("/documents/:id", Documents.Get)
 router.post("/documents", Documents.Post)
 router.delete("/documents/:id", Documents.Delete)
 
-router.get("/documents/:id/likedBy", Documents.GetLikedBy)
-router.post("/documents/:id/likedBy", Documents.LikedBy)
-router.delete("/documents/:id/likedBy", Documents.UnlikedBy)
+router.get("/documents/:id/likeIt", Documents.GetLikes)
+router.post("/documents/:id/likeIt", Documents.PostLikes)
+router.delete("/documents/:id/likeIt", Documents.DeleteLikes)
 
 router.get("/files", Files.Get)
 router.post("/files", Files.Post)
