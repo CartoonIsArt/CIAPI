@@ -18,15 +18,12 @@ export default class Comments {
   @PrimaryGeneratedColumn()
   public id: number
 
-  /* 작성 시각 */
   @CreateDateColumn()
   public createdAt: Date
 
-  /* 내용 */
   @Column("text")
   public text: string
 
-  /* 작성자 */
   @ManyToOne(type => Users, author => author.comments, {
     nullable : false,
   })
