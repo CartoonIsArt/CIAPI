@@ -122,6 +122,8 @@ export const Delete =  async (ctx, next) => {
     .execute()
 
     /* DB에서 댓글 삭제 */
+    await conn.manager.delete(Comments, comment)
+    /*
     await conn
     .createQueryBuilder()
     .delete()
