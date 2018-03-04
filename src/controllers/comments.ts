@@ -32,16 +32,19 @@ export const Post = async (ctx, next) => {
 
   /* comments 테이블 ORM 인스턴스 생성 */
   const comments: Comments = new Comments()
-  const user: Users = await conn
-  .getRepository(Users)
-  .findOne(ctx.session)
+
+  try{
+    comments.user = ctx.session.user
+  }
+  catch (e){
+    ctx.throw(400, e)
+  }
 
   comments.id = data.id
   comments.documentId = data.documentId
   comments.rootComment = null
   comments.createdAt = data.createdAt
   comments.text = data.text
-  comments.user = user
 
   /* commentId를 인자로 전달하면 대댓글 relation 설정 */
   if (data.commentId !== undefined) {
@@ -133,12 +136,13 @@ export const Delete =  async (ctx, next) => {
 
 export const GetLikedBy = async (ctx, next) => {
   const conn: Connection = getConnection()
-  const likedBy = await conn
-    .getRepository(Documents)
+  const comment: Comments = await conn
+    .getRepository(Comments)
     .createQueryBuilder("comment")
     .leftJoinAndSelect("comment.likedBy", "likedBy")
-    .getMany()
-  ctx.body = likedBy
+    .where("comment.id = :id", { id: ctx.params.id })
+    .getOne()
+  ctx.body = comment.likedBy
 
   /* Get 완료 응답 */
   ctx.response.status = 200
@@ -152,7 +156,7 @@ export const LikedBy = async (ctx, next) => {
       .getRepository(Comments)
       .findOne(ctx.params.id, { relations: ["likedBy"] })
 
-    comment.likedBy.push(ctx.session)
+    comment.likedBy.push(ctx.session.user)
     await conn.manager.save(comment)
 
     ctx.response.status = 201
@@ -179,7 +183,7 @@ export const UnlikedBy = async (ctx, next) => {
     .createQueryBuilder()
     .relation(Comments, "likedBy")
     .of(comment)
-    .remove(ctx.session)
+    .remove(ctx.session.user)
 
     /* 해제 완료 응답 */
     ctx.response.status = 204
