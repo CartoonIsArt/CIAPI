@@ -44,13 +44,17 @@ export default class Sessions {
   })
   public ipv6: number
 
+  /*
   @CreateDateColumn({
     type: "timestamp",
-  })
+  })*/
+  @CreateDateColumn()
   public createdAt: Date
 
+  /*
   @UpdateDateColumn({
     type: "timestamp",
-  })
+  })*/
+  @UpdateDateColumn()
   public updatedAt: Date
 }
