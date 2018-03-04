@@ -23,7 +23,9 @@ export default class Files{
   public savedPath: string
 
   /* 파일 소유 유저 */
-  @OneToOne(type => Users, user => user.profileImage)
+  @OneToOne(type => Users, user => user.profileImage, {
+    nullable: false,
+  })
   @JoinColumn()
   public user: Users
 }

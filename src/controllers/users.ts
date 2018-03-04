@@ -33,7 +33,7 @@ export const Post = async (ctx, next) => {
 
   /* Users 테이블 ORM 인스턴스 생성 */
   const user: Users = new Users()
-  user.profileImage = null
+  // user.profileImage = null
 
   /* 나머지 데이터를 DB에 저장 */
   user.fullname = data.fullname
@@ -58,26 +58,22 @@ export const Post = async (ctx, next) => {
     user.profileImage = profile
 
     try {
-      /* DB에 저장 - 비동기 */
       await conn.manager.save(profile)
     }
     catch (e) {
-      /* profile 저장 실패 시 400에러 리턴 */
       ctx.throw(400, e)
     }
   }
 
   try {
-    /* DB에 저장 - 비동기 */
     await conn.manager.save(user)
   }
   catch (e) {
-    /* required member중 하나라도 인자에 없을 경우 400에러 리턴 */
     ctx.throw(400, e)
   }
 
-  /* id를 포함하여 body에 응답 */
   ctx.body = user
+  ctx.response.status = 200
 }
 
 /* 해당 유저 DELETE */
