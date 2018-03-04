@@ -15,78 +15,50 @@ export const Get = async (ctx, next) => {
   .leftJoinAndSelect("comment.rootDocument", "rootDocument")
   .leftJoinAndSelect("comment.likedBy", "likedBy")
   .getOne()
-  ctx.body = comment
 
-  /* Get 완료 응답 */
+  ctx.body = comment
   ctx.response.status = 200
 }
 
 /* 댓글 POST */
 export const Post = async (ctx, next) => {
-  /* POST 인자를 data변수로 받음 */
+  const conn: Connection = getConnection()
+  const comment: Comments = new Comments()
   const data = ctx.request.body
 
-  /* DB 커넥션풀에서 커넥션을 하나 가져옴. */
-  const conn: Connection = getConnection()
-
-  /* comments 테이블 ORM 인스턴스 생성 */
-  const comment: Comments = new Comments()
-
-  /* 세션의 유저와 relation 설정 */
   try{
+    /* 세션의 유저와 relation 설정 */
     comment.author = ctx.session.user
-  }
-  catch (e){
-    /* session에 user가 없으면 400에러 리턴 */
-    ctx.throw(400, e)
-  }
 
-  /* 나머지 required 정보 입력 */
-  comment.id = data.id
-  comment.createdAt = data.createdAt
-  comment.text = data.text
-  comment.rootComment = null
-
-  /* commentId를 인자로 전달하면 대댓글 relation 설정 */
-  if (data.commentId !== undefined) {
-    try {
+    /* commentId를 인자로 전달하면 대댓글 relation 설정 */
+    if (data.commentId === Number) {
       const parent = await conn
       .getRepository(Comments)
       .findOne(data.commentId)
 
       comment.rootComment = parent
     }
-    catch (e) {
-      ctx.throw(400, e)
-    }
-  }
 
-  /* 작성한 글과 relation 설정 */
-  try {
+    /* 게시글과 relation 설정 */
     const document = await conn
     .getRepository(Documents)
     .findOne(data.documentId)
 
     comment.rootDocument = document
-  }
-  catch (e) {
-    ctx.throw(400, e)
-  }
 
-  /* DB에 저장 - 비동기 */
-  try {
+    /* 나머지 required 정보 입력 */
+    comment.id = data.id
+    comment.createdAt = data.createdAt
+    comment.text = data.text
+    comment.rootComment = null
+
     await conn.manager.save(comment)
+    ctx.body = comment
   }
-  catch (e) {
-    /* 하나라도 인자에 없을 경우 400에러 리턴 */
+  catch (e){
     ctx.throw(400, e)
   }
-
-  /* body에 응답 */
-  ctx.body = comment
-
-  /* Post 완료 응답 */
-  ctx.response.status = 201
+  ctx.response.status = 200
 }
 
 /* 해당 댓글 DELETE */
@@ -99,6 +71,7 @@ export const Delete =  async (ctx, next) => {
     .getRepository(Comments)
     .findOne(ctx.params.id)
 
+    /* 댓글 relation 초기화 */
     await conn
     .createQueryBuilder()
     .relation(Comments, "rootDocument")
