@@ -42,9 +42,7 @@ export const Post = async (ctx, next) => {
 
     /* DB에 저장 - 비동기 */
   try {
-    const user: Users = ctx.session.user
-    documents.author = user
-
+    documents.author = ctx.session.user
     await conn.manager.save(documents)
   }
   catch (e) {
@@ -129,7 +127,7 @@ export const LikedBy = async (ctx, next) => {
       .getRepository(Documents)
       .findOne(ctx.params.id, { relations: ["likedBy"] })
 
-    document.likedBy.push(ctx.session)
+    document.likedBy.push(ctx.session.user)
     await conn.manager.save(document)
 
     ctx.response.status = 201
@@ -156,7 +154,7 @@ export const UnlikedBy = async (ctx, next) => {
     .createQueryBuilder()
     .relation(Documents, "likedBy")
     .of(document)
-    .remove(ctx.session)
+    .remove(ctx.session.user)
 
     /* 해제 완료 응답 */
     ctx.response.status = 204
