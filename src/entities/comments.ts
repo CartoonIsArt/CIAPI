@@ -33,7 +33,9 @@ export default class Comments {
   public author: Users
 
   /* 댓글이 달린 게시물 */
-  @ManyToOne(type => Documents, documents => documents.comments)
+  @ManyToOne(type => Documents, documents => documents.comments, {
+    nullable: false,
+  })
   public rootDocument: Documents
 
   /* 좋아요 수 */

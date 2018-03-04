@@ -14,6 +14,8 @@ export const Get = async (ctx, next) => {
   .leftJoinAndSelect("author.profileImage", "profileImage")
   .leftJoinAndSelect("comment.rootDocument", "rootDocument")
   .leftJoinAndSelect("comment.likedBy", "likedBy")
+  .leftJoinAndSelect("comment.replies", "replies")
+  .leftJoinAndSelect("comment.rootComment", "rootComment")
   .getOne()
 
   ctx.body = comment
@@ -31,7 +33,7 @@ export const Post = async (ctx, next) => {
     comment.author = ctx.session.user
 
     /* commentId를 인자로 전달하면 대댓글 relation 설정 */
-    if (data.commentId === Number) {
+    if (typeof(data.commentId) === "number") {
       const parent = await conn
       .getRepository(Comments)
       .findOne(data.commentId)
@@ -40,9 +42,9 @@ export const Post = async (ctx, next) => {
     }
 
     /* 게시글과 relation 설정 */
-    const document = await conn
+    const document: Documents = await conn
     .getRepository(Documents)
-    .findOne(data.documentId)
+    .findOneOrFail(Number(data.documentId))
 
     comment.rootDocument = document
 
@@ -50,7 +52,6 @@ export const Post = async (ctx, next) => {
     comment.id = data.id
     comment.createdAt = data.createdAt
     comment.text = data.text
-    comment.rootComment = null
 
     await conn.manager.save(comment)
     ctx.body = comment
@@ -70,19 +71,6 @@ export const Delete =  async (ctx, next) => {
     const comment = await conn
     .getRepository(Comments)
     .findOne(ctx.params.id)
-
-    /* 댓글 relation 초기화 */
-    await conn
-    .createQueryBuilder()
-    .relation(Comments, "rootDocument")
-    .of(comment)
-    .set(null)
-
-    await conn
-    .createQueryBuilder()
-    .relation(Comments, "rootComment")
-    .of(comment)
-    .set(null)
 
     /* 대댓글 모두 삭제 */
     await conn
