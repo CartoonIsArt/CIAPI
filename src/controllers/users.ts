@@ -88,58 +88,124 @@ export const Delete =  async (ctx, next) => {
     .getRepository(Users)
     .findOne(ctx.params.id)
 
-    /* DB에서 모든 게시글 불러오기 */
+    /* DB에서 유저 relation 모두 불러오기 */
+    const comments: Comments[] = await conn
+    .createQueryBuilder()
+    .relation(Users, "comments")
+    .of(user)
+    .loadMany()
+
+    const documents: Documents[] = await conn
+    .createQueryBuilder()
+    .relation(Users, "documents")
+    .of(user)
+    .loadMany()
+
+    const likedComments: Comments[] = await conn
+    .createQueryBuilder()
+    .relation(Comments, "likedBy")
+    .of(user.likedComments)
+    .loadMany()
+
     const likedDocuments: Documents[] = await conn
     .createQueryBuilder()
     .relation(Documents, "likedBy")
-    .of(user.documents)
+    .of(user.likedDocuments)
     .loadMany()
 
-    /* DB에서 모든 게시글의 댓글 불러오기 */
-    const comments: Comments[] = await conn
-    .createQueryBuilder()
-    .relation(Documents, "comments")
-    .of(user.documents)
-    .loadMany()
+    /* 댓글 relation 해제 및 삭제 */
+    for (const commentSet of comments.entries()) {
+      const comment = commentSet["1"]
 
-    /* 모든 relation 해제 */
-    await conn
-    .createQueryBuilder()
-    .relation(Documents, "likedBy")
-    .of(likedDocuments)
-    .remove(user)
+      /* 댓글 좋아요 불러오기 */
+      const likedBy: Users[] = await conn
+      .getRepository(Users)
+      .createQueryBuilder()
+      .relation(Comments, "likedBy")
+      .of(comment)
+      .loadMany()
 
-    /* 모든 relation 삭제 */
-    /* 수정중입니다
-    for (const iter of comments) {
+      /* 좋아요 relation 해제 */
       await conn
       .createQueryBuilder()
       .relation(Comments, "likedBy")
-      .of(iter)
-      .remove(user)
+      .of(comment)
+      .remove(likedBy)
 
+      /* 대댓글 모두 삭제 */
       await conn
       .createQueryBuilder()
       .delete()
       .from(Comments)
-      .where("rootCommentId = :id", { id: iter.id })
+      .where("rootCommentId = :root", { root: comment.id })
+      .execute()
+
+      /* DB에서 댓글 삭제 */
+      await conn
+      .createQueryBuilder()
+      .delete()
+      .from(Comments)
+      .where("id = :id", { id: comment.id })
       .execute()
     }
 
-    await conn
-    .createQueryBuilder()
-    .delete()
-    .from(Documents)
-    .where("authorId = :id", { id: user.id })
-    .execute()
+    /* 게시글 relation 해제 및 삭제 */
+    for (const documentSet of documents.entries()) {
+      const document = documentSet["1"]
 
-    await conn
-    .createQueryBuilder()
-    .delete()
-    .from(Comments)
-    .where("authorId = :id", { id: user.id })
-    .execute()
+      /* 게시글의 relation 해제 */
+      await conn
+      .createQueryBuilder()
+      .relation(Documents, "likedBy")
+      .of(document)
+      .remove(user)
 
+      await conn
+      .createQueryBuilder()
+      .relation(Documents, "author")
+      .of(document)
+      .set(user)
+
+      /* 댓글 모두 삭제 */
+      await conn
+      .createQueryBuilder()
+      .delete()
+      .from(Comments)
+      .where("rootDocumentId = :id", { id: document.id })
+      .execute()
+
+      /* DB에서 게시글 삭제 */
+      await conn
+      .createQueryBuilder()
+      .delete()
+      .from(Documents)
+      .where("id = :id", { id: document.id })
+      .execute()
+    }
+
+    /* 좋아요한 댓글 relation 해제 */
+    for (const likedCommentSet of likedComments.entries()) {
+      const likedComment = likedCommentSet["1"]
+
+      await conn
+      .createQueryBuilder()
+      .relation(Comments, "likedBy")
+      .of(likedComment)
+      .remove(user)
+    }
+
+    /* 좋아요한 게시글 relation 해제 */
+    for (const likedDocumentSet of likedDocuments.entries()) {
+      const likedDocument = likedDocumentSet["1"]
+
+      await conn
+      .createQueryBuilder()
+      .relation(Documents, "likedBy")
+      .of(likedDocument)
+      .remove(user)
+    }
+
+    /* relation 삭제 */
     await conn
     .createQueryBuilder()
     .delete()
@@ -147,7 +213,6 @@ export const Delete =  async (ctx, next) => {
     .where("userId = :id", { id: user.id })
     .execute()
 
-    /* DB에서 유저 삭제 */
     await conn
     .createQueryBuilder()
     .delete()
@@ -155,6 +220,7 @@ export const Delete =  async (ctx, next) => {
     .where("userId = :id", { id: user.id })
     .execute()
 
+    /* DB에서 유저 삭제 */
     await conn
     .createQueryBuilder()
     .delete()

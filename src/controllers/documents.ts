@@ -108,6 +108,7 @@ export const Delete =  async (ctx, next) => {
   }
 }
 
+// 하나만 불러오게 수정해주세요
 /* 해당 게시글 좋아요 GET */
 export const GetLikes = async (ctx, next) => {
   const conn: Connection = getConnection()
