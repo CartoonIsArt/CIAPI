@@ -2,6 +2,7 @@ import { Connection, getConnection, getManager } from "typeorm"
 import Comments from "../entities/comments"
 import Documents from "../entities/documents"
 import Files from "../entities/files"
+import Sessions from "../entities/sessions"
 import Users from "../entities/users"
 
 /* 해당 유저 GET */
@@ -24,32 +25,10 @@ export const Get = async (ctx, next) => {
 
 /* 유저 POST */
 export const Post = async (ctx, next) => {
-  /* POST 인자를 data변수로 받음 */
-  const data = ctx.request.body
-
-  /* DB 커넥션풀에서 커넥션을 하나 가져옴. */
   const conn: Connection = getConnection()
-
-  /* Users 테이블 ORM 인스턴스 생성 */
   const user: Users = new Users()
-  user.profileImage = null
-
-  /* 프로필 이미지를 DB에 포함 및 relation을 구성 */
-  if (data.profileImage !== undefined) {
-    const profile = new Files()
-    profile.file = data.profileImage
-    profile.savedPath = "MIKI"
-
-    try {
-      /* DB에 저장 - 비동기 */
-      await conn.manager.save(profile)
-    }
-    catch (e) {
-      /* profile 저장 실패 시 400에러 리턴 */
-      ctx.throw(400, e)
-    }
-    user.profileImage = profile
-  }
+  const profile: Files = new Files()
+  const data = ctx.request.body
 
   /* 나머지 데이터를 DB에 저장 */
   user.fullname = data.fullname
@@ -66,16 +45,37 @@ export const Post = async (ctx, next) => {
   user.favoriteCharacter = data.favoriteCharacter
 
   try {
-    /* DB에 저장 - 비동기 */
     await conn.manager.save(user)
   }
   catch (e) {
-    /* required member중 하나라도 인자에 없을 경우 400에러 리턴 */
     ctx.throw(400, e)
   }
 
-  /* id를 포함하여 body에 응답 */
-  ctx.body = user
+  /* 프로필 이미지를 DB에 포함 및 relation을 구성 */
+  if (data.profileImage !== undefined) {
+    try {
+      profile.file = data.profileImage
+      profile.savedPath = "MIKI"
+      profile.user = user
+
+      await conn.manager.save(profile)
+    }
+    catch (e) {
+      await conn.manager.remove(profile)
+      ctx.throw(400, e)
+    }
+  }
+
+  try{
+    ctx.body = await conn
+    .getRepository(Users)
+    .findOne(user.id, { relations: ["profileImage"] })
+  }
+  catch (e){
+    ctx.throw(400, e)
+  }
+
+  ctx.response.status = 200
 }
 
 /* 해당 유저 DELETE */
@@ -84,25 +84,48 @@ export const Delete =  async (ctx, next) => {
 
   try {
     /* DB에서 유저 불러오기 */
-    const user = await conn
+    const user: Users = await conn
     .getRepository(Users)
     .findOne(ctx.params.id)
 
     /* DB에서 모든 게시글 불러오기 */
-    const likedDocuments = await conn
+    const likedDocuments: Documents[] = await conn
     .createQueryBuilder()
     .relation(Documents, "likedBy")
     .of(user.documents)
     .loadMany()
 
-    /* 모든 게시글의 좋아요 해제 */
+    /* DB에서 모든 게시글의 댓글 불러오기 */
+    const comments: Comments[] = await conn
+    .createQueryBuilder()
+    .relation(Documents, "comments")
+    .of(user.documents)
+    .loadMany()
+
+    /* 모든 relation 해제 */
     await conn
     .createQueryBuilder()
     .relation(Documents, "likedBy")
     .of(likedDocuments)
     .remove(user)
 
-    /* relation 모두 삭제 */
+    /* 모든 relation 삭제 */
+    /* 수정중입니다
+    for (const iter of comments) {
+      await conn
+      .createQueryBuilder()
+      .relation(Comments, "likedBy")
+      .of(iter)
+      .remove(user)
+
+      await conn
+      .createQueryBuilder()
+      .delete()
+      .from(Comments)
+      .where("rootCommentId = :id", { id: iter.id })
+      .execute()
+    }
+
     await conn
     .createQueryBuilder()
     .delete()
@@ -114,17 +137,24 @@ export const Delete =  async (ctx, next) => {
     .createQueryBuilder()
     .delete()
     .from(Comments)
-    .where("userId = :id", { id: user.id })
+    .where("authorId = :id", { id: user.id })
     .execute()
 
     await conn
     .createQueryBuilder()
     .delete()
-    .from(Users)
-    .where("profileImageId = :id", { id: user.id })
+    .from(Files)
+    .where("userId = :id", { id: user.id })
     .execute()
 
     /* DB에서 유저 삭제 */
+    await conn
+    .createQueryBuilder()
+    .delete()
+    .from(Sessions)
+    .where("userId = :id", { id: user.id })
+    .execute()
+
     await conn
     .createQueryBuilder()
     .delete()

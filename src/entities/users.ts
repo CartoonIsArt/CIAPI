@@ -3,7 +3,6 @@ import {
   CreateDateColumn,
   Entity,
   Index,
-  JoinColumn,
   ManyToMany,
   OneToMany,
   OneToOne,
@@ -25,7 +24,6 @@ export default class Users {
 
   /* 프로필 이미지 */
   @OneToOne(type => Files, files => files.user)
-  @JoinColumn()
   public profileImage: Files
 
   /* 이름 */

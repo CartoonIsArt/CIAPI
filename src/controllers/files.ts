@@ -10,32 +10,21 @@ export const Get = async (ctx, next) => {
 
 /* 파일 POST */
 export const Post = async (ctx, next) => {
-  /* POST인자를 data변수로 받음 */
+  const conn: Connection = getConnection()
+  const file: Files = new Files()
   const data = ctx.request.body
 
-  /* file이 인자로 들어왔을 경우 */
-  /* DB 커넥션풀에서 커넥션을 하나 가져옴. */
-  const conn: Connection = getConnection()
-
-  /* Files 테이블 ORM 인스턴스 생성 */
-  const file: Files = new Files()
   file.file = data.file
-
   file.savedPath = "YO"
 
-  /* DB에 저장 - 비동기 */
   try{
     await conn.manager.save(file)
   }
   catch (e){
-    /* files가 인자에 없을 경우 400에러 리턴 */
     ctx.throw(400, e)
   }
 
-  /* id를 포함하여 body에 응답 */
   ctx.body = file
-
-  /* Post 완료 응답 */
   ctx.response.status = 201
 }
 
@@ -45,11 +34,11 @@ export const Delete =  async (ctx, next) => {
 
   try {
     /* DB에서 파일 불러오기 */
-    const file = await conn
+    const file: Files = await conn
     .getRepository(Files)
     .findOne(ctx.params.id)
 
-    /* 파일의 relation 해제 */
+    /* 파일의 relation 해제 *//*
     await conn
     .createQueryBuilder()
     .relation(Files, "user")
