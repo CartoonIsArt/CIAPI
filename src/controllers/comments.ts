@@ -3,6 +3,10 @@ import Comments from "../entities/comments"
 import Documents from "../entities/documents"
 import Users from "../entities/users"
 
+// 대댓글의 대댓글을 삭제하려면 recursive하게 구현해야 합니다.
+// 개발 시간 상 구현하지 않겠습니다.
+// 근시일 내에 구현해주세요.
+
 /* 해당 댓글 GET */
 export const Get = async (ctx, next) => {
   const conn: Connection = getConnection()

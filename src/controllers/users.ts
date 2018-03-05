@@ -118,7 +118,7 @@ export const Delete =  async (ctx, next) => {
       const comment = commentSet["1"]
 
       /* 댓글 좋아요 불러오기 */
-      const likedBy: Users[] = await conn
+      const likes: Users[] = await conn
       .getRepository(Users)
       .createQueryBuilder()
       .relation(Comments, "likedBy")
@@ -130,7 +130,7 @@ export const Delete =  async (ctx, next) => {
       .createQueryBuilder()
       .relation(Comments, "likedBy")
       .of(comment)
-      .remove(likedBy)
+      .remove(likes)
 
       /* 대댓글 모두 삭제 */
       await conn
@@ -153,18 +153,20 @@ export const Delete =  async (ctx, next) => {
     for (const documentSet of documents.entries()) {
       const document = documentSet["1"]
 
+      /* 게시글 좋아요 불러오기 */
+      const likes: Users[] = await conn
+      .getRepository(Users)
+      .createQueryBuilder()
+      .relation(Documents, "likedBy")
+      .of(document)
+      .loadMany()
+
       /* 게시글의 relation 해제 */
       await conn
       .createQueryBuilder()
       .relation(Documents, "likedBy")
       .of(document)
-      .remove(user)
-
-      await conn
-      .createQueryBuilder()
-      .relation(Documents, "author")
-      .of(document)
-      .set(user)
+      .remove(likes)
 
       /* 댓글 모두 삭제 */
       await conn
