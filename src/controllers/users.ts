@@ -25,15 +25,10 @@ export const Get = async (ctx, next) => {
 
 /* 유저 POST */
 export const Post = async (ctx, next) => {
-  /* POST 인자를 data변수로 받음 */
-  const data = ctx.request.body
-
-  /* DB 커넥션풀에서 커넥션을 하나 가져옴. */
   const conn: Connection = getConnection()
-
-  /* Users 테이블 ORM 인스턴스 생성 */
   const user: Users = new Users()
-  // user.profileImage = null
+  const profile: Files = new Files()
+  const data = ctx.request.body
 
   /* 나머지 데이터를 DB에 저장 */
   user.fullname = data.fullname
@@ -49,22 +44,6 @@ export const Post = async (ctx, next) => {
   user.favoriteComic = data.favoriteComic
   user.favoriteCharacter = data.favoriteCharacter
 
-  /* 프로필 이미지를 DB에 포함 및 relation을 구성 */
-  if (data.profileImage !== undefined) {
-    const profile = new Files()
-    profile.file = data.profileImage
-    profile.savedPath = "MIKI"
-    profile.user = user
-    user.profileImage = profile
-
-    try {
-      await conn.manager.save(profile)
-    }
-    catch (e) {
-      ctx.throw(400, e)
-    }
-  }
-
   try {
     await conn.manager.save(user)
   }
@@ -72,7 +51,30 @@ export const Post = async (ctx, next) => {
     ctx.throw(400, e)
   }
 
-  ctx.body = user
+  /* 프로필 이미지를 DB에 포함 및 relation을 구성 */
+  if (data.profileImage !== undefined) {
+    try {
+      profile.file = data.profileImage
+      profile.savedPath = "MIKI"
+      profile.user = user
+
+      await conn.manager.save(profile)
+    }
+    catch (e) {
+      await conn.manager.remove(profile)
+      ctx.throw(400, e)
+    }
+  }
+
+  try{
+    ctx.body = await conn
+    .getRepository(Users)
+    .findOne(user.id, { relations: ["profileImage"] })
+  }
+  catch (e){
+    ctx.throw(400, e)
+  }
+
   ctx.response.status = 200
 }
 
@@ -82,25 +84,48 @@ export const Delete =  async (ctx, next) => {
 
   try {
     /* DB에서 유저 불러오기 */
-    const user = await conn
+    const user: Users = await conn
     .getRepository(Users)
     .findOne(ctx.params.id)
 
     /* DB에서 모든 게시글 불러오기 */
-    const likedDocuments = await conn
+    const likedDocuments: Documents[] = await conn
     .createQueryBuilder()
     .relation(Documents, "likedBy")
     .of(user.documents)
     .loadMany()
 
-    /* 모든 게시글의 좋아요 해제 */
+    /* DB에서 모든 게시글의 댓글 불러오기 */
+    const comments: Comments[] = await conn
+    .createQueryBuilder()
+    .relation(Documents, "comments")
+    .of(user.documents)
+    .loadMany()
+
+    /* 모든 relation 해제 */
     await conn
     .createQueryBuilder()
     .relation(Documents, "likedBy")
     .of(likedDocuments)
     .remove(user)
 
-    /* relation 모두 삭제 */
+    /* 모든 relation 삭제 */
+    /* 수정중입니다
+    for (const iter of comments) {
+      await conn
+      .createQueryBuilder()
+      .relation(Comments, "likedBy")
+      .of(iter)
+      .remove(user)
+
+      await conn
+      .createQueryBuilder()
+      .delete()
+      .from(Comments)
+      .where("rootCommentId = :id", { id: iter.id })
+      .execute()
+    }
+
     await conn
     .createQueryBuilder()
     .delete()

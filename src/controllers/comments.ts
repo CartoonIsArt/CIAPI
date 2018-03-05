@@ -72,6 +72,21 @@ export const Delete =  async (ctx, next) => {
     .getRepository(Comments)
     .findOne(ctx.params.id)
 
+    /* 댓글 좋아요 불러오기 */
+    const likedBy: Users[] = await conn
+    .getRepository(Users)
+    .createQueryBuilder()
+    .relation(Comments, "likedBy")
+    .of(comment)
+    .loadMany()
+
+    /* 좋아요 relation 해제 */
+    await conn
+    .createQueryBuilder()
+    .relation(Comments, "likedBy")
+    .of(comment)
+    .remove(likedBy)
+
     /* 대댓글 모두 삭제 */
     await conn
     .createQueryBuilder()

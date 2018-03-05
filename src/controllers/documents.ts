@@ -69,7 +69,7 @@ export const Delete =  async (ctx, next) => {
 
     const user = await conn
     .getRepository(Users)
-    .findOne(document.author.id)
+    .findOne(document.author)
 
     /* 게시글의 relation 해제 */
     await conn
