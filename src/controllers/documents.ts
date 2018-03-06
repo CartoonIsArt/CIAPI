@@ -37,7 +37,6 @@ export const Post = async (ctx, next) => {
   const data = ctx.request.body
 
   document.text = data.text
-
   try {
     document.author = ctx.session.user
     await conn.manager.save(document)
@@ -94,10 +93,12 @@ export const PostLikes = async (ctx, next) => {
   const conn: Connection = getConnection()
 
   try {
+    /* DB에서 게시글 불러오기 */
     const document: Documents = await conn
     .getRepository(Documents)
     .findOne(ctx.params.id, { relations: ["likedBy"] })
 
+    /* 게시글과 유저의 좋아요 relation 설정 */
     document.likedBy.push(ctx.session.user)
     await conn.manager.save(document)
   }
