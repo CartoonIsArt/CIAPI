@@ -12,7 +12,9 @@ export const Get = async (ctx, next) => {
   try{
     ctx.body = await conn
     .getRepository(Users)
-    .findOne(ctx.params.id, ({ relations: ["profileImage"] }))
+    .findOne(ctx.params.id, ({
+      relations: ["profileImage"],
+    }))
   }
   catch (e) {
     ctx.throw(400, e)
@@ -29,7 +31,7 @@ export const Post = async (ctx, next) => {
   const profile: Files = new Files()
   const data = ctx.request.body
 
-  /* 나머지 데이터를 DB에 저장 */
+  /* 데이터 저장 */
   user.fullname = data.fullname
   user.nTh = data.nTh
   user.dateOfBirth = data.dateOfBirth
@@ -68,7 +70,9 @@ export const Post = async (ctx, next) => {
   try{
     ctx.body = await conn
     .getRepository(Users)
-    .findOne(user.id, { relations: ["profileImage"] })
+    .findOne(user.id, {
+      relations: ["profileImage"],
+    })
   }
   catch (e){
     ctx.throw(400, e)
@@ -244,12 +248,14 @@ export const GetDocuments = async (ctx, next) => {
   const conn: Connection = getConnection()
 
   try{
-    ctx.body = await conn
+    const documents: Documents[] = await conn
     .getRepository(Documents)
     .createQueryBuilder("document")
     .leftJoinAndSelect("document.author", "author")
     .where("author.id = :id", { id: ctx.params.id })
     .getMany()
+
+    ctx.body = documents
   }
   catch (e) {
     ctx.throw(400, e)
@@ -281,12 +287,17 @@ export const GetComments = async (ctx, next) => {
 
 export const Patch = async (ctx, next) => {
   const conn: Connection = getConnection()
-  const data: Users = await conn.manager.findOne(Users, ctx.params.id, { relations: ["profileImage"] })
+  const data: Users = await conn
+  .manager
+  .findOne(Users, ctx.params.id, {
+    relations: ["profileImage"],
+  })
 
   try{
     const user = await conn
-                      .getRepository(Users)
-                      .findOne(ctx.params.id)
+    .getRepository(Users)
+    .findOne(ctx.params.id)
+
     if (data.fullname !== undefined) {
       user.fullname = data.fullname
     }
@@ -314,9 +325,14 @@ export const Patch = async (ctx, next) => {
     if (data.favoriteCharacter !== undefined) {
       user.favoriteCharacter = data.favoriteCharacter
     }
+
     await conn.manager.save(user)
+    ctx.body = user
   }
   catch (e) {
     ctx.throw(400, e)
   }
+
+  /* PATCH 완료 응답 */
+  ctx.request.status = 200
 }

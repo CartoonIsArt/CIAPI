@@ -10,24 +10,26 @@ import Users from "../entities/users"
 /* 해당 게시글 GET */
 export const Get = async (ctx, next) => {
   const conn: Connection = getConnection()
+
   try{
     const document = await conn
     .getRepository(Documents)
-    .createQueryBuilder("document")
-    .leftJoinAndSelect("document.author", "author")
-    .leftJoinAndSelect("author.profileImage", "profileImage")
-    .leftJoinAndSelect("document.comments", "comments")
-    .leftJoinAndSelect("document.likedBy", "likedBy")
-    .where("document.id = :id", { id: ctx.params.id })
-    .getOne()
+    .findOne(ctx.params.id, {
+      relations: [
+        "author",
+        "author.profileImage",
+        "comments",
+        "likedBy",
+      ]})
 
-    /* GET 완료 응답 */
     ctx.body = document
-    ctx.response.status = 200
   }
   catch (e) {
     ctx.throw(400, e)
   }
+
+  /* GET 완료 응답 */
+  ctx.response.status = 200
 }
 
 /* 게시글 POST */
@@ -79,9 +81,7 @@ export const GetLikes = async (ctx, next) => {
   const conn: Connection = getConnection()
   const likedBy: Documents[] = await conn
   .getRepository(Documents)
-  .createQueryBuilder("document")
-  .leftJoinAndSelect("document.likedBy", "likedBy")
-  .getMany()
+  .find({ relations: ["likedBy"] })
 
   /* GET 완료 응답 */
   ctx.body = likedBy
@@ -96,7 +96,9 @@ export const PostLikes = async (ctx, next) => {
     /* DB에서 게시글 불러오기 */
     const document: Documents = await conn
     .getRepository(Documents)
-    .findOne(ctx.params.id, { relations: ["likedBy"] })
+    .findOne(ctx.params.id, {
+      relations: ["likedBy"],
+    })
 
     /* 게시글과 유저의 좋아요 relation 설정 */
     document.likedBy.push(ctx.session.user)
