@@ -117,16 +117,23 @@ export const Delete =  async (ctx, next) => {
 /* 해당 댓글 좋아요 GET */
 export const GetLikes = async (ctx, next) => {
   const conn: Connection = getConnection()
-  const comment: Comments = await conn
-  .getRepository(Comments)
-  .findOne(ctx.params.id, {
-    relations: [
-      "likedBy",
-      "likedBy.profileImage",
-    ]})
+
+  try{
+    const comment: Comments = await conn
+    .getRepository(Comments)
+    .findOne(ctx.params.id, {
+      relations: [
+        "likedBy",
+        "likedBy.profileImage",
+      ]})
+
+    ctx.body = comment
+  }
+  catch (e){
+    ctx.throw(400, e)
+  }
 
   /* GET 성공 응답 */
-  ctx.body = comment
   ctx.response.status = 200
 }
 
