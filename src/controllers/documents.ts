@@ -81,12 +81,19 @@ export const Delete =  async (ctx, next) => {
 /* 해당 게시글 좋아요 GET */
 export const GetLikes = async (ctx, next) => {
   const conn: Connection = getConnection()
-  const likedBy: Documents[] = await conn
-  .getRepository(Documents)
-  .find({ relations: ["likedBy"] })
+
+  try{
+    const likedBy: Documents[] = await conn
+    .getRepository(Documents)
+    .find({ relations: ["likedBy"] })
+
+    ctx.body = likedBy
+  }
+  catch (e){
+    ctx.throw(400, e)
+  }
 
   /* GET 완료 응답 */
-  ctx.body = likedBy
   ctx.response.status = 200
 }
 

@@ -10,11 +10,13 @@ export const Get = async (ctx, next) => {
   const conn: Connection = getConnection()
 
   try{
-    ctx.body = await conn
+    const user: Users = await conn
     .getRepository(Users)
-    .findOne(ctx.params.id, ({
+    .findOne(ctx.params.id, {
       relations: ["profileImage"],
-    }))
+    })
+
+    ctx.body = user
   }
   catch (e) {
     ctx.throw(400, e)
@@ -52,7 +54,7 @@ export const Post = async (ctx, next) => {
     ctx.throw(400, e)
   }
 
-  /* 프로필 이미지를 DB에 포함 및 relation을 구성 */
+  /* 프로필 이미지 DB 저장 및 relation 설정 */
   if (data.profileImage !== undefined) {
     try {
       profile.file = data.profileImage
@@ -68,11 +70,13 @@ export const Post = async (ctx, next) => {
   }
 
   try{
-    ctx.body = await conn
+    const relationedUser: Users = await conn
     .getRepository(Users)
     .findOne(user.id, {
       relations: ["profileImage"],
     })
+
+    ctx.body = relationedUser
   }
   catch (e){
     ctx.throw(400, e)
@@ -121,73 +125,13 @@ export const Delete =  async (ctx, next) => {
     /* 댓글 relation 해제 및 삭제 */
     for (const commentSet of comments.entries()) {
       const comment: Comments = commentSet["1"]
-
-      /* 댓글 좋아요 불러오기 */
-      const likes: Users[] = await conn
-      .getRepository(Users)
-      .createQueryBuilder()
-      .relation(Comments, "likedBy")
-      .of(comment)
-      .loadMany()
-
-      /* 좋아요 relation 해제 */
-      await conn
-      .createQueryBuilder()
-      .relation(Comments, "likedBy")
-      .of(comment)
-      .remove(likes)
-
-      /* 대댓글 모두 삭제 */
-      await conn
-      .createQueryBuilder()
-      .delete()
-      .from(Comments)
-      .where("rootCommentId = :root", { root: comment.id })
-      .execute()
-
-      /* DB에서 댓글 삭제 */
-      await conn
-      .createQueryBuilder()
-      .delete()
-      .from(Comments)
-      .where("id = :id", { id: comment.id })
-      .execute()
+      // 댓글 DELETE 참고
     }
 
     /* 게시글 relation 해제 및 삭제 */
     for (const documentSet of documents.entries()) {
       const document: Documents = documentSet["1"]
-
-      /* 게시글 좋아요 불러오기 */
-      const likes: Users[] = await conn
-      .getRepository(Users)
-      .createQueryBuilder()
-      .relation(Documents, "likedBy")
-      .of(document)
-      .loadMany()
-
-      /* 게시글의 relation 해제 */
-      await conn
-      .createQueryBuilder()
-      .relation(Documents, "likedBy")
-      .of(document)
-      .remove(likes)
-
-      /* 댓글 모두 삭제 */
-      await conn
-      .createQueryBuilder()
-      .delete()
-      .from(Comments)
-      .where("rootDocumentId = :id", { id: document.id })
-      .execute()
-
-      /* DB에서 게시글 삭제 */
-      await conn
-      .createQueryBuilder()
-      .delete()
-      .from(Documents)
-      .where("id = :id", { id: document.id })
-      .execute()
+      // 게시글 DELETE 참고
     }
 
     /* 좋아요한 댓글 relation 해제 */
@@ -234,13 +178,13 @@ export const Delete =  async (ctx, next) => {
     .from(Users)
     .where("id = :id", { id: user.id })
     .execute()
-
-    /* 삭제 완료 응답 */
-    ctx.response.status = 204
   }
   catch (e) {
     ctx.throw(400, e)
   }
+
+  /* 삭제 완료 응답 */
+  ctx.response.status = 204
 }
 
 /* 유저가 쓴 게시글 불러오기 */
