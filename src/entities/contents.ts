@@ -22,6 +22,12 @@ export default class Contents {
   @CreateDateColumn()
   public createdAt: Date
 
+  /* 제목 */
+  @Column({
+    default: "",
+  })
+  public title: string
+
   /* 내용 */
   @Column("text")
   public text: string
