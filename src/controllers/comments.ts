@@ -83,56 +83,28 @@ export const Post = async (ctx, next) => {
 /* 해당 댓글 DELETE */
 export const Delete =  async (ctx, next) => {
   const conn: Connection = getConnection()
+  const leaver: Users = await conn.getRepository(Users).findOne(0)
 
   try {
     /* DB에서 댓글 불러오기 */
     const comment: Comments = await conn
     .getRepository(Comments)
-    .findOne(ctx.params.id)
+    .findOne(ctx.params.id, {
+      relations: [
+        "author",
+        "likedBy",
+      ]})
 
-    /* 댓글 작성자 임시 저장 */
-    const author: Users = comment.author
-
-    /* 댓글 좋아요 불러오기 */
-    const likedBy: Users[] = await conn
-    .getRepository(Users)
-    .createQueryBuilder()
-    .relation(Comments, "likedBy")
-    .of(comment)
-    .loadMany()
-
-    /* 좋아요 relation 해제 */
-    await conn
-    .createQueryBuilder()
-    .relation(Comments, "likedBy")
-    .of(comment)
-    .remove(likedBy)
-
-    /* 대댓글 모두 삭제 */
-    await conn
-    .createQueryBuilder()
-    .delete()
-    .from(Comments)
-    .where("rootCommentId = :root", { root: comment.id })
-    .execute()
-
-    /* DB에서 댓글 삭제 */
-    await conn
-    .createQueryBuilder()
-    .delete()
-    .from(Comments)
-    .where("id = :id", { id: comment.id })
-    .execute()
-
-    /* 댓글 작성자의 댓글 수 1 감소 */
-    --(author.numberOfComments)
-
-    /* DELETE 성공 응답 */
-    ctx.response.status = 204
+    /* 탈퇴한 유저 relation */
+    comment.author = leaver
+    await conn.manager.save(comment)
   }
   catch (e) {
     ctx.throw(400, e)
   }
+
+  /* DELETE 성공 응답 */
+  ctx.response.status = 204
 }
 
 /* 해당 댓글 좋아요 GET */
