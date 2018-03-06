@@ -11,7 +11,7 @@
     "koa-router": "^7.2.1",
     "koa-views": "^6.1.1",
     "sqlite3": "^3.1.13",
-    "typeorm": "^0.2.0-alpha.26",
+    "typeorm": "next",
     "typescript": "^2.6.1"
   },
   "devDependencies": {

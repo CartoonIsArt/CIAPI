@@ -1673,9 +1673,9 @@ type-is@^1.5.5, type-is@^1.6.14:
     media-typer "0.3.0"
     mime-types "~2.1.18"
 
-typeorm@^0.2.0-alpha.26:
-  version "0.2.0-alpha.26"
-  resolved "https://registry.yarnpkg.com/typeorm/-/typeorm-0.2.0-alpha.26.tgz#97ffd2e0bb5a443f10d483f20b32dfcc7b7b13aa"
+typeorm@next:
+  version "0.2.0-alpha.27"
+  resolved "https://registry.yarnpkg.com/typeorm/-/typeorm-0.2.0-alpha.27.tgz#a8bfe9041380de1dcb276d8e2d9f768443387d6f"
   dependencies:
     app-root-path "^2.0.1"
     chalk "^2.0.1"
