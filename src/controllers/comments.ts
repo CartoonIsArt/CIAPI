@@ -13,20 +13,27 @@ import Users from "../entities/users"
 /* 해당 댓글 GET */
 export const Get = async (ctx, next) => {
   const conn: Connection = getConnection()
-  const comment: Comments = await conn
-  .getRepository(Comments)
-  .findOne(ctx.params.id, {
-    relations: [
-      "author",
-      "author.profileImage",
-      "rootDocument",
-      "likedBy",
-      "replies",
-      "rootComment",
-    ]})
+
+  try{
+    const comment: Comments = await conn
+    .getRepository(Comments)
+    .findOne(ctx.params.id, {
+      relations: [
+        "author",
+        "author.profileImage",
+        "rootDocument",
+        "likedBy",
+        "replies",
+        "rootComment",
+      ]})
+
+    ctx.body = comment
+  }
+  catch (e){
+    ctx.throw(400, e)
+  }
 
   /* GET 성공 응답 */
-  ctx.body = comment
   ctx.response.status = 200
 }
 
@@ -131,7 +138,9 @@ export const PostLikes = async (ctx, next) => {
     /* DB에서 댓글 불러오기 */
     const comment: Comments = await conn
     .getRepository(Comments)
-    .findOne(ctx.params.id, { relations: ["likedBy"] })
+    .findOne(ctx.params.id, {
+      relations: ["likedBy"],
+    })
 
     /* 세션의 유저와 좋아요 relation 설정 */
     comment.likedBy.push(ctx.session.user)
