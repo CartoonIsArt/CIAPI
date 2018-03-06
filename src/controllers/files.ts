@@ -5,6 +5,8 @@ import Users from "../entities/users"
 /* 모든 파일 GET */
 export const Get = async (ctx, next) => {
   const entityManager = getManager()
+
+  /* GET 완료 응답 */
   ctx.body = await entityManager.find(Files)
 }
 
@@ -24,6 +26,7 @@ export const Post = async (ctx, next) => {
     ctx.throw(400, e)
   }
 
+  /* POST 완료 응답 */
   ctx.body = file
   ctx.response.status = 201
 }
@@ -38,13 +41,6 @@ export const Delete =  async (ctx, next) => {
     .getRepository(Files)
     .findOne(ctx.params.id)
 
-    /* 파일의 relation 해제 *//*
-    await conn
-    .createQueryBuilder()
-    .relation(Files, "user")
-    .of(file)
-    .set(null)
-
     /* DB에서 파일 삭제 */
     await conn
     .createQueryBuilder()
@@ -52,11 +48,11 @@ export const Delete =  async (ctx, next) => {
     .from(Files)
     .where("id = :id", { id: file.id })
     .execute()
-
-    /* 삭제 완료 응답 */
-    ctx.response.status = 204
   }
   catch (e) {
     ctx.throw(400, e)
   }
+
+  /* DELETE 완료 응답 */
+  ctx.response.status = 204
 }

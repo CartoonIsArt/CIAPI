@@ -19,7 +19,7 @@ export const Get = async (ctx, next) => {
     ctx.throw(400, e)
   }
 
-  /* Get 완료 응답 */
+  /* GET 완료 응답 */
   ctx.response.status = 201
 }
 
@@ -75,6 +75,7 @@ export const Post = async (ctx, next) => {
     ctx.throw(400, e)
   }
 
+  /* POST 완료 응답 */
   ctx.response.status = 200
 }
 
@@ -115,7 +116,7 @@ export const Delete =  async (ctx, next) => {
 
     /* 댓글 relation 해제 및 삭제 */
     for (const commentSet of comments.entries()) {
-      const comment = commentSet["1"]
+      const comment: Comments = commentSet["1"]
 
       /* 댓글 좋아요 불러오기 */
       const likes: Users[] = await conn
@@ -151,7 +152,7 @@ export const Delete =  async (ctx, next) => {
 
     /* 게시글 relation 해제 및 삭제 */
     for (const documentSet of documents.entries()) {
-      const document = documentSet["1"]
+      const document: Documents = documentSet["1"]
 
       /* 게시글 좋아요 불러오기 */
       const likes: Users[] = await conn
@@ -187,7 +188,7 @@ export const Delete =  async (ctx, next) => {
 
     /* 좋아요한 댓글 relation 해제 */
     for (const likedCommentSet of likedComments.entries()) {
-      const likedComment = likedCommentSet["1"]
+      const likedComment: Comments = likedCommentSet["1"]
 
       await conn
       .createQueryBuilder()
@@ -198,7 +199,7 @@ export const Delete =  async (ctx, next) => {
 
     /* 좋아요한 게시글 relation 해제 */
     for (const likedDocumentSet of likedDocuments.entries()) {
-      const likedDocument = likedDocumentSet["1"]
+      const likedDocument: Documents = likedDocumentSet["1"]
 
       await conn
       .createQueryBuilder()

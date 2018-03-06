@@ -65,11 +65,11 @@ export const Delete =  async (ctx, next) => {
 
   try {
     /* DB에서 게시글 불러오기 */
-    const document = await conn
+    const document: Documents = await conn
     .getRepository(Documents)
     .findOne(ctx.params.id)
 
-    const user = await conn
+    const user: Users = await conn
     .getRepository(Users)
     .findOne(document.author)
 
@@ -114,7 +114,7 @@ export const Delete =  async (ctx, next) => {
 /* 해당 게시글 좋아요 GET */
 export const GetLikes = async (ctx, next) => {
   const conn: Connection = getConnection()
-  const likedBy = await conn
+  const likedBy: Documents[] = await conn
   .getRepository(Documents)
   .createQueryBuilder("document")
   .leftJoinAndSelect("document.likedBy", "likedBy")
@@ -153,7 +153,7 @@ export const DeleteLikes = async (ctx, next) => {
 
   try {
     /* DB에서 게시글 불러오기 */
-    const document = await conn
+    const document: Documents = await conn
     .getRepository(Documents)
     .findOne(ctx.params.id)
 

@@ -10,7 +10,7 @@ import Users from "../entities/users"
 /* 해당 댓글 GET */
 export const Get = async (ctx, next) => {
   const conn: Connection = getConnection()
-  const comment = await conn
+  const comment: Comments = await conn
   .getRepository(Comments)
   .findOne(ctx.params.id, {
     relations: [
