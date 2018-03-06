@@ -1,5 +1,5 @@
 import * as crypto from "crypto"
-import { Connection, getConnection, getManager } from "typeorm"
+import { Connection, getConnection } from "typeorm"
 import Auth from "../auth/auth"
 import Sessions from "../entities/sessions"
 import Users from "../entities/users"

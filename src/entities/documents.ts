@@ -1,12 +1,10 @@
 import {
   Column,
-  CreateDateColumn,
   Entity,
   JoinTable,
   ManyToMany,
   ManyToOne,
   OneToMany,
-  PrimaryGeneratedColumn,
 } from "typeorm"
 import Comments from "./comments"
 import Contents from "./contents"
