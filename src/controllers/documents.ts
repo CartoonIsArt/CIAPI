@@ -47,7 +47,7 @@ export const Post = async (ctx, next) => {
   try {
     document.author = ctx.session.user
     ++(document.author.numberOfDocuments)
-    await conn.manager.save(document)
+    await conn.manager.save(document.author)
   }
   catch (e) {
     /* text나 session.user가 없으면 400에러 리턴 */
@@ -74,6 +74,7 @@ export const Delete =  async (ctx, next) => {
 
     /* 탈퇴한 유저 relation */
     document.author = leaver
+    --(document.author.numberOfDocuments)
     await conn.manager.save(document)
   }
   catch (e) {
@@ -109,6 +110,7 @@ export const PostLikes = async (ctx, next) => {
     .findOne(ctx.params.id, { relations: ["likedBy"] })
 
     document.likedBy.push(ctx.session.user)
+
     await conn.manager.save(document)
 
     ctx.response.status = 201
