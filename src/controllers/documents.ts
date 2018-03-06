@@ -64,6 +64,7 @@ export const Post = async (ctx, next) => {
 /* 해당 게시글 DELETE */
 export const Delete =  async (ctx, next) => {
   const conn: Connection = getConnection()
+  const leaver: Users = await conn.getRepository(Users).findOne(0)
 
   try {
     /* DB에서 게시글 불러오기 */
@@ -71,45 +72,16 @@ export const Delete =  async (ctx, next) => {
     .getRepository(Documents)
     .findOne(ctx.params.id)
 
-    const user: Users = await conn
-    .getRepository(Users)
-    .findOne(document.author)
-
-    /* 게시글의 relation 해제 */
-    await conn
-    .createQueryBuilder()
-    .relation(Documents, "likedBy")
-    .of(document)
-    .remove(user)
-
-    await conn
-    .createQueryBuilder()
-    .relation(Documents, "author")
-    .of(document)
-    .set(user)
-
-    /* 댓글 모두 삭제 */
-    await conn
-    .createQueryBuilder()
-    .delete()
-    .from(Comments)
-    .where("rootDocumentId = :id", { id: document.id })
-    .execute()
-
-    /* DB에서 게시글 삭제 */
-    await conn
-    .createQueryBuilder()
-    .delete()
-    .from(Documents)
-    .where("id = :id", { id: document.id })
-    .execute()
-
-    /* 삭제 완료 응답 */
-    ctx.response.status = 204
+    /* 탈퇴한 유저 relation */
+    document.author = leaver
+    await conn.manager.save(document)
   }
   catch (e) {
     ctx.throw(400, e)
   }
+
+  /* 삭제 완료 응답 */
+  ctx.response.status = 204
 }
 
 // 하나만 불러오게 수정해주세요

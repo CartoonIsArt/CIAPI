@@ -81,6 +81,7 @@ export const Post = async (ctx, next) => {
 /* 해당 유저 DELETE */
 export const Delete =  async (ctx, next) => {
   const conn: Connection = getConnection()
+  const leaver: Users = await conn.getRepository(Users).findOne(0)
 
   try {
     /* DB에서 유저 불러오기 */
@@ -280,7 +281,7 @@ export const GetComments = async (ctx, next) => {
 
 export const Patch = async (ctx, next) => {
   const conn: Connection = getConnection()
-  const data: Users = ctx.data
+  const data: Users = await conn.manager.findOne(Users, ctx.params.id, { relations: ["profileImage"] })
 
   try{
     const user = await conn
