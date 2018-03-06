@@ -20,10 +20,10 @@ export const Get = async (ctx, next) => {
     .leftJoinAndSelect("document.likedBy", "likedBy")
     .where("document.id = :id", { id: ctx.params.id })
     .getOne()
-    ctx.body = document
 
-    /* Get 완료 응답 */
-    ctx.response.status = 201
+    /* GET 완료 응답 */
+    ctx.body = document
+    ctx.response.status = 200
   }
   catch (e) {
     ctx.throw(400, e)
@@ -32,32 +32,22 @@ export const Get = async (ctx, next) => {
 
 /* 게시글 POST */
 export const Post = async (ctx, next) => {
-  /* POST 인자를 data변수로 받음 */
+  const conn: Connection = getConnection()
+  const document: Documents = new Documents()
   const data = ctx.request.body
 
-  /* DB 커넥션풀에서 커넥션을 하나 가져옴. */
-  const conn: Connection = getConnection()
-
-  /* document 테이블 ORM 인스턴스 생성 */
-  const document: Documents = new Documents()
-
   document.text = data.text
-
-  /* DB에 저장 - 비동기 */
   try {
     document.author = ctx.session.user
     await conn.manager.save(document)
   }
   catch (e) {
-    /* text나 session.user가 없으면 400에러 리턴 */
     ctx.throw(400, e)
   }
 
-  /* id와 created_at을 포함하여 body에 응답 */
+  /* POST 완료 응답 */
   ctx.body = document
-
-  /* Post 완료 응답 */
-  ctx.response.status = 201
+  ctx.response.status = 200
 }
 
 /* 해당 게시글 DELETE */
@@ -79,7 +69,7 @@ export const Delete =  async (ctx, next) => {
     ctx.throw(400, e)
   }
 
-  /* 삭제 완료 응답 */
+  /* DELETE 완료 응답 */
   ctx.response.status = 204
 }
 
@@ -92,9 +82,9 @@ export const GetLikes = async (ctx, next) => {
   .createQueryBuilder("document")
   .leftJoinAndSelect("document.likedBy", "likedBy")
   .getMany()
-  ctx.body = likedBy
 
-  /* Get 완료 응답 */
+  /* GET 완료 응답 */
+  ctx.body = likedBy
   ctx.response.status = 200
 }
 
@@ -103,21 +93,21 @@ export const PostLikes = async (ctx, next) => {
   const conn: Connection = getConnection()
 
   try {
+    /* DB에서 게시글 불러오기 */
     const document: Documents = await conn
     .getRepository(Documents)
     .findOne(ctx.params.id, { relations: ["likedBy"] })
 
+    /* 게시글과 유저의 좋아요 relation 설정 */
     document.likedBy.push(ctx.session.user)
     await conn.manager.save(document)
-
-    ctx.response.status = 201
   }
   catch (e) {
     ctx.throw(400, e)
   }
 
-  /* Post 완료 응답 */
-  ctx.response.status = 201
+  /* POST 완료 응답 */
+  ctx.response.status = 200
 }
 
 /* 해당 게시글 좋아요 DELETE */
@@ -136,11 +126,11 @@ export const DeleteLikes = async (ctx, next) => {
     .relation(Documents, "likedBy")
     .of(document)
     .remove(ctx.session.user)
-
-    /* 해제 완료 응답 */
-    ctx.response.status = 204
   }
   catch (e) {
     ctx.throw(400, e)
   }
+
+  /* DELETE 완료 응답 */
+  ctx.response.status = 204
 }
