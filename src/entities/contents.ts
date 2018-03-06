@@ -8,9 +8,6 @@ import {
     OneToMany,
     PrimaryGeneratedColumn,
   } from "typeorm"
-import Comments from "./comments"
-import Documents from "./documents"
-import Users from "./users"
 
 export default abstract class Contents {
   /* 컨텐츠 pk */
