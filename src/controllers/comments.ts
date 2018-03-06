@@ -84,6 +84,9 @@ export const Delete =  async (ctx, next) => {
     .getRepository(Comments)
     .findOne(ctx.params.id)
 
+    /* 댓글 작성자 임시 저장 */
+    const author: Users = comment.author
+
     /* 댓글 좋아요 불러오기 */
     const likedBy: Users[] = await conn
     .getRepository(Users)
@@ -116,7 +119,7 @@ export const Delete =  async (ctx, next) => {
     .execute()
 
     /* 댓글 작성자의 댓글 수 1 감소 */
-    --(comment.author.numberOfComments)
+    --(author.numberOfComments)
 
     /* DELETE 성공 응답 */
     ctx.response.status = 204
