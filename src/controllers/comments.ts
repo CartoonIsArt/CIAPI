@@ -3,6 +3,9 @@ import Comments from "../entities/comments"
 import Documents from "../entities/documents"
 import Users from "../entities/users"
 
+// 댓글과 좋아요 추가/삭제 시, 유저의 댓글과 좋아요 수가 변해야 합니다.
+// 추후에 수정할 계획입니다.
+
 // 대댓글의 대댓글을 삭제하려면 recursive하게 구현해야 합니다.
 // 개발 시간 상 구현하지 않겠습니다.
 // 근시일 내에 구현해주세요.
