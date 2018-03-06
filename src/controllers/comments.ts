@@ -22,6 +22,7 @@ export const Get = async (ctx, next) => {
       "rootComment",
     ]})
 
+  /* GET 성공 응답 */
   ctx.body = comment
   ctx.response.status = 200
 }
@@ -58,11 +59,16 @@ export const Post = async (ctx, next) => {
     comment.text = data.text
 
     await conn.manager.save(comment)
-    ctx.body = comment
+
+    /* 댓글 작성자의 댓글 수 1 증가 */
+    ++(comment.author.numberOfComments)
   }
   catch (e){
     ctx.throw(400, e)
   }
+
+  /* POST 성공 응답 */
+  ctx.body = comment
   ctx.response.status = 200
 }
 
@@ -107,7 +113,10 @@ export const Delete =  async (ctx, next) => {
     .where("id = :id", { id: comment.id })
     .execute()
 
-    /* 삭제 완료 응답 */
+    /* 댓글 작성자의 댓글 수 1 감소 */
+    --(comment.author.numberOfComments)
+
+    /* DELETE 성공 응답 */
     ctx.response.status = 204
   }
   catch (e) {
@@ -120,12 +129,13 @@ export const GetLikes = async (ctx, next) => {
   const conn: Connection = getConnection()
   const comment: Comments = await conn
   .getRepository(Comments)
-  .createQueryBuilder("comment")
-  .where("comment.id = :id", { id: ctx.params.id })
-  .leftJoinAndSelect("comment.likedBy", "likedBy")
-  .leftJoinAndSelect("likedBy.profileImage", "profileImage")
-  .getOne()
+  .findOne(ctx.params.id, {
+    relations: [
+      "likedBy",
+      "likedBy.profileImage",
+    ]})
 
+  /* GET 성공 응답 */
   ctx.body = comment
   ctx.response.status = 200
 }
@@ -135,16 +145,23 @@ export const PostLikes = async (ctx, next) => {
   const conn: Connection = getConnection()
 
   try {
+    /* DB에서 댓글 불러오기 */
     const comment: Comments = await conn
     .getRepository(Comments)
     .findOne(ctx.params.id, { relations: ["likedBy"] })
 
+    /* 세션의 유저와 좋아요 relation 형성 */
     comment.likedBy.push(ctx.session.user)
     await conn.manager.save(comment)
+
+    /* 세션 유저의 댓글 좋아요 수 1 증가 */
+    ++(ctx.session.user.numberOfCommentLikes)
   }
   catch (e) {
     ctx.throw(400, e)
   }
+
+  /* POST 성공 응답 */
   ctx.response.status = 200
 }
 
@@ -158,14 +175,17 @@ export const DeleteLikes = async (ctx, next) => {
     .getRepository(Comments)
     .findOne(ctx.params.id)
 
-    /* 댓글과 유저의 좋아요 relation 해제 */
+    /* 세션의 유저와 좋아요 relation 해제 */
     await conn
     .createQueryBuilder()
     .relation(Comments, "likedBy")
     .of(comment)
     .remove(ctx.session.user)
 
-    /* 해제 완료 응답 */
+    /* 세션 유저의 댓글 좋아요 수 1 감소 */
+    --(comment.author.numberOfCommentLikes)
+
+    /* DELETE 성공 응답 */
     ctx.response.status = 204
   }
   catch (e) {

@@ -4,7 +4,9 @@ import Comments from "../entities/comments"
 import Documents from "../entities/documents"
 import Users from "../entities/users"
 
-/* 해당 댓글 GET */
+// 유저의 게시글 수, 게시글 좋아요 개수 카운트
+
+/* 해당 게시글 GET */
 export const Get = async (ctx, next) => {
   const conn: Connection = getConnection()
   try{
