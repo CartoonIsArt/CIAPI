@@ -42,7 +42,9 @@ export const Post = async (ctx, next) => {
     if (typeof(data.commentId) === "number") {
       const parent: Comments = await conn
       .getRepository(Comments)
-      .findOne(data.commentId)
+      .findOne(data.commentId, {
+        relations: ["rootDocument"],
+      })
 
       comment.rootComment = parent
       documentId = parent.rootDocument.id
@@ -51,7 +53,8 @@ export const Post = async (ctx, next) => {
     /* 게시글과 relation 설정 */
     const document: Documents = await conn
     .getRepository(Documents)
-    .findOneOrFail(documentId ? documentId : Number(data.documentId))
+    .findOneOrFail(documentId
+      ? documentId : Number(data.documentId))
 
     comment.rootDocument = document
 
