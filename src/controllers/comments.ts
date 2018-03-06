@@ -32,6 +32,7 @@ export const Post = async (ctx, next) => {
   const conn: Connection = getConnection()
   const comment: Comments = new Comments()
   const data = ctx.request.body
+  let documentId: number = null
 
   try{
     /* 세션의 유저와 relation 설정 */
@@ -44,12 +45,13 @@ export const Post = async (ctx, next) => {
       .findOne(data.commentId)
 
       comment.rootComment = parent
+      documentId = parent.rootDocument.id
     }
 
     /* 게시글과 relation 설정 */
     const document: Documents = await conn
     .getRepository(Documents)
-    .findOneOrFail(Number(data.documentId))
+    .findOneOrFail(documentId ? documentId : Number(data.documentId))
 
     comment.rootDocument = document
 
