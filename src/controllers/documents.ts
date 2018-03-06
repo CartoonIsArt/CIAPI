@@ -13,16 +13,16 @@ export const Get = async (ctx, next) => {
   try{
     const document = await conn
     .getRepository(Documents)
-    .createQueryBuilder("document")
-    .leftJoinAndSelect("document.author", "author")
-    .leftJoinAndSelect("author.profileImage", "profileImage")
-    .leftJoinAndSelect("document.comments", "comments")
-    .leftJoinAndSelect("document.likedBy", "likedBy")
-    .where("document.id = :id", { id: ctx.params.id })
-    .getOne()
-    ctx.body = document
+    .findOne(ctx.params.id,{
+      relations: [
+        "author",
+        "author.profileImage",
+        "comments",
+        "likedBy"
+    ]})
 
     /* Get 완료 응답 */
+    ctx.body = document
     ctx.response.status = 201
   }
   catch (e) {
@@ -46,6 +46,7 @@ export const Post = async (ctx, next) => {
   /* DB에 저장 - 비동기 */
   try {
     document.author = ctx.session.user
+    ++(document.author.numberOfDocuments)
     await conn.manager.save(document)
   }
   catch (e) {
