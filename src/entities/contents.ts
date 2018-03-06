@@ -12,8 +12,7 @@ import Comments from "./comments"
 import Documents from "./documents"
 import Users from "./users"
 
-@Entity()
-export default class Contents {
+export default abstract class Contents {
   /* 컨텐츠 pk */
   @PrimaryGeneratedColumn()
   public id: number

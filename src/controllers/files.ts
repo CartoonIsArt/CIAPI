@@ -1,6 +1,5 @@
 import { Connection, getConnection, getManager } from "typeorm"
 import Files from "../entities/files"
-import Users from "../entities/users"
 
 /* 모든 파일 GET */
 export const Get = async (ctx, next) => {

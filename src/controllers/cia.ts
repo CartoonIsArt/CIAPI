@@ -7,8 +7,8 @@ export const Post = async (ctx, next) => {
   const cia: Cia = new Cia()
   const data = ctx.request.body
 
-  cia.name = data.name
-  cia.value = data.value
+  cia.title = data.name
+  cia.text = data.value
 
   try{
     await conn.manager.save(cia)
@@ -36,7 +36,7 @@ export const Patch = async (ctx, next) => {
     .getOne()
 
     /* 입력받은 값으로 수정 */
-    cia.value = data.value
+    cia.text = data.value
 
     await conn.manager.save(cia)
     ctx.body = cia

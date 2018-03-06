@@ -5,6 +5,7 @@ import Documents from "../entities/documents"
 import Users from "../entities/users"
 
 // 유저의 게시글 수, 게시글 좋아요 개수 카운트
+// 게시글 GET을 relation을 이용하여 불러오기
 
 /* 해당 게시글 GET */
 export const Get = async (ctx, next) => {
