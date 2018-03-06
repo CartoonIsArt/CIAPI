@@ -9,23 +9,12 @@ import {
   PrimaryGeneratedColumn,
 } from "typeorm"
 import Comments from "./comments"
+import Contents from "./contents"
 import Users from "./users"
 
 /* 게시글 테이블 스키마 */
 @Entity()
-export default class Documents {
-  /* 게시글 pk */
-  @PrimaryGeneratedColumn()
-  public id: number
-
-  /* 내용 */
-  @Column("text")
-  public text: string
-
-  /* 작성 시간 */
-  @CreateDateColumn()
-  public createdAt: Date
-
+export default class Documents extends Contents {
   /* 작성자 */
   @ManyToOne( type => Users, author => author.documents, {
     nullable : false,
