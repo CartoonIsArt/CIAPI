@@ -13,14 +13,13 @@ export const Get = async (ctx, next) => {
     ctx.body = await conn
     .getRepository(Users)
     .findOne(ctx.params.id, ({ relations: ["profileImage"] }))
-    ctx.response.status = 201
   }
   catch (e) {
     ctx.throw(400, e)
   }
 
   /* GET 완료 응답 */
-  ctx.response.status = 201
+  ctx.response.status = 200
 }
 
 /* 유저 POST */
@@ -255,7 +254,7 @@ export const GetDocuments = async (ctx, next) => {
     ctx.throw(400, e)
   }
 
-  /* Get 완료 응답 */
+  /* GET 완료 응답 */
   ctx.response.status = 200
 }
 
@@ -275,7 +274,7 @@ export const GetComments = async (ctx, next) => {
     ctx.throw(400, e)
   }
 
-  /* Get 완료 응답 */
+  /* GET 완료 응답 */
   ctx.response.status = 200
 }
 

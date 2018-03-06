@@ -7,6 +7,7 @@ export const Get = async (ctx, next) => {
 
   /* GET 완료 응답 */
   ctx.body = await entityManager.find(Files)
+  ctx.response.status = 200
 }
 
 /* 파일 POST */
@@ -27,7 +28,7 @@ export const Post = async (ctx, next) => {
 
   /* POST 완료 응답 */
   ctx.body = file
-  ctx.response.status = 201
+  ctx.response.status = 200
 }
 
 /* 해당 파일 DELETE */
