@@ -5,8 +5,15 @@ import Files from "../entities/files"
 export const Get = async (ctx, next) => {
   const entityManager = getManager()
 
+  try{
+    const files: Files[] = await entityManager.find(Files)
+    ctx.body = files
+  }
+  catch (e){
+    ctx.throw(400, e)
+  }
+
   /* GET 완료 응답 */
-  ctx.body = await entityManager.find(Files)
   ctx.response.status = 200
 }
 

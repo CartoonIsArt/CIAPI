@@ -33,7 +33,7 @@ export const Login = async (ctx, next) => {
   }
 
   /* 로그인 완료 응답 */
-  ctx.response.status = 201
+  ctx.response.status = 200
 }
 
 /* 로그아웃 */
