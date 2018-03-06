@@ -41,7 +41,8 @@ export const Post = async (ctx, next) => {
   document.text = data.text
   try {
     document.author = ctx.session.user
-    await conn.manager.save(document)
+    ++(document.author.numberOfDocuments)
+    await conn.manager.save(document.author)
   }
   catch (e) {
     ctx.throw(400, e)
@@ -65,6 +66,7 @@ export const Delete =  async (ctx, next) => {
 
     /* 탈퇴한 유저 relation */
     document.author = leaver
+    --(document.author.numberOfDocuments)
     await conn.manager.save(document)
   }
   catch (e) {
@@ -102,6 +104,7 @@ export const PostLikes = async (ctx, next) => {
 
     /* 게시글과 유저의 좋아요 relation 설정 */
     document.likedBy.push(ctx.session.user)
+
     await conn.manager.save(document)
   }
   catch (e) {
