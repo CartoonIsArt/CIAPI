@@ -3,10 +3,17 @@ import Comments from "../entities/comments"
 import Documents from "../entities/documents"
 import Users from "../entities/users"
 
+// 댓글과 좋아요 추가/삭제 시, 유저의 댓글과 좋아요 수가 변해야 합니다.
+// 추후에 수정할 계획입니다.
+
+// 대댓글의 대댓글을 삭제하려면 recursive하게 구현해야 합니다.
+// 개발 시간 상 구현하지 않겠습니다.
+// 근시일 내에 구현해주세요.
+
 /* 해당 댓글 GET */
 export const Get = async (ctx, next) => {
   const conn: Connection = getConnection()
-  const comment = await conn
+  const comment: Comments = await conn
   .getRepository(Comments)
   .findOne(ctx.params.id, {
     relations: [
@@ -18,6 +25,7 @@ export const Get = async (ctx, next) => {
       "rootComment",
     ]})
 
+  /* GET 성공 응답 */
   ctx.body = comment
   ctx.response.status = 200
 }
@@ -27,6 +35,7 @@ export const Post = async (ctx, next) => {
   const conn: Connection = getConnection()
   const comment: Comments = new Comments()
   const data = ctx.request.body
+  let documentId: number = null
 
   try{
     /* 세션의 유저와 relation 설정 */
@@ -36,15 +45,19 @@ export const Post = async (ctx, next) => {
     if (typeof(data.commentId) === "number") {
       const parent: Comments = await conn
       .getRepository(Comments)
-      .findOne(data.commentId)
+      .findOne(data.commentId, {
+        relations: ["rootDocument"],
+      })
 
       comment.rootComment = parent
+      documentId = parent.rootDocument.id
     }
 
     /* 게시글과 relation 설정 */
     const document: Documents = await conn
     .getRepository(Documents)
-    .findOneOrFail(Number(data.documentId))
+    .findOneOrFail(documentId
+      ? documentId : Number(data.documentId))
 
     comment.rootDocument = document
 
@@ -54,11 +67,16 @@ export const Post = async (ctx, next) => {
     comment.text = data.text
 
     await conn.manager.save(comment)
-    ctx.body = comment
+
+    /* 댓글 작성자의 댓글 수 1 증가 */
+    ++(comment.author.numberOfComments)
   }
   catch (e){
     ctx.throw(400, e)
   }
+
+  /* POST 성공 응답 */
+  ctx.body = comment
   ctx.response.status = 200
 }
 
@@ -71,6 +89,9 @@ export const Delete =  async (ctx, next) => {
     const comment: Comments = await conn
     .getRepository(Comments)
     .findOne(ctx.params.id)
+
+    /* 댓글 작성자 임시 저장 */
+    const author: Users = comment.author
 
     /* 댓글 좋아요 불러오기 */
     const likedBy: Users[] = await conn
@@ -103,7 +124,10 @@ export const Delete =  async (ctx, next) => {
     .where("id = :id", { id: comment.id })
     .execute()
 
-    /* 삭제 완료 응답 */
+    /* 댓글 작성자의 댓글 수 1 감소 */
+    --(author.numberOfComments)
+
+    /* DELETE 성공 응답 */
     ctx.response.status = 204
   }
   catch (e) {
@@ -116,12 +140,13 @@ export const GetLikes = async (ctx, next) => {
   const conn: Connection = getConnection()
   const comment: Comments = await conn
   .getRepository(Comments)
-  .createQueryBuilder("comment")
-  .where("comment.id = :id", { id: ctx.params.id })
-  .leftJoinAndSelect("comment.likedBy", "likedBy")
-  .leftJoinAndSelect("likedBy.profileImage", "profileImage")
-  .getOne()
+  .findOne(ctx.params.id, {
+    relations: [
+      "likedBy",
+      "likedBy.profileImage",
+    ]})
 
+  /* GET 성공 응답 */
   ctx.body = comment
   ctx.response.status = 200
 }
@@ -131,16 +156,23 @@ export const PostLikes = async (ctx, next) => {
   const conn: Connection = getConnection()
 
   try {
+    /* DB에서 댓글 불러오기 */
     const comment: Comments = await conn
     .getRepository(Comments)
     .findOne(ctx.params.id, { relations: ["likedBy"] })
 
+    /* 세션의 유저와 좋아요 relation 형성 */
     comment.likedBy.push(ctx.session.user)
     await conn.manager.save(comment)
+
+    /* 세션 유저의 댓글 좋아요 수 1 증가 */
+    ++(ctx.session.user.numberOfCommentLikes)
   }
   catch (e) {
     ctx.throw(400, e)
   }
+
+  /* POST 성공 응답 */
   ctx.response.status = 200
 }
 
@@ -154,14 +186,17 @@ export const DeleteLikes = async (ctx, next) => {
     .getRepository(Comments)
     .findOne(ctx.params.id)
 
-    /* 댓글과 유저의 좋아요 relation 해제 */
+    /* 세션의 유저와 좋아요 relation 해제 */
     await conn
     .createQueryBuilder()
     .relation(Comments, "likedBy")
     .of(comment)
     .remove(ctx.session.user)
 
-    /* 해제 완료 응답 */
+    /* 세션 유저의 댓글 좋아요 수 1 감소 */
+    --(comment.author.numberOfCommentLikes)
+
+    /* DELETE 성공 응답 */
     ctx.response.status = 204
   }
   catch (e) {

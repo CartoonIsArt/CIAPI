@@ -22,10 +22,6 @@ export default class Users {
 
   // 회원가입 시 입력받는 정보
 
-  /* 프로필 이미지 */
-  @OneToOne(type => Files, files => files.user)
-  public profileImage: Files
-
   /* 이름 */
   @Column("text")
   public fullname:	string
@@ -75,6 +71,10 @@ export default class Users {
     default: "",
   })
   public favoriteCharacter:	string
+
+  /* 프로필 이미지 */
+  @OneToOne(type => Files, files => files.user)
+  public profileImage: Files
 
   // 회원가입 시 입력받는 정보 끝
 

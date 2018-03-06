@@ -8,22 +8,14 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from "typeorm"
+import Contents from "./contents"
 import Documents from "./documents"
 import Users from "./users"
 
 /* 댓글 테이블 스키마 */
 @Entity()
-export default class Comments {
-  /* 댓글 pk */
-  @PrimaryGeneratedColumn()
-  public id: number
-
-  @CreateDateColumn()
-  public createdAt: Date
-
-  @Column("text")
-  public text: string
-
+export default class Comments extends Contents {
+  /* 작성자 */
   @ManyToOne(type => Users, author => author.comments, {
     nullable : false,
   })

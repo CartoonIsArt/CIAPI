@@ -4,7 +4,10 @@ import Comments from "../entities/comments"
 import Documents from "../entities/documents"
 import Users from "../entities/users"
 
-/* 해당 댓글 GET */
+// 유저의 게시글 수, 게시글 좋아요 개수 카운트
+// 게시글 GET을 relation을 이용하여 불러오기
+
+/* 해당 게시글 GET */
 export const Get = async (ctx, next) => {
   const conn: Connection = getConnection()
   try{
@@ -63,11 +66,11 @@ export const Delete =  async (ctx, next) => {
 
   try {
     /* DB에서 게시글 불러오기 */
-    const document = await conn
+    const document: Documents = await conn
     .getRepository(Documents)
     .findOne(ctx.params.id)
 
-    const user = await conn
+    const user: Users = await conn
     .getRepository(Users)
     .findOne(document.author)
 
@@ -108,10 +111,11 @@ export const Delete =  async (ctx, next) => {
   }
 }
 
+// 하나만 불러오게 수정해주세요
 /* 해당 게시글 좋아요 GET */
 export const GetLikes = async (ctx, next) => {
   const conn: Connection = getConnection()
-  const likedBy = await conn
+  const likedBy: Documents[] = await conn
   .getRepository(Documents)
   .createQueryBuilder("document")
   .leftJoinAndSelect("document.likedBy", "likedBy")
@@ -150,7 +154,7 @@ export const DeleteLikes = async (ctx, next) => {
 
   try {
     /* DB에서 게시글 불러오기 */
-    const document = await conn
+    const document: Documents = await conn
     .getRepository(Documents)
     .findOne(ctx.params.id)
 
