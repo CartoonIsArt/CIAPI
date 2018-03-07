@@ -1,5 +1,4 @@
-import { Connection, getConnection, getConnectionManager, getManager, Double } from "typeorm"
-import { ConnectionManager } from "typeorm/connection/ConnectionManager"
+import { Connection, getConnection } from "typeorm"
 import Comments from "../entities/comments"
 import Documents from "../entities/documents"
 import Users from "../entities/users"
