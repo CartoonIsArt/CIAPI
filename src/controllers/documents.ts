@@ -117,7 +117,7 @@ export const PostLikes = async (ctx, next) => {
       relations: ["likedBy"],
     })
 
-    /* 세션의 유저 불러오기 */
+    /* 세션 유저 불러오기 */
     const user: Users = ctx.session.user
 
     /* 게시글과 유저의 좋아요 relation 설정 */
@@ -147,7 +147,7 @@ export const DeleteLikes = async (ctx, next) => {
     .getRepository(Documents)
     .findOne(ctx.params.id)
 
-    /* 세션의 유저 불러오기 */
+    /* 세션 유저 불러오기 */
     const user: Users = ctx.session.user
 
     /* 게시글과 유저의 좋아요 relation 해제 */
