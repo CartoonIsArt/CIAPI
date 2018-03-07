@@ -1,11 +1,8 @@
-import { Connection, getConnection, getConnectionManager, getManager } from "typeorm"
+import { Connection, getConnection, getConnectionManager, getManager, Double } from "typeorm"
 import { ConnectionManager } from "typeorm/connection/ConnectionManager"
 import Comments from "../entities/comments"
 import Documents from "../entities/documents"
 import Users from "../entities/users"
-
-// 유저의 게시글 수, 게시글 좋아요 개수 카운트
-// 게시글 GET을 relation을 이용하여 불러오기
 
 /* 해당 게시글 GET */
 export const Get = async (ctx, next) => {
@@ -41,7 +38,11 @@ export const Post = async (ctx, next) => {
   document.text = data.text
   try {
     document.author = ctx.session.user
+
+    /* 게시글 작성자의 게시글 수 1 증가 */
     ++(document.author.numberOfDocuments)
+
+    await conn.manager.save(document)
     await conn.manager.save(document.author)
   }
   catch (e) {
@@ -62,12 +63,17 @@ export const Delete =  async (ctx, next) => {
     /* DB에서 게시글 불러오기 */
     const document: Documents = await conn
     .getRepository(Documents)
-    .findOne(ctx.params.id)
+    .findOne(ctx.params.id,{ 
+      relations: ["author"]
+    })
+
+    /* 게시글 작성자의 게시글 수 1 감소 */
+    --(document.author.numberOfDocuments)
 
     /* 탈퇴한 유저 relation */
     document.author = leaver
-    --(document.author.numberOfDocuments)
     await conn.manager.save(document)
+    await conn.manager.save(document.author)
   }
   catch (e) {
     ctx.throw(400, e)
@@ -102,9 +108,16 @@ export const PostLikes = async (ctx, next) => {
       relations: ["likedBy"],
     })
 
-    /* 게시글과 유저의 좋아요 relation 설정 */
-    document.likedBy.push(ctx.session.user)
+    /* 세션의 유저 불러오기 */
+    const user: Users = ctx.session.user
 
+    /* 게시글과 유저의 좋아요 relation 설정 */
+    document.likedBy.push(user)
+
+    /* 게시글에 좋아요한 수 1 증가 */
+    ++(user.numberOfCommentLikes)
+
+    await conn.manager.save(user)
     await conn.manager.save(document)
   }
   catch (e) {
@@ -125,12 +138,19 @@ export const DeleteLikes = async (ctx, next) => {
     .getRepository(Documents)
     .findOne(ctx.params.id)
 
+    /* 세션의 유저 불러오기 */
+    const user: Users = ctx.session.user
+
     /* 게시글과 유저의 좋아요 relation 해제 */
     await conn
     .createQueryBuilder()
     .relation(Documents, "likedBy")
     .of(document)
-    .remove(ctx.session.user)
+    .remove(user)
+
+    /* 게시글에 좋아요한 수 1 감소 */
+    --(user.numberOfCommentLikes)
+    await conn.manager.save(user)
   }
   catch (e) {
     ctx.throw(400, e)
