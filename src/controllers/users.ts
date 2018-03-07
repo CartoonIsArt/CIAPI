@@ -35,7 +35,10 @@ export const GetAll = async (ctx, next) => {
     .getRepository(Users)
     .find({ relations: ["profileImage"] })
 
-    ctx.body = users
+    /* 0번 탈퇴한 유저 제외 */
+    const onlyUsers: Users[] = users.slice(1, users.length)
+
+    ctx.body = onlyUsers
   }
   catch (e){
     ctx.throw(400, e)
@@ -143,7 +146,11 @@ export const Delete =  async (ctx, next) => {
 
     /* 댓글 relation 해제 및 삭제 */
     for (const commentSet of comments.entries()) {
-      const comment: Comments = commentSet["1"]
+      const comment: Comments = await conn
+      .getRepository(Comments)
+      .findOne(commentSet["1"].id, {
+        relations: ["author"],
+      })
 
       /* 댓글 작성자의 댓글 수 1 감소 */
       --(comment.author.numberOfComments)
@@ -156,7 +163,11 @@ export const Delete =  async (ctx, next) => {
 
     /* 게시글 relation 해제 및 삭제 */
     for (const documentSet of documents.entries()) {
-      const document: Documents = documentSet["1"]
+      const document: Documents = await conn
+      .getRepository(Documents)
+      .findOne(documentSet["1"].id, {
+        relations: ["author"],
+      })
 
       /* 게시글 작성자의 게시글 수 1 감소 */
       --(document.author.numberOfDocuments)
@@ -203,7 +214,6 @@ export const Delete =  async (ctx, next) => {
     .execute()
 
     /* DB에서 유저 삭제 */
-    // user = leaver
     await conn
     .createQueryBuilder()
     .delete()
