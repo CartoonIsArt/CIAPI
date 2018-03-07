@@ -28,7 +28,7 @@ export const Post = async (ctx, next) => {
   file.savedPath = "YO"
 
   try{
-    const user: Users = ctx.params.user
+    const user: Users = ctx.session.user
     file.user = user
     await conn.manager.save(file)
   }
