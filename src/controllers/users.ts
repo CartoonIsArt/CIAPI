@@ -113,6 +113,10 @@ export const Delete =  async (ctx, next) => {
   const conn: Connection = getConnection()
   const leaver: Users = await conn.getRepository(Users).findOne(0)
 
+  if (ctx.params.id === 0){
+    ctx.throw(400, "삭제할 수 없는 유저입니다.")
+  }
+
   try {
     /* DB에서 유저 불러오기 */
     const user: Users = await conn
