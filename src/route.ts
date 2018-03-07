@@ -39,8 +39,10 @@ router.post("/login", Sessions.Login)
 router.post("/logout", Sessions.Logout)
 
 router.get("/users/:id", Users.Get)
+router.get("/users", Users.GetAll)
 router.post("/users", Users.Post)
 router.delete("/users/:id", Users.Delete)
+router.patch("/users/:id", Users.Patch)
 
 router.get("/users/:id/documents", Users.GetDocuments)
 router.get("/users/:id/comments", Users.GetComments)
@@ -63,7 +65,6 @@ router.delete("/documents/:id/likeIt", Documents.DeleteLikes)
 
 router.get("/files", Files.Get)
 router.post("/files", Files.Post)
-router.patch("/users/:id", Users.Patch)
 router.delete("/files/:id", Files.Delete)
 
 router.post("/cia", Cia.Post)

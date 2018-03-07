@@ -72,7 +72,6 @@ export const Delete =  async (ctx, next) => {
     /* 탈퇴한 유저 relation */
     document.author = leaver
     await conn.manager.save(document)
-    await conn.manager.save(document.author)
   }
   catch (e) {
     ctx.throw(400, e)
