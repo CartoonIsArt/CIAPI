@@ -119,12 +119,11 @@ export const PostLikes = async (ctx, next) => {
     /* 세션 유저 불러오기 */
     const user: Users = ctx.session.user
 
+    /* 게시글에 좋아요한 수 1 증가 */
+    ++(user.numberOfDocumentLikes)
+
     /* 게시글과 유저의 좋아요 relation 설정 */
     document.likedBy.push(user)
-
-    /* 게시글에 좋아요한 수 1 증가 */
-    ++(user.numberOfCommentLikes)
-
     await conn.manager.save(user)
     await conn.manager.save(document)
   }
@@ -157,7 +156,7 @@ export const DeleteLikes = async (ctx, next) => {
     .remove(user)
 
     /* 게시글에 좋아요한 수 1 감소 */
-    --(user.numberOfCommentLikes)
+    --(user.numberOfDocumentLikes)
     await conn.manager.save(user)
   }
   catch (e) {
