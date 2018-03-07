@@ -62,8 +62,8 @@ export const Delete =  async (ctx, next) => {
     /* DB에서 게시글 불러오기 */
     const document: Documents = await conn
     .getRepository(Documents)
-    .findOne(ctx.params.id,{ 
-      relations: ["author"]
+    .findOne(ctx.params.id, {
+      relations: ["author"],
     })
 
     /* 게시글 작성자의 게시글 수 1 감소 */

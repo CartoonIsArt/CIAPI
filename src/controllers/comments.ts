@@ -99,7 +99,7 @@ export const Delete =  async (ctx, next) => {
     /* 댓글 작성자의 댓글 수 1 감소 */
     --(comment.author.numberOfComments)
     await conn.manager.save(comment.author)
-    
+
     /* 탈퇴한 유저 relation */
     comment.author = leaver
     await conn.manager.save(comment)
