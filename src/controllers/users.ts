@@ -1,4 +1,4 @@
-import { Connection, getConnection, getManager } from "typeorm"
+import { Connection, getConnection } from "typeorm"
 import Comments from "../entities/comments"
 import Documents from "../entities/documents"
 import Files from "../entities/files"
@@ -187,7 +187,7 @@ export const Delete =  async (ctx, next) => {
   ctx.response.status = 204
 }
 
-/* 유저가 쓴 게시글 불러오기 */
+/* 해당 유저 게시글 GET */
 export const GetDocuments = async (ctx, next) => {
   const conn: Connection = getConnection()
 
@@ -209,17 +209,19 @@ export const GetDocuments = async (ctx, next) => {
   ctx.response.status = 200
 }
 
-/* 유저가 쓴 댓글 불러오기 */
+/* 해당 유저 댓글 GET */
 export const GetComments = async (ctx, next) => {
   const conn: Connection = getConnection()
 
   try{
-    ctx.body = await conn
+    const comments: Comments[] = await conn
     .getRepository(Comments)
     .createQueryBuilder("comment")
     .leftJoinAndSelect("comment.author", "author")
     .where("author.id = :id", { id: ctx.params.id })
     .getMany()
+
+    ctx.body = comments
   }
   catch (e) {
     ctx.throw(400, e)
@@ -229,16 +231,17 @@ export const GetComments = async (ctx, next) => {
   ctx.response.status = 200
 }
 
+/* 해당 유저 PATCH */
 export const Patch = async (ctx, next) => {
   const conn: Connection = getConnection()
   const data: Users = await conn
-  .manager
-  .findOne(Users, ctx.params.id, {
+  .getRepository(Users)
+  .findOne(ctx.params.id, {
     relations: ["profileImage"],
   })
 
   try{
-    const user = await conn
+    const user: Users = await conn
     .getRepository(Users)
     .findOne(ctx.params.id)
 

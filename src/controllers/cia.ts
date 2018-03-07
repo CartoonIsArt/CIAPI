@@ -1,4 +1,4 @@
-import { Connection, getConnection, getManager } from "typeorm"
+import { Connection, getConnection } from "typeorm"
 import Cia from "../entities/cia"
 
 /* 동아리 정보 POST */

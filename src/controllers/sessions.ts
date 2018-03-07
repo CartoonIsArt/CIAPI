@@ -1,5 +1,5 @@
 import * as crypto from "crypto"
-import { Connection, getConnection, getManager } from "typeorm"
+import { Connection, getConnection } from "typeorm"
 import Auth from "../auth/auth"
 import Sessions from "../entities/sessions"
 import Users from "../entities/users"
@@ -40,8 +40,7 @@ export const Login = async (ctx, next) => {
 export const Logout =  async (ctx, next) => {
   try {
     const conn: Connection = getConnection()
-    // await conn.manager.delete(Sessions, ctx.session.id)
-    await conn.manager.delete(Sessions, ctx.session)
+    await conn.manager.delete(Sessions, ctx.session.id)
 
     ctx.status = 204
     ctx.redirect("/")

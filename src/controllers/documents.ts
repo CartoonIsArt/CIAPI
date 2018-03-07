@@ -82,17 +82,20 @@ export const Delete =  async (ctx, next) => {
   ctx.response.status = 204
 }
 
-// 하나만 불러오게 수정해주세요
 /* 해당 게시글 좋아요 GET */
 export const GetLikes = async (ctx, next) => {
   const conn: Connection = getConnection()
 
   try{
-    const likedBy: Documents[] = await conn
+    const document: Documents = await conn
     .getRepository(Documents)
-    .find({ relations: ["likedBy"] })
+    .findOne(ctx.params.id, {
+      relations: [
+        "likedBy",
+        "likedBy.profileImage",
+      ]})
 
-    ctx.body = likedBy
+    ctx.body = document.likedBy
   }
   catch (e){
     ctx.throw(400, e)
