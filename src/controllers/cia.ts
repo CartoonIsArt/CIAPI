@@ -32,7 +32,7 @@ export const Patch = async (ctx, next) => {
     const cia: Cia = await conn
     .getRepository(Cia)
     .createQueryBuilder("cia")
-    .where("cia.name = :name", { name : ctx.params.name })
+    .where("cia.title = :title", { title: ctx.params.title })
     .getOne()
 
     /* 입력받은 값으로 수정 */
