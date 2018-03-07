@@ -78,11 +78,15 @@ export const GetLikes = async (ctx, next) => {
   const conn: Connection = getConnection()
 
   try{
-    const likedBy: Documents[] = await conn
+    const document: Documents = await conn
     .getRepository(Documents)
-    .find({ relations: ["likedBy"] })
+    .findOne(ctx.params.id, {
+      relations: [
+        "likedBy",
+        "likedBy.profileImage",
+      ]})
 
-    ctx.body = likedBy
+    ctx.body = document.likedBy
   }
   catch (e){
     ctx.throw(400, e)

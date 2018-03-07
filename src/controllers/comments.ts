@@ -120,7 +120,7 @@ export const GetLikes = async (ctx, next) => {
         "likedBy.profileImage",
       ]})
 
-    ctx.body = comment
+    ctx.body = comment.likedBy
   }
   catch (e){
     ctx.throw(400, e)
