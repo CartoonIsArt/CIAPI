@@ -1,5 +1,6 @@
 import { Connection, getConnection, getManager } from "typeorm"
 import Files from "../entities/files"
+import Users from "../entities/users"
 
 /* 모든 파일 GET */
 export const Get = async (ctx, next) => {
@@ -27,6 +28,8 @@ export const Post = async (ctx, next) => {
   file.savedPath = "YO"
 
   try{
+    const user: Users = ctx.params.user
+    file.user = user
     await conn.manager.save(file)
   }
   catch (e){
