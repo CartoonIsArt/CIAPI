@@ -5,4 +5,3 @@ node_modules
 yarn-error.log
 db
 .idea
-db/test.sql
