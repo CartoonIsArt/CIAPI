@@ -26,6 +26,28 @@ export const Get = async (ctx, next) => {
   ctx.response.status = 200
 }
 
+/* 모든 유저 GET */
+export const GetAll = async (ctx, next) => {
+  const conn: Connection = getConnection()
+
+  try{
+    const users: Users[] = await conn
+    .getRepository(Users)
+    .find({ relations: ["profileImage"] })
+
+    /* 0번 탈퇴한 유저 제외 */
+    const onlyUsers: Users[] = users.slice(1, users.length)
+
+    ctx.body = onlyUsers
+  }
+  catch (e){
+    ctx.throw(400, e)
+  }
+
+  /* GET 완료 응답 */
+  ctx.response.status = 200
+}
+
 /* 유저 POST */
 export const Post = async (ctx, next) => {
   const conn: Connection = getConnection()
@@ -124,28 +146,38 @@ export const Delete =  async (ctx, next) => {
 
     /* 댓글 relation 해제 및 삭제 */
     for (const commentSet of comments.entries()) {
-      const comment: Comments = commentSet["1"]
-      // 댓글 DELETE 참고
+      const comment: Comments = await conn
+      .getRepository(Comments)
+      .findOne(commentSet["1"].id, {
+        relations: ["author"],
+      })
+
+      /* 댓글 작성자의 댓글 수 1 감소 */
+      --(comment.author.numberOfComments)
+      await conn.manager.save(comment.author)
+
+      /* 탈퇴한 유저 relation */
+      comment.author = leaver
+      await conn.manager.save(comment)
     }
 
     /* 게시글 relation 해제 및 삭제 */
     for (const documentSet of documents.entries()) {
-      const document: Documents = documentSet["1"]
-      // 게시글 DELETE 참고
+      const document: Documents = await conn
+      .getRepository(Documents)
+      .findOne(documentSet["1"].id, {
+        relations: ["author"],
+      })
+
+      /* 게시글 작성자의 게시글 수 1 감소 */
+      --(document.author.numberOfDocuments)
+
+      /* 탈퇴한 유저 relation */
+      document.author = leaver
+      await conn.manager.save(document)
     }
 
-    /* 좋아요한 댓글 relation 해제 */
-    for (const likedCommentSet of likedComments.entries()) {
-      const likedComment: Comments = likedCommentSet["1"]
-
-      await conn
-      .createQueryBuilder()
-      .relation(Comments, "likedBy")
-      .of(likedComment)
-      .remove(user)
-    }
-
-    /* 좋아요한 게시글 relation 해제 */
+    /* 좋아요한 컨텐츠 relation 해제 */
     for (const likedDocumentSet of likedDocuments.entries()) {
       const likedDocument: Documents = likedDocumentSet["1"]
 
@@ -153,6 +185,16 @@ export const Delete =  async (ctx, next) => {
       .createQueryBuilder()
       .relation(Documents, "likedBy")
       .of(likedDocument)
+      .remove(user)
+    }
+
+    for (const likedCommentSet of likedComments.entries()) {
+      const likedComment: Comments = likedCommentSet["1"]
+
+      await conn
+      .createQueryBuilder()
+      .relation(Comments, "likedBy")
+      .of(likedComment)
       .remove(user)
     }
 

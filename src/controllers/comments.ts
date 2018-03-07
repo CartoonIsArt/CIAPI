@@ -66,11 +66,11 @@ export const Post = async (ctx, next) => {
     comment.createdAt = data.createdAt
     comment.text = data.text
 
-    await conn.manager.save(comment)
-
     /* 댓글 작성자의 댓글 수 1 증가 */
     ++(comment.author.numberOfComments)
     await conn.manager.save(comment.author)
+
+    await conn.manager.save(comment)
   }
   catch (e){
     ctx.throw(400, e)
@@ -147,13 +147,16 @@ export const PostLikes = async (ctx, next) => {
       relations: ["likedBy"],
     })
 
+    /* 세션 유저 불러오기 */
+    const user: Users = ctx.session.user
+
     /* 세션의 유저와 좋아요 relation 설정 */
-    comment.likedBy.push(ctx.session.user)
+    comment.likedBy.push(user)
     await conn.manager.save(comment)
 
     /* 세션 유저의 댓글 좋아요 수 1 증가 */
-    ++(ctx.session.user.numberOfCommentLikes)
-    await conn.manager.save(ctx.session.user)
+    ++(user.numberOfCommentLikes)
+    await conn.manager.save(user)
   }
   catch (e) {
     ctx.throw(400, e)
@@ -173,16 +176,19 @@ export const DeleteLikes = async (ctx, next) => {
     .getRepository(Comments)
     .findOne(ctx.params.id)
 
+    /* 세션 유저 불러오기 */
+    const user: Users = ctx.session.user
+
     /* 세션의 유저와 좋아요 relation 해제 */
     await conn
     .createQueryBuilder()
     .relation(Comments, "likedBy")
     .of(comment)
-    .remove(ctx.session.user)
+    .remove(user)
 
     /* 세션 유저의 댓글 좋아요 수 1 감소 */
-    --(comment.author.numberOfCommentLikes)
-    await conn.manager.save(comment.author)
+    --(user.numberOfCommentLikes)
+    await conn.manager.save(user)
   }
   catch (e) {
     ctx.throw(400, e)
