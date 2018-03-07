@@ -150,12 +150,12 @@ export const PostLikes = async (ctx, next) => {
     /* 세션 유저 불러오기 */
     const user: Users = ctx.session.user
 
+    /* 세션 유저의 댓글 좋아요 수 1 증가 */
+    ++(user.numberOfCommentLikes)
+
     /* 세션의 유저와 좋아요 relation 설정 */
     comment.likedBy.push(user)
     await conn.manager.save(comment)
-
-    /* 세션 유저의 댓글 좋아요 수 1 증가 */
-    ++(user.numberOfCommentLikes)
     await conn.manager.save(user)
   }
   catch (e) {
