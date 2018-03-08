@@ -5,27 +5,6 @@ import Files from "../entities/files"
 import Sessions from "../entities/sessions"
 import Users from "../entities/users"
 
-/* 해당 유저 GET */
-export const Get = async (ctx, next) => {
-  const conn: Connection = getConnection()
-
-  try{
-    const user: Users = await conn
-    .getRepository(Users)
-    .findOne(ctx.params.id, {
-      relations: ["profileImage"],
-    })
-
-    ctx.body = user
-  }
-  catch (e) {
-    ctx.throw(400, e)
-  }
-
-  /* GET 완료 응답 */
-  ctx.response.status = 200
-}
-
 /* 모든 유저 GET */
 export const GetAll = async (ctx, next) => {
   const conn: Connection = getConnection()
@@ -41,6 +20,27 @@ export const GetAll = async (ctx, next) => {
     ctx.body = onlyUsers
   }
   catch (e){
+    ctx.throw(400, e)
+  }
+
+  /* GET 완료 응답 */
+  ctx.response.status = 200
+}
+
+/* 해당 유저 GET */
+export const GetOne = async (ctx, next) => {
+  const conn: Connection = getConnection()
+
+  try{
+    const user: Users = await conn
+    .getRepository(Users)
+    .findOne(ctx.params.id, {
+      relations: ["profileImage"],
+    })
+
+    ctx.body = user
+  }
+  catch (e) {
     ctx.throw(400, e)
   }
 
@@ -109,7 +109,7 @@ export const Post = async (ctx, next) => {
 }
 
 /* 해당 유저 DELETE */
-export const Delete =  async (ctx, next) => {
+export const DeleteOne =  async (ctx, next) => {
   const conn: Connection = getConnection()
   const leaver: Users = await conn.getRepository(Users).findOne(0)
 
@@ -278,7 +278,7 @@ export const GetComments = async (ctx, next) => {
 }
 
 /* 해당 유저 PATCH */
-export const Patch = async (ctx, next) => {
+export const PatchOne = async (ctx, next) => {
   const conn: Connection = getConnection()
   const data: Users = await conn
   .getRepository(Users)

@@ -23,7 +23,7 @@ export const Post = async (ctx, next) => {
 }
 
 /* 해당 동아리 정보 PATCH */
-export const Patch = async (ctx, next) => {
+export const PatchOne = async (ctx, next) => {
   const conn: Connection = getConnection()
   const data = ctx.request.body
 
