@@ -280,16 +280,14 @@ export const GetComments = async (ctx, next) => {
 /* 해당 유저 PATCH */
 export const PatchOne = async (ctx, next) => {
   const conn: Connection = getConnection()
-  const data: Users = await conn
-  .getRepository(Users)
-  .findOne(ctx.params.id, {
-    relations: ["profileImage"],
-  })
+  const data = ctx.request.body
 
   try{
     const user: Users = await conn
     .getRepository(Users)
-    .findOne(ctx.params.id)
+    .findOne(ctx.params.id, {
+      relations: ["profileImage"],
+    })
 
     if (data.fullname !== undefined) {
       user.fullname = data.fullname
@@ -327,5 +325,38 @@ export const PatchOne = async (ctx, next) => {
   }
 
   /* PATCH 완료 응답 */
-  ctx.request.status = 200
+  ctx.response.status = 200
+}
+
+/* 모든 유저의 활동인구 여부 수정 */
+/* 모든 유저 PATCH */
+export const PatchAll = async (ctx, next) => {
+  const conn: Connection = getConnection()
+  const data = ctx.request.body
+
+  try{
+    const allUsers: Users[] = await conn
+    .getRepository(Users)
+    .createQueryBuilder()
+    .getMany()
+
+    const onlyUsers: Users[] = allUsers.slice(1, allUsers.length)
+
+    for (const userSet of onlyUsers.entries()) {
+      const user: Users = userSet["1"]
+
+      if (typeof data.isActivated === "number"){
+        user.isActivated = Boolean(data.isActivated)
+      }
+      await conn.manager.save(user)
+    }
+
+    ctx.body = onlyUsers
+  }
+  catch (e){
+    ctx.throw(400, e)
+  }
+
+  /* PATCH 완료 응답 */
+  ctx.response.status = 200
 }
