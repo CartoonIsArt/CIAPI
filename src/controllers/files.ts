@@ -1,13 +1,36 @@
-import { Connection, getConnection, getManager } from "typeorm"
+import { Connection, getConnection } from "typeorm"
 import Files from "../entities/files"
 import Users from "../entities/users"
 
-/* 모든 파일 GET */
-export const Get = async (ctx, next) => {
-  const entityManager = getManager()
+/* 해당 파일 GET */
+export const GetOne = async (ctx, next) => {
+  const conn: Connection = getConnection()
 
   try{
-    const files: Files[] = await entityManager.find(Files)
+    const files: Files = await conn
+    .getRepository(Files)
+    .findOne(ctx.params.id)
+
+    ctx.body = files
+  }
+  catch (e){
+    ctx.throw(400, e)
+  }
+
+  /* GET 완료 응답 */
+  ctx.response.status = 200
+}
+
+/* 모든 파일 GET */
+export const GetAll = async (ctx, next) => {
+  const conn: Connection = getConnection()
+
+  try{
+    const files: Files[] = await conn
+    .getRepository(Files)
+    .createQueryBuilder()
+    .getMany()
+
     ctx.body = files
   }
   catch (e){
@@ -28,7 +51,7 @@ export const Post = async (ctx, next) => {
   file.savedPath = "YO"
 
   try{
-    const user: Users = ctx.params.user
+    const user: Users = ctx.session.user
     file.user = user
     await conn.manager.save(file)
   }
@@ -42,7 +65,7 @@ export const Post = async (ctx, next) => {
 }
 
 /* 해당 파일 DELETE */
-export const Delete =  async (ctx, next) => {
+export const DeleteOne =  async (ctx, next) => {
   const conn: Connection = getConnection()
 
   try {

@@ -4,7 +4,7 @@ import Documents from "../entities/documents"
 import Users from "../entities/users"
 
 /* 해당 게시글 GET */
-export const Get = async (ctx, next) => {
+export const GetOne = async (ctx, next) => {
   const conn: Connection = getConnection()
 
   try{
@@ -54,7 +54,7 @@ export const Post = async (ctx, next) => {
 }
 
 /* 해당 게시글 DELETE */
-export const Delete =  async (ctx, next) => {
+export const DeleteOne =  async (ctx, next) => {
   const conn: Connection = getConnection()
   const leaver: Users = await conn.getRepository(Users).findOne(0)
 
@@ -136,7 +136,7 @@ export const PostLikes = async (ctx, next) => {
 }
 
 /* 해당 게시글 좋아요 DELETE */
-export const DeleteLikes = async (ctx, next) => {
+export const CancelLikes = async (ctx, next) => {
   const conn: Connection = getConnection()
 
   try {

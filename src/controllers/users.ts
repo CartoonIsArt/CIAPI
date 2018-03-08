@@ -6,7 +6,7 @@ import Sessions from "../entities/sessions"
 import Users from "../entities/users"
 
 /* 해당 유저 GET */
-export const Get = async (ctx, next) => {
+export const GetOne = async (ctx, next) => {
   const conn: Connection = getConnection()
 
   try{
@@ -109,9 +109,13 @@ export const Post = async (ctx, next) => {
 }
 
 /* 해당 유저 DELETE */
-export const Delete =  async (ctx, next) => {
+export const DeleteOne =  async (ctx, next) => {
   const conn: Connection = getConnection()
   const leaver: Users = await conn.getRepository(Users).findOne(0)
+
+  if (ctx.params.id === 0){
+    ctx.throw(400, "삭제할 수 없는 유저입니다.")
+  }
 
   try {
     /* DB에서 유저 불러오기 */
@@ -274,7 +278,7 @@ export const GetComments = async (ctx, next) => {
 }
 
 /* 해당 유저 PATCH */
-export const Patch = async (ctx, next) => {
+export const PatchOne = async (ctx, next) => {
   const conn: Connection = getConnection()
   const data: Users = await conn
   .getRepository(Users)

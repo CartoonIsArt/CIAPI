@@ -18,7 +18,7 @@ export default class Files{
   @Column("text")
   public file: string
 
-  /* 파일의 저장 이름 */
+  /* 파일 저장 경로 */
   @Column("text")
   public savedPath: string
 

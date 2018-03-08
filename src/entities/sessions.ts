@@ -16,12 +16,9 @@ export default class Sessions {
   public id: number
 
   /* 세션에 해당하는 유저 */
-  @OneToOne(
-    type => Users,
-    {
-      nullable: false,
-    },
-  )
+  @OneToOne(type => Users, {
+    nullable: false,
+  })
   @JoinColumn()
   public user: Users
 
