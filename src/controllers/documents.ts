@@ -35,8 +35,12 @@ export const GetTimeline = async (ctx, next) => {
   try{
     const timeline = await conn
     .getRepository(Documents)
-    .createQueryBuilder()
-    .getMany()
+    .find({
+      relations: [
+        "author",
+        "comments",
+        "likedBy",
+      ]})
 
     ctx.body = timeline
   }
