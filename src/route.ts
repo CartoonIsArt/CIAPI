@@ -42,6 +42,7 @@ router.get("/users", Users.GetAll)
 router.post("/users", Users.Post)
 router.delete("/users/:id", Users.DeleteOne)
 router.patch("/users/:id", Users.PatchOne)
+router.patch("/users", Users.PatchAll)
 router.get("/users/:id/documents", Users.GetDocuments)
 router.get("/users/:id/comments", Users.GetComments)
 

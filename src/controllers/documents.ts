@@ -40,9 +40,7 @@ export const Post = async (ctx, next) => {
 
     /* 게시글 작성자의 게시글 수 1 증가 */
     ++(document.author.numberOfDocuments)
-
     await conn.manager.save(document)
-    await conn.manager.save(document.author)
   }
   catch (e) {
     ctx.throw(400, e)
