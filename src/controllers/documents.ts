@@ -28,6 +28,26 @@ export const GetOne = async (ctx, next) => {
   ctx.response.status = 200
 }
 
+/* 타임라인 읽기 - 모든 게시글 GET */
+export const GetTimeline = async (ctx, next) => {
+  const conn: Connection = getConnection()
+
+  try{
+    const timeline = await conn
+    .getRepository(Documents)
+    .createQueryBuilder()
+    .getMany()
+
+    ctx.body = timeline
+  }
+  catch (e){
+    ctx.throw(400, e)
+  }
+
+  /* GET 완료 응답 */
+  ctx.response.status = 200
+}
+
 /* 게시글 POST */
 export const Post = async (ctx, next) => {
   const conn: Connection = getConnection()
