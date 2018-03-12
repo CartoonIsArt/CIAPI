@@ -31,12 +31,15 @@ export const PatchOne = async (ctx, next) => {
     /* name 문서를 찾아서 가져옴 */
     const cia: Cia = await conn
     .getRepository(Cia)
-    .createQueryBuilder("cia")
-    .where("cia.title = :title", { title: ctx.params.title })
-    .getOne()
+    .findOne(ctx.params.id)
 
     /* 입력받은 값으로 수정 */
-    cia.text = data.text
+    if (data.title !== undefined){
+      cia.title = data.title
+    }
+    if (data.text !== undefined){
+      cia.text = data.text
+    }
 
     await conn.manager.save(cia)
     ctx.body = cia
