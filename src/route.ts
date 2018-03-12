@@ -66,5 +66,7 @@ router.get("/files", Files.GetAll)
 router.post("/files", Files.Post)
 router.delete("/files/:id", Files.DeleteOne)
 
+router.get("/cia/:title", Cia.GetOne)
+router.get("/cia", Cia.GetAll)
 router.post("/cia", Cia.Post)
-router.patch("/cia/:id", Cia.PatchOne)
+router.patch("/cia/:title", Cia.PatchOne)
