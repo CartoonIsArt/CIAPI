@@ -47,6 +47,7 @@ router.get("/users/:id/documents", Users.GetDocuments)
 router.get("/users/:id/comments", Users.GetComments)
 
 router.get("/documents/:id", Documents.GetOne)
+router.get("/documents", Documents.GetTimeline)
 router.post("/documents", Documents.Post)
 router.delete("/documents/:id", Documents.DeleteOne)
 router.get("/documents/:id/likeIt", Documents.GetLikes)
