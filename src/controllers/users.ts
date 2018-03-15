@@ -73,6 +73,9 @@ export const Post = async (ctx, next) => {
     await conn.manager.save(user)
   }
   catch (e) {
+    if (e.message === "SQLITE_CONSTRAINT: UNIQUE constraint failed: users.username"){
+      ctx.throw(403, "중복 아이디입니다.")
+    }
     ctx.throw(400, e)
   }
 
