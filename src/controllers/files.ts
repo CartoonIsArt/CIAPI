@@ -55,6 +55,10 @@ export const Post = async (ctx, next) => {
     await conn.manager.save(file)
   }
   catch (e){
+    if (e.message ===
+    "Cannot read property 'user' of undefined"){
+      ctx.throw(401, e)
+    }
     ctx.throw(400, e)
   }
 
