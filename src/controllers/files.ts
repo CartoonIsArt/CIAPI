@@ -28,8 +28,7 @@ export const GetAll = async (ctx, next) => {
   try{
     const files: Files[] = await conn
     .getRepository(Files)
-    .createQueryBuilder()
-    .getMany()
+    .find()
 
     ctx.body = files
   }
