@@ -37,6 +37,7 @@ export const router = new Router()
 router.post("/login", Sessions.Login)
 router.post("/logout", Sessions.Logout)
 
+router.get("/users/session", Users.GetSession)
 router.get("/users/:id", Users.GetOne)
 router.get("/users", Users.GetAll)
 router.post("/users", Users.Post)

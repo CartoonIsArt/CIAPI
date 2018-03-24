@@ -20,7 +20,7 @@ export const Login = async (ctx, next) => {
 
     session.user = await Auth(username, password)
     session.data = hash.update(Math.random().toString()).digest("hex")
-    session.ipv4 = ipToInt(String(ctx.ip))
+    session.ipv4 = ipToInt(ctx.ip)
 
     ctx.session = await conn.manager.save(session)
     // ctx.set("CIASESSIONID", session.data)

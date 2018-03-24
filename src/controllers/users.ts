@@ -5,6 +5,21 @@ import Files from "../entities/files"
 import Sessions from "../entities/sessions"
 import Users from "../entities/users"
 
+/* 세션 유저 GET */
+export const GetSession = async (ctx, next) => {
+  const conn: Connection = getConnection()
+
+  try{
+    ctx.body = ctx.sessions.user
+  }
+  catch (e){
+    ctx.throw(401, e)
+  }
+
+  /* GET 완료 응답 */
+  ctx.response.status = 200
+}
+
 /* 해당 유저 GET */
 export const GetOne = async (ctx, next) => {
   const conn: Connection = getConnection()
@@ -319,6 +334,9 @@ export const PatchOne = async (ctx, next) => {
     }
     if (data.favoriteCharacter !== undefined) {
       user.favoriteCharacter = data.favoriteCharacter
+    }
+    if (data.isActivated !== undefined) {
+      user.isActivated = !user.isActivated
     }
 
     await conn.manager.save(user)
