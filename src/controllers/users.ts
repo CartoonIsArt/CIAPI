@@ -81,18 +81,16 @@ export const Post = async (ctx, next) => {
   }
 
   /* 프로필 이미지 DB 저장 및 relation 설정 */
-  if (data.profileImage !== undefined) {
-    try {
-      profile.file = data.profileImage
-      profile.savedPath = "MIKI"
-      profile.user = user
+  try {
+    profile.file = data.profileImage
+    profile.savedPath = "MIKI"
+    profile.user = user
 
-      await conn.manager.save(profile)
-    }
-    catch (e) {
-      await conn.manager.remove(profile)
-      ctx.throw(400, e)
-    }
+    await conn.manager.save(profile)
+  }
+  catch (e) {
+    await conn.manager.remove(profile)
+    ctx.throw(400, e)
   }
 
   try{
