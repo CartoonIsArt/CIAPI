@@ -73,6 +73,10 @@ export const Post = async (ctx, next) => {
     await conn.manager.save(comment)
   }
   catch (e){
+    if (e.message ===
+    "Cannot read property 'user' of undefined"){
+      ctx.throw(401, e)
+    }
     ctx.throw(400, e)
   }
 
@@ -159,6 +163,10 @@ export const PostLikes = async (ctx, next) => {
     await conn.manager.save(user)
   }
   catch (e) {
+    if (e.message ===
+    "Cannot read property 'user' of undefined"){
+      ctx.throw(401, e)
+    }
     ctx.throw(400, e)
   }
 
@@ -191,6 +199,10 @@ export const CalcelLikes = async (ctx, next) => {
     await conn.manager.save(user)
   }
   catch (e) {
+    if (e.message ===
+    "Cannot read property 'user' of undefined"){
+      ctx.throw(401, e)
+    }
     ctx.throw(400, e)
   }
 

@@ -28,8 +28,7 @@ export const GetAll = async (ctx, next) => {
   try{
     const files: Files[] = await conn
     .getRepository(Files)
-    .createQueryBuilder()
-    .getMany()
+    .find()
 
     ctx.body = files
   }
@@ -56,6 +55,10 @@ export const Post = async (ctx, next) => {
     await conn.manager.save(file)
   }
   catch (e){
+    if (e.message ===
+    "Cannot read property 'user' of undefined"){
+      ctx.throw(401, e)
+    }
     ctx.throw(400, e)
   }
 

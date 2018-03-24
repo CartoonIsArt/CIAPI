@@ -73,8 +73,9 @@ export const Post = async (ctx, next) => {
     await conn.manager.save(user)
   }
   catch (e) {
-    if (e.message === "SQLITE_CONSTRAINT: UNIQUE constraint failed: users.username"){
-      ctx.throw(403, "중복 아이디입니다.")
+    if (e.message ===
+      "SQLITE_CONSTRAINT: UNIQUE constraint failed: users.username"){
+      ctx.throw(409, e)
     }
     ctx.throw(400, e)
   }
@@ -116,6 +117,8 @@ export const DeleteOne =  async (ctx, next) => {
   const conn: Connection = getConnection()
   const leaver: Users = await conn.getRepository(Users).findOne(0)
 
+  /* 코드 상에는 문제가 없어 텍스트를 throw함
+    변경할 수 있으면 좋습니다. */
   if (ctx.params.id === 0){
     ctx.throw(400, "삭제할 수 없는 유저입니다.")
   }
