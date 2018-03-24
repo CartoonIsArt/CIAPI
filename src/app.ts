@@ -9,6 +9,7 @@ import { router } from "./route"
 import session from "./session"
 
 const app = new Koa()
+app.proxy = true
 
 /* DB와 연결을 맺고 Connection Pool을 생성함 */
 // tslint:disable-next-line
