@@ -10,7 +10,7 @@ export const GetSession = async (ctx, next) => {
   const conn: Connection = getConnection()
 
   try{
-    ctx.body = ctx.sessions.user
+    ctx.body = ctx.session.user
   }
   catch (e){
     ctx.throw(401, e)
