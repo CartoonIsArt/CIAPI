@@ -367,7 +367,7 @@ export const PatchAll = async (ctx, next) => {
     for (const userSet of onlyUsers.entries()) {
       const user: Users = userSet["1"]
 
-      if (typeof data.isActivated === "number"){
+      if (data.isActivated !== undefined) {
         user.isActivated = !user.isActivated
       }
       await conn.manager.save(user)
