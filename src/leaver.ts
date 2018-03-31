@@ -18,7 +18,7 @@ const leaver = async (ctx, next) => {
 
       /* 탈퇴 회원 이미지 생성 */
       profile.id = 0
-      profile.file = "leaved.jpg"
+      profile.filename = "leaved.jpg"
       profile.savedPath = "MIKI"
 
       await conn.manager.save(profile)
