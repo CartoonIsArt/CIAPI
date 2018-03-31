@@ -10,7 +10,13 @@ export const GetSession = async (ctx, next) => {
   const conn: Connection = getConnection()
 
   try{
-    ctx.body = ctx.session.user
+    const user: Users = await conn
+    .getRepository(Users)
+    .findOne(ctx.session.user.id, {
+      relations: ["profileImage"],
+    })
+
+    ctx.body = user
   }
   catch (e){
     ctx.throw(401, e)
