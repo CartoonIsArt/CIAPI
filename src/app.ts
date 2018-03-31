@@ -5,6 +5,7 @@ import * as Serve from "koa-static"
 import * as path from "path"
 import "reflect-metadata"
 import { Connection, createConnection } from "typeorm"
+// import leaver from "./leaver"
 import { router } from "./route"
 import session from "./session"
 
@@ -25,6 +26,9 @@ app.use(bodyParser())
 if (process.env.NODE_ENV !== "production") {
   app.use(Serve(path.join("test-restful", "dist")))
 }
+
+/* DB에 탈퇴 회원 추가 */
+// app.use(leaver)
 
 /* 세션 */
 app.use(session)

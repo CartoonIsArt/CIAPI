@@ -63,7 +63,7 @@ export const Post = async (ctx, next) => {
     document.author = ctx.session.user
 
     /* 게시글 작성자의 게시글 수 1 증가 */
-    ++(document.author.numberOfDocuments)
+    ++(document.author.nDocuments)
     await conn.manager.save(document)
   }
   catch (e) {
@@ -93,7 +93,7 @@ export const DeleteOne =  async (ctx, next) => {
     })
 
     /* 게시글 작성자의 게시글 수 1 감소 */
-    --(document.author.numberOfDocuments)
+    --(document.author.nDocuments)
 
     /* 탈퇴한 유저 relation */
     document.author = leaver
@@ -146,7 +146,7 @@ export const PostLikes = async (ctx, next) => {
     const user: Users = ctx.session.user
 
     /* 게시글에 좋아요한 수 1 증가 */
-    ++(user.numberOfDocumentLikes)
+    ++(user.nDocumentLikes)
 
     /* 게시글과 유저의 좋아요 relation 설정 */
     document.likedBy.push(user)
@@ -186,7 +186,7 @@ export const CancelLikes = async (ctx, next) => {
     .remove(user)
 
     /* 게시글에 좋아요한 수 1 감소 */
-    --(user.numberOfDocumentLikes)
+    --(user.nDocumentLikes)
     await conn.manager.save(user)
   }
   catch (e) {

@@ -67,7 +67,7 @@ export const Post = async (ctx, next) => {
     comment.text = data.text
 
     /* 댓글 작성자의 댓글 수 1 증가 */
-    ++(comment.author.numberOfComments)
+    ++(comment.author.nComments)
     await conn.manager.save(comment.author)
 
     await conn.manager.save(comment)
@@ -101,7 +101,7 @@ export const DeleteOne =  async (ctx, next) => {
       ]})
 
     /* 댓글 작성자의 댓글 수 1 감소 */
-    --(comment.author.numberOfComments)
+    --(comment.author.nComments)
     await conn.manager.save(comment.author)
 
     /* 탈퇴한 유저 relation */
@@ -155,7 +155,7 @@ export const PostLikes = async (ctx, next) => {
     const user: Users = ctx.session.user
 
     /* 세션 유저의 댓글 좋아요 수 1 증가 */
-    ++(user.numberOfCommentLikes)
+    ++(user.nCommentLikes)
 
     /* 세션의 유저와 좋아요 relation 설정 */
     comment.likedBy.push(user)
@@ -195,7 +195,7 @@ export const CalcelLikes = async (ctx, next) => {
     .remove(user)
 
     /* 세션 유저의 댓글 좋아요 수 1 감소 */
-    --(user.numberOfCommentLikes)
+    --(user.nCommentLikes)
     await conn.manager.save(user)
   }
   catch (e) {
