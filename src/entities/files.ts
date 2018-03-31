@@ -16,7 +16,7 @@ export default class Files{
 
   /* 파일의 원래 이름 */
   @Column("text")
-  public file: string
+  public filename: string
 
   /* 파일 저장 경로 */
   @Column("text")

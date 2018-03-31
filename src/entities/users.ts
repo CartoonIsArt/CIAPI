@@ -22,7 +22,7 @@ export default class Users {
 
   /* 이름 */
   @Column("text")
-  public fullname:	string
+  public fullname: string
 
   /* 기수 */
   @Column("int")
@@ -78,7 +78,7 @@ export default class Users {
 
   /* 회원 가입 일자 */
   @CreateDateColumn()
-  public dataJoined: Date
+  public joinDate: Date
 
   /* 가입허용 여부 */
   @Column("boolean", {
@@ -114,31 +114,31 @@ export default class Users {
   @Column("boolean", {
     default: false,
   })
-  public isRegularMember:	boolean
+  public isRegular:	boolean
 
   /* 게시글 수 */
   @Column("int", {
     default: 0,
   })
-  public numberOfDocuments:	number
+  public nDocuments:	number
 
   /* 댓글 수 */
   @Column("int", {
     default: 0,
   })
-  public numberOfComments:	number
+  public nComments:	number
 
   /* 좋아요한 게시글 수 */
   @Column("int", {
     default: 0,
   })
-  public numberOfDocumentLikes:	number
+  public nDocumentLikes:	number
 
   /* 좋아요한 댓글 수 */
   @Column("int" , {
     default: 0,
   })
-  public numberOfCommentLikes: number
+  public nCommentLikes: number
 
   /* 작성 글 리스트 */
   @OneToMany(type => Documents, document => document.author)

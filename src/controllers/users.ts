@@ -10,7 +10,13 @@ export const GetSession = async (ctx, next) => {
   const conn: Connection = getConnection()
 
   try{
-    ctx.body = ctx.session.user
+    const user: Users = await conn
+    .getRepository(Users)
+    .findOne(ctx.session.user.id, {
+      relations: ["profileImage"],
+    })
+
+    ctx.body = user
   }
   catch (e){
     ctx.throw(401, e)
@@ -97,7 +103,7 @@ export const Post = async (ctx, next) => {
 
   /* 프로필 이미지 DB 저장 및 relation 설정 */
   try {
-    profile.file = data.profileImage
+    profile.filename = data.profileImage
     profile.savedPath = "MIKI"
     profile.user = user
 
@@ -176,7 +182,7 @@ export const DeleteOne =  async (ctx, next) => {
       })
 
       /* 댓글 작성자의 댓글 수 1 감소 */
-      --(comment.author.numberOfComments)
+      --(comment.author.nComments)
       await conn.manager.save(comment.author)
 
       /* 탈퇴한 유저 relation */
@@ -193,7 +199,7 @@ export const DeleteOne =  async (ctx, next) => {
       })
 
       /* 게시글 작성자의 게시글 수 1 감소 */
-      --(document.author.numberOfDocuments)
+      --(document.author.nDocuments)
 
       /* 탈퇴한 유저 relation */
       document.author = leaver
@@ -367,8 +373,8 @@ export const PatchAll = async (ctx, next) => {
     for (const userSet of onlyUsers.entries()) {
       const user: Users = userSet["1"]
 
-      if (typeof data.isActivated === "number"){
-        user.isActivated = Boolean(data.isActivated)
+      if (data.isActivated !== undefined) {
+        user.isActivated = !user.isActivated
       }
       await conn.manager.save(user)
     }

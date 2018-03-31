@@ -46,7 +46,7 @@ export const Post = async (ctx, next) => {
   const file: Files = new Files()
   const data = ctx.request.body
 
-  file.file = data.file
+  file.filename = data.file
   file.savedPath = "YO"
 
   try{
