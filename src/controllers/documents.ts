@@ -15,6 +15,9 @@ export const GetOne = async (ctx, next) => {
         "author",
         "author.profileImage",
         "comments",
+        "comments.author",
+        "comments.author.profileImage",
+        "comments.replies",
         "likedBy",
       ]})
 
@@ -38,7 +41,11 @@ export const GetTimeline = async (ctx, next) => {
     .find({
       relations: [
         "author",
+        "author.profileImage",
         "comments",
+        "comments.author",
+        "comments.author.profileImage",
+        "comments.replies",
         "likedBy",
       ]})
 
