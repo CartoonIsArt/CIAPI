@@ -68,8 +68,8 @@ export const Post = async (ctx, next) => {
 
     /* 댓글 작성자의 댓글 수 1 증가 */
     ++(comment.author.nComments)
-    await conn.manager.save(comment.author)
 
+    await conn.manager.save(comment.author)
     await conn.manager.save(comment)
   }
   catch (e){

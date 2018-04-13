@@ -69,12 +69,14 @@ export const Post = async (ctx, next) => {
   const document: Documents = new Documents()
   const data = ctx.request.body
 
-  document.text = data.text
   try {
     document.author = ctx.session.user
+    document.text = data.text
 
     /* 게시글 작성자의 게시글 수 1 증가 */
     ++(document.author.nDocuments)
+
+    await conn.manager.save(document.author)
     await conn.manager.save(document)
   }
   catch (e) {
