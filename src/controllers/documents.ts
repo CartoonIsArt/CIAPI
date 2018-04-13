@@ -8,7 +8,7 @@ export const GetOne = async (ctx, next) => {
   const conn: Connection = getConnection()
 
   try{
-    const document = await conn
+    const document: Documents = await conn
     .getRepository(Documents)
     .findOne(ctx.params.id, {
       relations: [
@@ -36,7 +36,7 @@ export const GetTimeline = async (ctx, next) => {
   const conn: Connection = getConnection()
 
   try{
-    const timeline = await conn
+    const timeline: Documents[] = await conn
     .getRepository(Documents)
     .find({
       relations: [
@@ -48,6 +48,10 @@ export const GetTimeline = async (ctx, next) => {
         "comments.replies",
         "likedBy",
       ]})
+
+    timeline.sort((lhs: Documents, rhs: Documents) => {
+      return rhs.createdAt.getTime() - lhs.createdAt.getTime()
+    })
 
     ctx.body = timeline
   }
