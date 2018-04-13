@@ -94,6 +94,7 @@ export const Post = async (ctx, next) => {
     await conn.manager.save(user)
   }
   catch (e) {
+    await conn.manager.remove(user)
     if (e.message ===
       "SQLITE_CONSTRAINT: UNIQUE constraint failed: users.username"){
       ctx.throw(409, e)
