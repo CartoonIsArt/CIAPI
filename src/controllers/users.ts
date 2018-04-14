@@ -76,7 +76,6 @@ export const Post = async (ctx, next) => {
   const profile: Files = new Files()
   const data = ctx.request.body
 
-  /* 데이터 저장 */
   user.fullname = data.fullname
   user.nTh = data.nTh
   user.dateOfBirth = data.dateOfBirth
@@ -91,10 +90,10 @@ export const Post = async (ctx, next) => {
   user.favoriteCharacter = data.favoriteCharacter
 
   try {
+    /* 데이터 저장 */
     await conn.manager.save(user)
   }
   catch (e) {
-    await conn.manager.remove(user)
     if (e.message ===
       "SQLITE_CONSTRAINT: UNIQUE constraint failed: users.username"){
       ctx.throw(409, e)
@@ -111,6 +110,7 @@ export const Post = async (ctx, next) => {
     await conn.manager.save(profile)
   }
   catch (e) {
+    await conn.manager.remove(user)
     await conn.manager.remove(profile)
     ctx.throw(400, e)
   }
