@@ -154,13 +154,16 @@ export const PostLikes = async (ctx, next) => {
     /* 세션 유저 불러오기 */
     const user: Users = ctx.session.user
 
-    /* 세션 유저의 댓글 좋아요 수 1 증가 */
-    ++(user.nCommentLikes)
-
     /* 세션의 유저와 좋아요 relation 설정 */
     comment.likedBy.push(user)
+    ++(user.nCommentLikes)
+
     await conn.manager.save(comment)
     await conn.manager.save(user)
+
+    /* POST 성공 응답 */
+    ctx.body = comment.likedBy
+    ctx.response.status = 200
   }
   catch (e) {
     if (e.message ===
@@ -169,9 +172,6 @@ export const PostLikes = async (ctx, next) => {
     }
     ctx.throw(400, e)
   }
-
-  /* POST 성공 응답 */
-  ctx.response.status = 200
 }
 
 /* 해당 댓글 좋아요 DELETE */
