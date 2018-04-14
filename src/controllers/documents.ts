@@ -120,6 +120,36 @@ export const DeleteOne =  async (ctx, next) => {
   ctx.response.status = 204
 }
 
+/* 해당 게시글 PATCH */
+export const PatchOne = async (ctx, next) => {
+  const conn: Connection = getConnection()
+  const data = ctx.request.body
+
+  try{
+    const document: Documents = await conn
+    .getRepository(Documents)
+    .findOne(ctx.params.id, {
+      relations: [
+        "author",
+        "author.profileImage",
+        "comments",
+        "comments.author",
+        "comments.author.profileImage",
+        "comments.replies",
+        "likedBy",
+      ]})
+
+    document.text += "\n\n" + data.text
+
+    /* PATCH 완료 응답 */
+    ctx.body = document
+    ctx.response.status = 200
+  }
+  catch (e){
+    ctx.throw(400, e)
+  }
+}
+
 /* 해당 게시글 좋아요 GET */
 export const GetLikes = async (ctx, next) => {
   const conn: Connection = getConnection()
