@@ -76,21 +76,21 @@ export const Post = async (ctx, next) => {
   const profile: Files = new Files()
   const data = ctx.request.body
 
-  user.fullname = data.fullname
-  user.nTh = data.nTh
-  user.dateOfBirth = data.dateOfBirth
-  user.username = data.username
-  user.password = data.password
-  user.department = data.department
-  user.studentNumber = data.studentNumber
-  user.email = data.email
-  user.phoneNumber = data.phoneNumber
-  user.profileText = data.profileText
-  user.favoriteComic = data.favoriteComic
-  user.favoriteCharacter = data.favoriteCharacter
-
   try {
     /* 데이터 저장 */
+    user.fullname = data.fullname
+    user.nTh = data.nTh
+    user.dateOfBirth = data.dateOfBirth
+    user.username = data.username
+    user.password = data.password
+    user.department = data.department
+    user.studentNumber = data.studentNumber
+    user.email = data.email
+    user.phoneNumber = data.phoneNumber
+    user.profileText = data.profileText
+    user.favoriteComic = data.favoriteComic
+    user.favoriteCharacter = data.favoriteCharacter
+
     await conn.manager.save(user)
   }
   catch (e) {
@@ -111,7 +111,6 @@ export const Post = async (ctx, next) => {
   }
   catch (e) {
     await conn.manager.remove(user)
-    await conn.manager.remove(profile)
     ctx.throw(400, e)
   }
 
