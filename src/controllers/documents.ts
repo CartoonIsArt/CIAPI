@@ -141,6 +141,8 @@ export const PatchOne = async (ctx, next) => {
 
     document.text += "\n\n" + data.text
 
+    await conn.manager.save(document)
+
     /* PATCH 완료 응답 */
     ctx.body = document
     ctx.response.status = 200
