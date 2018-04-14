@@ -120,7 +120,7 @@ export default class Users {
   @Column("int", {
     default: 0,
   })
-  public nDocuments:	number
+  public nDocuments: number
 
   /* 댓글 수 */
   @Column("int", {

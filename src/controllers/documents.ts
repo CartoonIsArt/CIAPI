@@ -8,7 +8,7 @@ export const GetOne = async (ctx, next) => {
   const conn: Connection = getConnection()
 
   try{
-    const document = await conn
+    const document: Documents = await conn
     .getRepository(Documents)
     .findOne(ctx.params.id, {
       relations: [
@@ -36,7 +36,7 @@ export const GetTimeline = async (ctx, next) => {
   const conn: Connection = getConnection()
 
   try{
-    const timeline = await conn
+    const timeline: Documents[] = await conn
     .getRepository(Documents)
     .find({
       relations: [
@@ -48,6 +48,10 @@ export const GetTimeline = async (ctx, next) => {
         "comments.replies",
         "likedBy",
       ]})
+
+    timeline.sort((lhs: Documents, rhs: Documents) => {
+      return rhs.createdAt.getTime() - lhs.createdAt.getTime()
+    })
 
     ctx.body = timeline
   }
@@ -65,12 +69,14 @@ export const Post = async (ctx, next) => {
   const document: Documents = new Documents()
   const data = ctx.request.body
 
-  document.text = data.text
   try {
     document.author = ctx.session.user
+    document.text = data.text
 
     /* 게시글 작성자의 게시글 수 1 증가 */
     ++(document.author.nDocuments)
+
+    await conn.manager.save(document.author)
     await conn.manager.save(document)
   }
   catch (e) {
@@ -152,13 +158,16 @@ export const PostLikes = async (ctx, next) => {
     /* 세션 유저 불러오기 */
     const user: Users = ctx.session.user
 
-    /* 게시글에 좋아요한 수 1 증가 */
-    ++(user.nDocumentLikes)
-
     /* 게시글과 유저의 좋아요 relation 설정 */
     document.likedBy.push(user)
+    ++(user.nDocumentLikes)
+
     await conn.manager.save(user)
     await conn.manager.save(document)
+
+    /* POST 완료 응답 */
+    ctx.body = document.likedBy
+    ctx.response.status = 200
   }
   catch (e) {
     if (e.message ===
@@ -167,9 +176,6 @@ export const PostLikes = async (ctx, next) => {
     }
     ctx.throw(400, e)
   }
-
-  /* POST 완료 응답 */
-  ctx.response.status = 200
 }
 
 /* 해당 게시글 좋아요 DELETE */
