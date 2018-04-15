@@ -18,6 +18,7 @@ export const GetOne = async (ctx, next) => {
         "comments.author",
         "comments.author.profileImage",
         "comments.replies",
+        "comments.likedBy",
         "likedBy",
       ]})
 
@@ -46,6 +47,7 @@ export const GetTimeline = async (ctx, next) => {
         "comments.author",
         "comments.author.profileImage",
         "comments.replies",
+        "comments.likedBy",
         "likedBy",
       ]})
 
@@ -136,6 +138,7 @@ export const PatchOne = async (ctx, next) => {
         "comments.author",
         "comments.author.profileImage",
         "comments.replies",
+        "comments.likedBy",
         "likedBy",
       ]})
 
