@@ -6,7 +6,9 @@ import * as Files from "./controllers/files"
 import * as Sessions from "./controllers/sessions"
 import * as Users from "./controllers/users"
 
-export const router = new Router()
+export const router = new Router({
+  prefix: '/api',
+})
 
 /* router 등록방법: router.메소드("경로", 함수)
 
