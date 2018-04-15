@@ -47,8 +47,9 @@ router.patch("/users", Users.PatchAll)
 router.get("/users/:id/documents", Users.GetDocuments)
 router.get("/users/:id/comments", Users.GetComments)
 
+router.get("/timeline/:page", Documents.GetTimeline)
+
 router.get("/documents/:id", Documents.GetOne)
-router.get("/documents", Documents.GetTimeline)
 router.post("/documents", Documents.Post)
 router.delete("/documents/:id", Documents.DeleteOne)
 router.patch("/documents/:id", Documents.PatchOne)

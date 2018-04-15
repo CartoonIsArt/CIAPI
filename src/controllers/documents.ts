@@ -40,6 +40,9 @@ export const GetTimeline = async (ctx, next) => {
     const timeline: Documents[] = await conn
     .getRepository(Documents)
     .find({
+      order: {
+        id: -1,
+      },
       relations: [
         "author",
         "author.profileImage",
@@ -49,10 +52,9 @@ export const GetTimeline = async (ctx, next) => {
         "comments.replies",
         "comments.likedBy",
         "likedBy",
-      ]})
-
-    timeline.sort((lhs: Documents, rhs: Documents) => {
-      return rhs.createdAt.getTime() - lhs.createdAt.getTime()
+      ],
+      skip: (ctx.params.page - 1) * 5,
+      take: 5,
     })
 
     ctx.body = timeline
