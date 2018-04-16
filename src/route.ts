@@ -7,7 +7,13 @@ import * as Sessions from "./controllers/sessions"
 import * as Timeline from "./controllers/timeline"
 import * as Users from "./controllers/users"
 
-export const router = new Router()
+export var router = new Router()
+
+if (process.env.NODE_ENV === 'production') {
+  router = new Router({
+    prefix: '/api'
+  })
+}
 
 /* router 등록방법: router.메소드("경로", 함수)
 
