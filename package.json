@@ -4,6 +4,7 @@
   "description": "koa restful example",
   "main": "app.js",
   "dependencies": {
+    "@koa/cors": "2",
     "@types/node": "^8.0.47",
     "koa": "^2.3.0",
     "koa-bodyparser": "^4.2.0",
