@@ -9,7 +9,7 @@ import { Connection, createConnection } from "typeorm"
 import { router } from "./route"
 import session from "./session"
 
-const cors = require('@koa/cors')
+import cors = require("@koa/cors")
 
 const app = new Koa()
 app.proxy = true

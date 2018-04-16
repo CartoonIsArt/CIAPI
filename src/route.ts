@@ -7,11 +7,11 @@ import * as Sessions from "./controllers/sessions"
 import * as Timeline from "./controllers/timeline"
 import * as Users from "./controllers/users"
 
-export var router = new Router()
+export let router = new Router()
 
-if (process.env.NODE_ENV === 'production') {
+if (process.env.NODE_ENV === "production") {
   router = new Router({
-    prefix: '/api'
+    prefix: "/api",
   })
 }
 
