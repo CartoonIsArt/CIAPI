@@ -1,5 +1,4 @@
 import { Connection, getConnection } from "typeorm"
-import Comments from "../entities/comments"
 import Documents from "../entities/documents"
 import Users from "../entities/users"
 
@@ -25,39 +24,6 @@ export const GetOne = async (ctx, next) => {
     ctx.body = document
   }
   catch (e) {
-    ctx.throw(400, e)
-  }
-
-  /* GET 완료 응답 */
-  ctx.response.status = 200
-}
-
-/* 타임라인 읽기 - 모든 게시글 GET */
-export const GetTimeline = async (ctx, next) => {
-  const conn: Connection = getConnection()
-
-  try{
-    const timeline: Documents[] = await conn
-    .getRepository(Documents)
-    .find({
-      relations: [
-        "author",
-        "author.profileImage",
-        "comments",
-        "comments.author",
-        "comments.author.profileImage",
-        "comments.replies",
-        "comments.likedBy",
-        "likedBy",
-      ]})
-
-    timeline.sort((lhs: Documents, rhs: Documents) => {
-      return rhs.createdAt.getTime() - lhs.createdAt.getTime()
-    })
-
-    ctx.body = timeline
-  }
-  catch (e){
     ctx.throw(400, e)
   }
 

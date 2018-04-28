@@ -4,6 +4,7 @@ import * as Comments from "./controllers/comments"
 import * as Documents from "./controllers/documents"
 import * as Files from "./controllers/files"
 import * as Sessions from "./controllers/sessions"
+import * as Timeline from "./controllers/timeline"
 import * as Users from "./controllers/users"
 
 export var router = new Router()
@@ -53,8 +54,9 @@ router.patch("/users", Users.PatchAll)
 router.get("/users/:id/documents", Users.GetDocuments)
 router.get("/users/:id/comments", Users.GetComments)
 
+router.get("/timeline/:page", Timeline.GetTimeline)
+
 router.get("/documents/:id", Documents.GetOne)
-router.get("/documents", Documents.GetTimeline)
 router.post("/documents", Documents.Post)
 router.delete("/documents/:id", Documents.DeleteOne)
 router.patch("/documents/:id", Documents.PatchOne)
