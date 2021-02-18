@@ -47,7 +47,8 @@ export const Post = async (ctx, next) => {
   const data = ctx.request.body
 
   file.filename = data.file
-  file.savedPath = "YO"
+  // file.savedPath = "YO"
+  file.savedPath = "images/YO.png"
 
   try{
     const user: Users = ctx.session.user

@@ -104,7 +104,8 @@ export const Post = async (ctx, next) => {
   /* 프로필 이미지 DB 저장 및 relation 설정 */
   try {
     profile.filename = data.profileImage
-    profile.savedPath = "MIKI"
+    // profile.savedPath = "MIKI"
+    profile.savedPath = "/images/MIKI.png"
     profile.user = user
 
     await conn.manager.save(profile)
