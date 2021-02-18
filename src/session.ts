@@ -9,8 +9,6 @@ const session = async (ctx, next) => {
       const s = await conn
       .getRepository(Sessions)
       .createQueryBuilder("session")
-      // .innerJoin("session.user", "user")
-      // .where("session.data = :data", { data : ctx.header.CIASESSIONID })
       .leftJoinAndSelect("session.user", "user")
       .where("session.data = :data", { data : ctx.cookies.get("CIASESSIONID") })
       .getOne()

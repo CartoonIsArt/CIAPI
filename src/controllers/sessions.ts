@@ -23,7 +23,6 @@ export const Login = async (ctx, next) => {
     session.ipv4 = ipToInt(ctx.ip)
 
     ctx.session = await conn.manager.save(session)
-    // ctx.set("CIASESSIONID", session.data)
     ctx.cookies.set("CIASESSIONID", session.data)
     ctx.response.body = session.user
   }
