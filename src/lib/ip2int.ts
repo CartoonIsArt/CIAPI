@@ -10,6 +10,7 @@ const ipv6re = /(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,
 
 /* https://stackoverflow.com/a/8105740 */
 const ipv4ToInt = (ip: string): number => {
+  ip = ip.startsWith("::ffff:") ? ip.substr(7) : ip
   const d = ip.split(".")
   return ((((((+d[0]) * 256) + (+d[1])) * 256)  + (+d[2])) * 256) + (+d[3])
 }
