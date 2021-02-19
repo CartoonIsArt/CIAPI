@@ -13,7 +13,7 @@ const cors = require('@koa/cors')
 
 const app = new Koa()
 app.proxy = true
-app.use(cors())
+app.use(cors({ origin: '*' }))
 
 /* DB와 연결을 맺고 Connection Pool을 생성함 */
 // tslint:disable-next-line
