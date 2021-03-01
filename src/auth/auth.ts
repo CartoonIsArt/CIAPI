@@ -8,9 +8,15 @@ export default async function Auth (username: string, password: string): Promise
     .getRepository(Users)
     .find({
       where: {
-        password,
         username,
       },
     })
-  return users[0]
+  const user = users[0]
+
+  const [encryptedKey, salt] = user.password.split("@")
+  const derivedKey = crypto.pbkdf2Sync(password, salt, 131071, 64, 'sha512')
+
+  if (derivedKey.toString('hex') !== encryptedKey)
+    throw new Error('password mismatch')
+  return user
 }

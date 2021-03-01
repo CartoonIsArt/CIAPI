@@ -1,3 +1,4 @@
+import * as crypto from "crypto"
 import { Connection, getConnection } from "typeorm"
 import Comments from "../entities/comments"
 import Documents from "../entities/documents"
@@ -80,7 +81,6 @@ export const Post = async (ctx, next) => {
   user.nTh = data.nTh
   user.dateOfBirth = data.dateOfBirth
   user.username = data.username
-  user.password = data.password
   user.department = data.department
   user.studentNumber = data.studentNumber
   user.email = data.email
@@ -88,6 +88,10 @@ export const Post = async (ctx, next) => {
   user.profileText = data.profileText
   user.favoriteComic = data.favoriteComic
   user.favoriteCharacter = data.favoriteCharacter
+
+  const salt: Buffer = crypto.randomBytes(64)
+  const derivedKey: Buffer = crypto.pbkdf2Sync(data.password, salt.toString('hex'), 131071, 64, 'sha512')
+  user.password = `${derivedKey.toString('hex')}@${salt.toString('hex')}`
 
   try {
     /* 데이터 저장 */
