@@ -34,7 +34,7 @@ export const GetOne = async (ctx, next) => {
 export const Post = async (ctx, next) => {
   const conn: Connection = getConnection()
   const comment: Comments = new Comments()
-  const data = ctx.request.body
+  const data = ctx.request.body.data
   let documentId: number = null
 
   try{
@@ -68,6 +68,8 @@ export const Post = async (ctx, next) => {
 
     /* 댓글 작성자의 댓글 수 1 증가 */
     ++(comment.author.nComments)
+
+    comment.likedBy = []
 
     await conn.manager.save(comment.author)
     await conn.manager.save(comment)
