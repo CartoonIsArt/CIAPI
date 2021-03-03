@@ -35,11 +35,10 @@ export const GetOne = async (ctx, next) => {
 export const Post = async (ctx, next) => {
   const conn: Connection = getConnection()
   const document: Documents = new Documents()
-  const data = ctx.request.body
 
   try {
     document.author = ctx.session.user
-    document.text = data.text
+    document.text = ctx.request.body.data
 
     /* 게시글 작성자의 게시글 수 1 증가 */
     ++(document.author.nDocuments)
@@ -91,7 +90,6 @@ export const DeleteOne =  async (ctx, next) => {
 /* 해당 게시글 PATCH */
 export const PatchOne = async (ctx, next) => {
   const conn: Connection = getConnection()
-  const data = ctx.request.body
 
   try{
     const document: Documents = await conn
@@ -108,7 +106,7 @@ export const PatchOne = async (ctx, next) => {
         "likedBy",
       ]})
 
-    document.text += "\n\n" + data.text
+    document.text += "\n\n" + ctx.request.body.data
 
     await conn.manager.save(document)
 

@@ -6,14 +6,18 @@ const session = async (ctx, next) => {
 
   if (ctx.request.url !== "/login") {
     try {
-      const s = await conn
+      const session: Sessions[] = await conn
       .getRepository(Sessions)
-      .createQueryBuilder("session")
-      .leftJoinAndSelect("session.user", "user")
-      .where("session.data = :data", { data : ctx.cookies.get("CIASESSIONID") })
-      .getOne()
-
-      ctx.session = s
+      .find({
+        where: {
+          data: ctx.cookies.get("CIASESSIONID")
+        },
+        relations: [
+          "user",
+          "user.profileImage"
+        ]
+      })
+      ctx.session = session[0]
     }
     catch (e) {
       ctx.throw(401, e)
