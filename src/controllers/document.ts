@@ -1,24 +1,24 @@
 import { Connection, getConnection } from "typeorm"
-import Documents from "../entities/documents"
-import Users from "../entities/users"
+import Document from "../entities/document"
+import User from "../entities/user"
 
 /* 해당 게시글 GET */
 export const GetOne = async (ctx, next) => {
   const conn: Connection = getConnection()
 
   try{
-    const document: Documents = await conn
-    .getRepository(Documents)
+    const document: Document = await conn
+    .getRepository(Document)
     .findOne(ctx.params.id, {
       relations: [
         "author",
         "author.profileImage",
-        "comments",
-        "comments.author",
-        "comments.author.profileImage",
-        "comments.replies",
-        "comments.likedBy",
-        "likedBy",
+        "comment",
+        "comment.author",
+        "comment.author.profileImage",
+        "comment.comments",
+        "comment.likedUsers",
+        "likedUsers",
       ]})
 
     ctx.body = document
@@ -34,14 +34,19 @@ export const GetOne = async (ctx, next) => {
 /* 게시글 POST */
 export const Post = async (ctx, next) => {
   const conn: Connection = getConnection()
-  const document: Documents = new Documents()
+  const document: Document = new Document()
 
   try {
-    document.author = ctx.session.user
-    document.text = ctx.request.body.data
+    // ctx.state.token.user 바로 저장이 안됨
+    document.author = await conn
+    .getRepository(User)
+    .findOne(ctx.state.token.user.id, {
+      relations: ['profileImage']
+    })
+    document.content = ctx.request.body.data
 
     /* 게시글 작성자의 게시글 수 1 증가 */
-    ++(document.author.nDocuments)
+    ++(document.author.documentsCount)
 
     await conn.manager.save(document.author)
     await conn.manager.save(document)
@@ -62,18 +67,18 @@ export const Post = async (ctx, next) => {
 /* 해당 게시글 DELETE */
 export const DeleteOne =  async (ctx, next) => {
   const conn: Connection = getConnection()
-  const leaver: Users = await conn.getRepository(Users).findOne(0)
+  const leaver: User = await conn.getRepository(User).findOne(0)
 
   try {
     /* DB에서 게시글 불러오기 */
-    const document: Documents = await conn
-    .getRepository(Documents)
+    const document: Document = await conn
+    .getRepository(Document)
     .findOne(ctx.params.id, {
       relations: ["author"],
     })
 
     /* 게시글 작성자의 게시글 수 1 감소 */
-    --(document.author.nDocuments)
+    --(document.author.documentsCount)
 
     /* 탈퇴한 유저 relation */
     document.author = leaver
@@ -92,21 +97,21 @@ export const PatchOne = async (ctx, next) => {
   const conn: Connection = getConnection()
 
   try{
-    const document: Documents = await conn
-    .getRepository(Documents)
+    const document: Document = await conn
+    .getRepository(Document)
     .findOne(ctx.params.id, {
       relations: [
         "author",
         "author.profileImage",
-        "comments",
-        "comments.author",
-        "comments.author.profileImage",
-        "comments.replies",
-        "comments.likedBy",
-        "likedBy",
+        "comment",
+        "comment.author",
+        "comment.author.profileImage",
+        "comment.comments",
+        "comment.likedUsers",
+        "likedUsers",
       ]})
 
-    document.text += "\n\n" + ctx.request.body.data
+    document.content += "\n\n" + ctx.request.body.data
 
     await conn.manager.save(document)
 
@@ -124,15 +129,15 @@ export const GetLikes = async (ctx, next) => {
   const conn: Connection = getConnection()
 
   try{
-    const document: Documents = await conn
-    .getRepository(Documents)
+    const document: Document = await conn
+    .getRepository(Document)
     .findOne(ctx.params.id, {
       relations: [
-        "likedBy",
-        "likedBy.profileImage",
+        "likedUsers",
+        "likedUsers.profileImage",
       ]})
 
-    ctx.body = document.likedBy
+    ctx.body = document.likedUsers
   }
   catch (e){
     ctx.throw(400, e)
@@ -148,24 +153,24 @@ export const PostLikes = async (ctx, next) => {
 
   try {
     /* DB에서 게시글 불러오기 */
-    const document: Documents = await conn
-    .getRepository(Documents)
+    const document: Document = await conn
+    .getRepository(Document)
     .findOne(ctx.params.id, {
-      relations: ["likedBy"],
+      relations: ["likedUsers"],
     })
 
     /* 세션 유저 불러오기 */
-    const user: Users = ctx.session.user
+    const user: User = ctx.state.token.user
 
     /* 게시글과 유저의 좋아요 relation 설정 */
-    document.likedBy.push(user)
-    ++(user.nDocumentLikes)
+    document.likedUsers.push(user)
+    ++(user.likedDocumentsCount)
 
     await conn.manager.save(user)
     await conn.manager.save(document)
 
     /* POST 완료 응답 */
-    ctx.body = document.likedBy
+    ctx.body = document.likedUsers
     ctx.response.status = 200
   }
   catch (e) {
@@ -183,22 +188,22 @@ export const CancelLikes = async (ctx, next) => {
 
   try {
     /* DB에서 게시글 불러오기 */
-    const document: Documents = await conn
-    .getRepository(Documents)
+    const document: Document = await conn
+    .getRepository(Document)
     .findOne(ctx.params.id)
 
     /* 세션 유저 불러오기 */
-    const user: Users = ctx.session.user
+    const user: User = ctx.state.token.user
 
     /* 게시글과 유저의 좋아요 relation 해제 */
     await conn
     .createQueryBuilder()
-    .relation(Documents, "likedBy")
+    .relation(Document, "likedUsers")
     .of(document)
     .remove(user)
 
     /* 게시글에 좋아요한 수 1 감소 */
-    --(user.nDocumentLikes)
+    --(user.likedDocumentsCount)
     await conn.manager.save(user)
   }
   catch (e) {
