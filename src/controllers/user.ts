@@ -5,6 +5,7 @@ import Document from "../entities/document"
 import File from "../entities/file"
 import AuthenticationToken from "../entities/authenticationToken"
 import User from "../entities/user"
+import { Authenticate } from "../auth"
 
 /* 세션 유저 GET */
 export const GetAuthenticated = async (ctx, next) => {
@@ -57,10 +58,7 @@ export const GetAll = async (ctx, next) => {
     .getRepository(User)
     .find({ relations: ["profileImage"] })
 
-    /* 0번 탈퇴한 유저 제외 */
-    const onlyUsers: User[] = users.slice(1, users.length)
-
-    ctx.body = onlyUsers
+    ctx.body = users
   }
   catch (e){
     ctx.throw(400, e)
@@ -312,11 +310,7 @@ export const PatchOne = async (ctx, next) => {
   const data = ctx.request.body
 
   try{
-    const user: User = await conn
-    .getRepository(User)
-    .findOne(ctx.params.id, {
-      relations: ["profileImage"],
-    })
+    const user = await Authenticate(ctx.state.token.user.username, data.password)
 
     if (data.fullname !== undefined) {
       user.fullname = data.fullname
@@ -327,8 +321,8 @@ export const PatchOne = async (ctx, next) => {
     if (data.birthdate !== undefined) {
       user.birthdate = data.birthdate
     }
-    if (data.department !== undefined) {
-      user.department = data.department
+    if (data.major !== undefined) {
+      user.department = data.major
     }
     if (data.studentNumber !== undefined) {
       user.studentNumber = data.studentNumber
