@@ -13,7 +13,7 @@
     "koa-jwt": "^4.0.0",
     "koa-logger": "^3.1.0",
     "koa-router": "^7.2.1",
-    "koa-views": "^6.1.1",
+    "koa-views": "^7.0.0",
     "sqlite3": "^5.0.2",
     "typeorm": "next",
     "typescript": "^2.6.1"
