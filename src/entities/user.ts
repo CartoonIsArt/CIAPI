@@ -7,13 +7,13 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
 } from "typeorm"
-import Comments from "./comments"
-import Documents from "./documents"
-import Files from "./files"
+import Comment from "./comment"
+import Document from "./document"
+import File from "./file"
 
 /* 유저 테이블 스키마 */
 @Entity()
-export default class Users {
+export default class User {
   /* Users table pk */
   @PrimaryGeneratedColumn()
   public id: number
@@ -30,7 +30,7 @@ export default class Users {
 
   /* 생일 */
   @Column("date")
-  public dateOfBirth: Date
+  public birthdate: Date
 
   /* 아이디 */
   @Column("varchar", {
@@ -71,8 +71,8 @@ export default class Users {
   public favoriteCharacter:	string
 
   /* 프로필 이미지 */
-  @OneToOne(type => Files, files => files.user)
-  public profileImage: Files
+  @OneToOne(type => File, files => files.user)
+  public profileImage: File
 
   // 회원가입 시 입력받는 정보 끝
 
@@ -84,7 +84,7 @@ export default class Users {
   @Column("boolean", {
     default: false,
   })
-  public isAnon: boolean
+  public isApproved: boolean
 
   /* 프로필 */
   @Column("text", {
@@ -96,19 +96,19 @@ export default class Users {
   @Column("boolean", {
     default: false,
   })
-  public isSuperUser:	boolean
+  public isSuperuser:	boolean
 
   /* 활동인구 여부 */
   @Column("boolean", {
     default: false,
   })
-  public isActivated:	boolean
+  public isActive:	boolean
 
   /* 졸업여부 */
   @Column("boolean", {
     default: false,
   })
-  public isGraduated:	boolean
+  public hasGraduated:	boolean
 
   /* 정회원 여부 */
   @Column("boolean", {
@@ -120,39 +120,39 @@ export default class Users {
   @Column("int", {
     default: 0,
   })
-  public nDocuments: number
+  public documentsCount: number
 
   /* 댓글 수 */
   @Column("int", {
     default: 0,
   })
-  public nComments:	number
+  public commentsCount:	number
 
   /* 좋아요한 게시글 수 */
   @Column("int", {
     default: 0,
   })
-  public nDocumentLikes:	number
+  public likedDocumentsCount:	number
 
   /* 좋아요한 댓글 수 */
   @Column("int" , {
     default: 0,
   })
-  public nCommentLikes: number
+  public likedCommentsCount: number
 
   /* 작성 글 리스트 */
-  @OneToMany(type => Documents, document => document.author)
-  public documents: Documents[]
+  @OneToMany(type => Document, document => document.author)
+  public documents: Document[]
 
   /* 작성 댓글 리스트 */
-  @OneToMany(type => Comments, comment => comment.author)
-  public comments: Comments[]
+  @OneToMany(type => Comment, comment => comment.author)
+  public comments: Comment[]
 
   /* 좋아요한 게시글 리스트 */
-  @ManyToMany(type => Documents, document => document.likedBy)
-  public likedDocuments: Documents[]
+  @ManyToMany(type => Document, document => document.likedUsers)
+  public likedDocuments: Document[]
 
   /* 좋아요한 댓글 리스트 */
-  @ManyToMany(type => Comments, comments => comments.likedBy)
-  public likedComments: Comments[]
+  @ManyToMany(type => Comment, comment => comment.likedUsers)
+  public likedComments: Comment[]
 }

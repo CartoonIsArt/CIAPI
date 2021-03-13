@@ -1,14 +1,13 @@
 import { Connection, getConnection } from "typeorm"
-import Documents from "../entities/documents"
-import Users from "../entities/users"
+import Document from "../entities/document"
 
 /* 타임라인 GET */
 export const GetTimeline = async (ctx, next) => {
   const conn: Connection = getConnection()
 
   try{
-    const timeline: Documents[] = await conn
-    .getRepository(Documents)
+    const timeline: Document[] = await conn
+    .getRepository(Document)
     .find({
       order: {
         id: -1,
@@ -19,9 +18,9 @@ export const GetTimeline = async (ctx, next) => {
         "comments",
         "comments.author",
         "comments.author.profileImage",
-        "comments.replies",
-        "comments.likedBy",
-        "likedBy",
+        "comments.comments",
+        "comments.likedUsers",
+        "likedUsers",
       ],
       skip: (ctx.params.page - 1) * 5,
       take: 5,

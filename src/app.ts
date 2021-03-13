@@ -4,16 +4,16 @@ import * as logger from "koa-logger"
 import * as Serve from "koa-static"
 import * as path from "path"
 import "reflect-metadata"
-import { Connection, createConnection } from "typeorm"
-// import leaver from "./leaver"
-import { router } from "./route"
-import session from "./session"
+import { createConnection } from "typeorm"
+import { router } from "./middleware/route"
+import refresher from "./middleware/refresher"
 
 const cors = require('@koa/cors')
+const jwt = require('koa-jwt')
 
 const app = new Koa()
 app.proxy = true
-app.use(cors())
+app.use(cors({ origin: '*', credentials: true }))
 
 /* DB와 연결을 맺고 Connection Pool을 생성함 */
 // tslint:disable-next-line
@@ -30,11 +30,19 @@ if (process.env.NODE_ENV !== "production") {
   app.use(Serve(path.join("test-restful", "dist")))
 }
 
-/* DB에 탈퇴 회원 추가 */
-// app.use(leaver)
+/* authentication */
+app.use(jwt({
+    secret: 'secretKey',
+    cookie: 'accessToken',
+    key: 'token',
+    passthrough: true,
+  })
+  .unless({
+    path: [/^\/api\/public(?:\/)?/]
+  })
+)
 
-/* 세션 */
-app.use(session)
+app.use(refresher)
 
 /* 라우팅 */
 app.use(router.routes())

@@ -1,18 +1,20 @@
+import * as crypto from "crypto"
 import { Connection, getConnection } from "typeorm"
-import Comments from "../entities/comments"
-import Documents from "../entities/documents"
-import Files from "../entities/files"
-import Sessions from "../entities/sessions"
-import Users from "../entities/users"
+import Comment from "../entities/comment"
+import Document from "../entities/document"
+import File from "../entities/file"
+import AuthenticationToken from "../entities/authenticationToken"
+import User from "../entities/user"
+import { Authenticate } from "../auth"
 
 /* 세션 유저 GET */
-export const GetSession = async (ctx, next) => {
+export const GetAuthenticated = async (ctx, next) => {
   const conn: Connection = getConnection()
-
-  try{
-    const user: Users = await conn
-    .getRepository(Users)
-    .findOne(ctx.session.user.id, {
+  
+  try {
+    const user: User = await conn
+    .getRepository(User)
+    .findOne(ctx.state.token.user.id, {
       relations: ["profileImage"],
     })
 
@@ -31,8 +33,8 @@ export const GetOne = async (ctx, next) => {
   const conn: Connection = getConnection()
 
   try{
-    const user: Users = await conn
-    .getRepository(Users)
+    const user: User = await conn
+    .getRepository(User)
     .findOne(ctx.params.id, {
       relations: ["profileImage"],
     })
@@ -52,14 +54,11 @@ export const GetAll = async (ctx, next) => {
   const conn: Connection = getConnection()
 
   try{
-    const users: Users[] = await conn
-    .getRepository(Users)
+    const users: User[] = await conn
+    .getRepository(User)
     .find({ relations: ["profileImage"] })
 
-    /* 0번 탈퇴한 유저 제외 */
-    const onlyUsers: Users[] = users.slice(1, users.length)
-
-    ctx.body = onlyUsers
+    ctx.body = users
   }
   catch (e){
     ctx.throw(400, e)
@@ -72,15 +71,14 @@ export const GetAll = async (ctx, next) => {
 /* 유저 POST */
 export const Post = async (ctx, next) => {
   const conn: Connection = getConnection()
-  const user: Users = new Users()
-  const profile: Files = new Files()
+  const user: User = new User()
+  const profile: File = new File()
   const data = ctx.request.body
 
   user.fullname = data.fullname
   user.nTh = data.nTh
-  user.dateOfBirth = data.dateOfBirth
+  user.birthdate = data.birthdate
   user.username = data.username
-  user.password = data.password
   user.department = data.department
   user.studentNumber = data.studentNumber
   user.email = data.email
@@ -89,13 +87,17 @@ export const Post = async (ctx, next) => {
   user.favoriteComic = data.favoriteComic
   user.favoriteCharacter = data.favoriteCharacter
 
+  const salt: Buffer = crypto.randomBytes(64)
+  const derivedKey: Buffer = crypto.pbkdf2Sync(data.password, salt.toString('hex'), 131071, 64, 'sha512')
+  user.password = `${derivedKey.toString('hex')}@${salt.toString('hex')}`
+
   try {
     /* 데이터 저장 */
     await conn.manager.save(user)
   }
   catch (e) {
     if (e.message ===
-      "SQLITE_CONSTRAINT: UNIQUE constraint failed: users.username"){
+      "SQLITE_CONSTRAINT: UNIQUE constraint failed: user.username"){
       ctx.throw(409, e)
     }
     ctx.throw(400, e)
@@ -104,7 +106,7 @@ export const Post = async (ctx, next) => {
   /* 프로필 이미지 DB 저장 및 relation 설정 */
   try {
     profile.filename = data.profileImage
-    profile.savedPath = "MIKI"
+    profile.savedPath = "/images/MIKI.png"
     profile.user = user
 
     await conn.manager.save(profile)
@@ -115,8 +117,8 @@ export const Post = async (ctx, next) => {
   }
 
   try{
-    const relationedUser: Users = await conn
-    .getRepository(Users)
+    const relationedUser: User = await conn
+    .getRepository(User)
     .findOne(user.id, {
       relations: ["profileImage"],
     })
@@ -134,7 +136,7 @@ export const Post = async (ctx, next) => {
 /* 해당 유저 DELETE */
 export const DeleteOne =  async (ctx, next) => {
   const conn: Connection = getConnection()
-  const leaver: Users = await conn.getRepository(Users).findOne(0)
+  const leaver: User = await conn.getRepository(User).findOne(0)
 
   /* 코드 상에는 문제가 없어 텍스트를 throw함
     변경할 수 있으면 좋습니다. */
@@ -144,45 +146,45 @@ export const DeleteOne =  async (ctx, next) => {
 
   try {
     /* DB에서 유저 불러오기 */
-    const user: Users = await conn
-    .getRepository(Users)
+    const user: User = await conn
+    .getRepository(User)
     .findOne(ctx.params.id)
 
     /* DB에서 유저 relation 모두 불러오기 */
-    const comments: Comments[] = await conn
+    const comment: Comment[] = await conn
     .createQueryBuilder()
-    .relation(Users, "comments")
+    .relation(User, "comment")
     .of(user)
     .loadMany()
 
-    const documents: Documents[] = await conn
+    const document: Document[] = await conn
     .createQueryBuilder()
-    .relation(Users, "documents")
+    .relation(User, "document")
     .of(user)
     .loadMany()
 
-    const likedComments: Comments[] = await conn
+    const likedComments: Comment[] = await conn
     .createQueryBuilder()
-    .relation(Comments, "likedBy")
+    .relation(Comment, "likedUsers")
     .of(user.likedComments)
     .loadMany()
 
-    const likedDocuments: Documents[] = await conn
+    const likedDocuments: Document[] = await conn
     .createQueryBuilder()
-    .relation(Documents, "likedBy")
+    .relation(Document, "likedUsers")
     .of(user.likedDocuments)
     .loadMany()
 
     /* 댓글 relation 해제 및 삭제 */
-    for (const commentSet of comments.entries()) {
-      const comment: Comments = await conn
-      .getRepository(Comments)
+    for (const commentSet of comment.entries()) {
+      const comment: Comment = await conn
+      .getRepository(Comment)
       .findOne(commentSet["1"].id, {
         relations: ["author"],
       })
 
       /* 댓글 작성자의 댓글 수 1 감소 */
-      --(comment.author.nComments)
+      --(comment.author.commentsCount)
       await conn.manager.save(comment.author)
 
       /* 탈퇴한 유저 relation */
@@ -191,15 +193,15 @@ export const DeleteOne =  async (ctx, next) => {
     }
 
     /* 게시글 relation 해제 및 삭제 */
-    for (const documentSet of documents.entries()) {
-      const document: Documents = await conn
-      .getRepository(Documents)
+    for (const documentSet of document.entries()) {
+      const document: Document = await conn
+      .getRepository(Document)
       .findOne(documentSet["1"].id, {
         relations: ["author"],
       })
 
       /* 게시글 작성자의 게시글 수 1 감소 */
-      --(document.author.nDocuments)
+      --(document.author.documentsCount)
 
       /* 탈퇴한 유저 relation */
       document.author = leaver
@@ -208,21 +210,21 @@ export const DeleteOne =  async (ctx, next) => {
 
     /* 좋아요한 컨텐츠 relation 해제 */
     for (const likedDocumentSet of likedDocuments.entries()) {
-      const likedDocument: Documents = likedDocumentSet["1"]
+      const likedDocument: Document = likedDocumentSet["1"]
 
       await conn
       .createQueryBuilder()
-      .relation(Documents, "likedBy")
+      .relation(Document, "likedUsers")
       .of(likedDocument)
       .remove(user)
     }
 
     for (const likedCommentSet of likedComments.entries()) {
-      const likedComment: Comments = likedCommentSet["1"]
+      const likedComment: Comment = likedCommentSet["1"]
 
       await conn
       .createQueryBuilder()
-      .relation(Comments, "likedBy")
+      .relation(Comment, "likedUsers")
       .of(likedComment)
       .remove(user)
     }
@@ -231,14 +233,14 @@ export const DeleteOne =  async (ctx, next) => {
     await conn
     .createQueryBuilder()
     .delete()
-    .from(Files)
+    .from(File)
     .where("userId = :id", { id: user.id })
     .execute()
 
     await conn
     .createQueryBuilder()
     .delete()
-    .from(Sessions)
+    .from(AuthenticationToken)
     .where("userId = :id", { id: user.id })
     .execute()
 
@@ -246,7 +248,7 @@ export const DeleteOne =  async (ctx, next) => {
     await conn
     .createQueryBuilder()
     .delete()
-    .from(Users)
+    .from(User)
     .where("id = :id", { id: user.id })
     .execute()
   }
@@ -263,8 +265,8 @@ export const GetDocuments = async (ctx, next) => {
   const conn: Connection = getConnection()
 
   try{
-    const documents: Documents[] = await conn
-    .getRepository(Documents)
+    const documents: Document[] = await conn
+    .getRepository(Document)
     .createQueryBuilder("document")
     .leftJoinAndSelect("document.author", "author")
     .where("author.id = :id", { id: ctx.params.id })
@@ -281,18 +283,18 @@ export const GetDocuments = async (ctx, next) => {
 }
 
 /* 해당 유저 댓글 GET */
-export const GetComments = async (ctx, next) => {
+export const GetComment = async (ctx, next) => {
   const conn: Connection = getConnection()
 
   try{
-    const comments: Comments[] = await conn
-    .getRepository(Comments)
+    const comment: Comment[] = await conn
+    .getRepository(Comment)
     .createQueryBuilder("comment")
     .leftJoinAndSelect("comment.author", "author")
     .where("author.id = :id", { id: ctx.params.id })
     .getMany()
 
-    ctx.body = comments
+    ctx.body = comment
   }
   catch (e) {
     ctx.throw(400, e)
@@ -308,23 +310,19 @@ export const PatchOne = async (ctx, next) => {
   const data = ctx.request.body
 
   try{
-    const user: Users = await conn
-    .getRepository(Users)
-    .findOne(ctx.params.id, {
-      relations: ["profileImage"],
-    })
+    const user = await Authenticate(ctx.state.token.user.username, data.password)
 
     if (data.fullname !== undefined) {
       user.fullname = data.fullname
     }
-    if (data.nTh !== undefined) {
+    if (data.n_th !== undefined) {
       user.nTh = data.nTh
     }
-    if (data.dateOfBirth !== undefined) {
-      user.dateOfBirth = data.dateOfBirth
+    if (data.birthdate !== undefined) {
+      user.birthdate = data.birthdate
     }
-    if (data.department !== undefined) {
-      user.department = data.department
+    if (data.major !== undefined) {
+      user.department = data.major
     }
     if (data.studentNumber !== undefined) {
       user.studentNumber = data.studentNumber
@@ -341,8 +339,8 @@ export const PatchOne = async (ctx, next) => {
     if (data.favoriteCharacter !== undefined) {
       user.favoriteCharacter = data.favoriteCharacter
     }
-    if (data.isActivated !== undefined) {
-      user.isActivated = !user.isActivated
+    if (data.is_active !== undefined) {
+      user.isActive = !user.isActive
     }
 
     await conn.manager.save(user)
@@ -363,18 +361,18 @@ export const PatchAll = async (ctx, next) => {
   const data = ctx.request.body
 
   try{
-    const allUsers: Users[] = await conn
-    .getRepository(Users)
+    const allUsers: User[] = await conn
+    .getRepository(User)
     .createQueryBuilder()
     .getMany()
 
-    const onlyUsers: Users[] = allUsers.slice(1, allUsers.length)
+    const onlyUsers: User[] = allUsers.slice(1, allUsers.length)
 
     for (const userSet of onlyUsers.entries()) {
-      const user: Users = userSet["1"]
+      const user: User = userSet["1"]
 
-      if (data.isActivated !== undefined) {
-        user.isActivated = !user.isActivated
+      if (data.is_active !== undefined) {
+        user.isActive = !user.isActive
       }
       await conn.manager.save(user)
     }

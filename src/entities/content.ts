@@ -4,7 +4,7 @@ import {
     PrimaryGeneratedColumn,
   } from "typeorm"
 
-export default abstract class Contents {
+export default abstract class Content {
   /* 컨텐츠 pk */
   @PrimaryGeneratedColumn()
   public id: number
@@ -21,5 +21,5 @@ export default abstract class Contents {
 
   /* 내용 */
   @Column("text")
-  public text: string
+  public content: string
 }
