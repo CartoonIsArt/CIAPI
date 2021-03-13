@@ -5,7 +5,7 @@
   "main": "app.js",
   "dependencies": {
     "@koa/cors": "^3.1.0",
-    "@mapbox/node-pre-gyp": "^1.0.0",
+    "@mapbox/node-pre-gyp": "^1.0.1",
     "@types/node": "^8.0.47",
     "jsonwebtoken": "^8.5.1",
     "koa": "^2.13.1",
