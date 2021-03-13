@@ -16,7 +16,7 @@
     "koa-views": "^7.0.0",
     "sqlite3": "^5.0.2",
     "typeorm": "next",
-    "typescript": "^2.6.1"
+    "typescript": "^2.9.2"
   },
   "devDependencies": {
     "chai": "^4.1.2",
