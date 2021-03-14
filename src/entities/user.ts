@@ -42,9 +42,9 @@ export default class User {
   @Column("text")
   public password: string
 
-  /* 학과 */
+  /* 전공 */
   @Column("text")
-  public department: string
+  public major: string
 
   /* 학번 */
   @Column("int")

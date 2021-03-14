@@ -79,7 +79,7 @@ export const Post = async (ctx, next) => {
   user.nTh = data.nTh
   user.birthdate = data.birthdate
   user.username = data.username
-  user.department = data.department
+  user.major = data.major
   user.studentNumber = data.studentNumber
   user.email = data.email
   user.phoneNumber = data.phoneNumber
@@ -322,7 +322,7 @@ export const PatchOne = async (ctx, next) => {
       user.birthdate = data.birthdate
     }
     if (data.major !== undefined) {
-      user.department = data.major
+      user.major = data.major
     }
     if (data.studentNumber !== undefined) {
       user.studentNumber = data.studentNumber
