@@ -76,6 +76,16 @@ export default class User {
 
   // 회원가입 시 입력받는 정보 끝
 
+  /* 프로필 배너 */
+  @OneToOne(type => File, files => files.user)
+  public profileBanner: File
+
+  /* 프로필 텍스트 */
+  @Column("text", {
+    default: "",
+  })
+  public profileText:	string
+
   /* 회원 가입 일자 */
   @CreateDateColumn()
   public joinDate: Date
@@ -86,17 +96,25 @@ export default class User {
   })
   public isApproved: boolean
 
-  /* 프로필 */
-  @Column("text", {
-    default: "",
-  })
-  public profileText:	string
+  /* 프로필 배너 */
 
   /* DB관리 권한 유무 */
   @Column("boolean", {
     default: false,
   })
   public isSuperuser:	boolean
+
+  /* 임원진 여부 */
+  @Column("boolean", {
+    default: false,
+  })
+  public isBoardMemeber:	boolean
+
+  /* 총무 여부 */
+  @Column("boolean", {
+    default: false,
+  })
+  public isManager:	boolean
 
   /* 활동인구 여부 */
   @Column("boolean", {
