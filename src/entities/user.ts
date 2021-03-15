@@ -42,6 +42,10 @@ export default class User {
   @Column("text")
   public password: string
 
+  /* 비밀번호 솔트 */
+  @Column("text")
+  public salt: string
+
   /* 전공 */
   @Column("text")
   public major: string
