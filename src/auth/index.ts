@@ -13,7 +13,7 @@ export async function Authenticate (username: string, password: string): Promise
       relations: ['profileImage']
     })
   const user = users[0]
-  const derivedKey = crypto.pbkdf2Sync(user.password, user.salt, 131071, 64, 'sha512')
+  const derivedKey = crypto.pbkdf2Sync(password, user.salt, 131071, 64, 'sha512')
 
   if (derivedKey.toString('hex') !== user.password)
     throw new Error('password mismatch')
