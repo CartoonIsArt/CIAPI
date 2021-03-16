@@ -88,9 +88,10 @@ export const Post = async (ctx, next) => {
   user.favoriteCharacter = data.favoriteCharacter
 
   const salt: Buffer = crypto.randomBytes(64)
-  const derivedKey: Buffer = crypto.pbkdf2Sync(data.password, salt.toString('hex'), 131071, 64, 'sha512')
-  user.password = derivedKey.toString('hex')
   user.salt = salt.toString('hex')
+
+  const derivedKey: Buffer = crypto.pbkdf2Sync(data.password, user.salt, 131071, 64, 'sha512')
+  user.password = derivedKey.toString('hex')
 
   try {
     /* 데이터 저장 */
