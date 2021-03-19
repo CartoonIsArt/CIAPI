@@ -100,8 +100,6 @@ export default class User {
   })
   public isApproved: boolean
 
-  /* 프로필 배너 */
-
   /* DB관리 권한 유무 */
   @Column("boolean", {
     default: false,
