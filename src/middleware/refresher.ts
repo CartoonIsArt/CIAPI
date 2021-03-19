@@ -24,7 +24,7 @@ export default async function refresher(ctx, next) {
     const jsonUser = { user: decoded.user }
 
     // 3. Reissue access token
-    accessToken = jwt.sign(jsonUser, 'secretKey', { expiresIn: '30s' })
+    accessToken = jwt.sign(jsonUser, 'secretKey', { expiresIn: '1h' })
     ctx.cookies.set('accessToken', accessToken, { expires: cookieExpirationDate() })
     
     // 4. Update database
