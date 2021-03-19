@@ -79,7 +79,7 @@ export const Post = async (ctx, next) => {
   user.nTh = data.nTh
   user.birthdate = data.birthdate
   user.username = data.username
-  user.department = data.department
+  user.major = data.major
   user.studentNumber = data.studentNumber
   user.email = data.email
   user.phoneNumber = data.phoneNumber
@@ -88,8 +88,10 @@ export const Post = async (ctx, next) => {
   user.favoriteCharacter = data.favoriteCharacter
 
   const salt: Buffer = crypto.randomBytes(64)
-  const derivedKey: Buffer = crypto.pbkdf2Sync(data.password, salt.toString('hex'), 131071, 64, 'sha512')
-  user.password = `${derivedKey.toString('hex')}@${salt.toString('hex')}`
+  user.salt = salt.toString('hex')
+
+  const derivedKey: Buffer = crypto.pbkdf2Sync(data.password, user.salt, 131071, 64, 'sha512')
+  user.password = derivedKey.toString('hex')
 
   try {
     /* 데이터 저장 */
@@ -106,7 +108,7 @@ export const Post = async (ctx, next) => {
   /* 프로필 이미지 DB 저장 및 relation 설정 */
   try {
     profile.filename = data.profileImage
-    profile.savedPath = "/images/MIKI.png"
+    profile.savedPath = "/images/profile_image_default.png"
     profile.user = user
 
     await conn.manager.save(profile)
@@ -322,7 +324,7 @@ export const PatchOne = async (ctx, next) => {
       user.birthdate = data.birthdate
     }
     if (data.major !== undefined) {
-      user.department = data.major
+      user.major = data.major
     }
     if (data.studentNumber !== undefined) {
       user.studentNumber = data.studentNumber
