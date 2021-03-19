@@ -44,12 +44,19 @@ export const Login = async (ctx, next) => {
 
 /* 로그아웃 */
 export const Logout =  async (ctx, next) => {
-  try {
-    const conn: Connection = getConnection()
-    await conn.manager.delete(AuthenticationToken, ctx.authenticationToken.id)
+  const conn: Connection = getConnection()
+  const accessToken = ctx.cookies.get('accessToken')
 
-    ctx.status = 204
-    ctx.redirect("/")
+  try {
+    // 1. Remove authentication token from DB
+    const authenticationTokens: AuthenticationToken[] = await conn
+      .getRepository(AuthenticationToken)
+      .find({ where: { accessToken } })
+    const authenticationToken = authenticationTokens[0]
+    await conn.manager.remove(authenticationToken)
+
+    // 2. Delete access token from user's browser
+    ctx.cookies.set('accessToken')
   }
   catch (e) {
     ctx.throw(400, e)
@@ -57,4 +64,5 @@ export const Logout =  async (ctx, next) => {
 
   /* 로그아웃 완료 응답 */
   ctx.response.status = 204
+  ctx.redirect("/login")
 }

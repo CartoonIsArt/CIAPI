@@ -43,7 +43,6 @@ export var router = new Router({ prefix: '/api' })
 
 // public API
 router.post("/public/login", AuthenticationToken.Login)
-router.post("/public/logout", AuthenticationToken.Logout)
 router.post("/public/user", User.Post)
 
 // authorization required API
@@ -77,3 +76,5 @@ router.get("/file/:id", File.GetOne)
 router.get("/file", File.GetAll)
 router.post("/file", File.Post)
 router.delete("/file/:id", File.DeleteOne)
+
+router.get("/logout", AuthenticationToken.Logout)
