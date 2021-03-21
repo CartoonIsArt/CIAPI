@@ -84,7 +84,6 @@ export const PatchOne = async (ctx, next) => {
           "likedUsers",
         ]
       })
-      console.log(id, content, document.content)
 
     document.content += "\n\n" + content
 
