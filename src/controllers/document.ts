@@ -5,121 +5,95 @@ import User from "../entities/user"
 /* 해당 게시글 GET */
 export const GetOne = async (ctx, next) => {
   const conn: Connection = getConnection()
+  const { id } = ctx.params
 
-  try{
+  try {
     const document: Document = await conn
-    .getRepository(Document)
-    .findOne(ctx.params.id, {
-      relations: [
-        "author",
-        "author.profileImage",
-        "comment",
-        "comment.author",
-        "comment.author.profileImage",
-        "comment.comments",
-        "comment.likedUsers",
-        "likedUsers",
-      ]})
+      .getRepository(Document)
+      .findOne(id, {
+        relations: [
+          "author",
+          "author.profileImage",
+          "comment",
+          "comment.author",
+          "comment.author.profileImage",
+          "comment.comments",
+          "comment.likedUsers",
+          "likedUsers",
+        ]
+      })
 
-    ctx.body = document
+    /* GET 완료 응답 */
+    ctx.response.status = 200
+    ctx.body = { document }
   }
   catch (e) {
     ctx.throw(400, e)
   }
-
-  /* GET 완료 응답 */
-  ctx.response.status = 200
 }
 
 /* 게시글 POST */
 export const Post = async (ctx, next) => {
   const conn: Connection = getConnection()
   const document: Document = new Document()
+  const tokenUser = ctx.state.token.user
+  const { content } = ctx.request.body
 
   try {
-    // ctx.state.token.user 바로 저장이 안됨
     document.author = await conn
-    .getRepository(User)
-    .findOne(ctx.state.token.user.id, {
-      relations: ['profileImage']
-    })
-    document.content = ctx.request.body.data
+      .getRepository(User)
+      .findOne(tokenUser.id, {
+        relations: ['profileImage']
+      })
+    document.content = content
+    document.comments = []
+    document.likedUsers = []
 
     /* 게시글 작성자의 게시글 수 1 증가 */
     ++(document.author.documentsCount)
 
     await conn.manager.save(document.author)
     await conn.manager.save(document)
-  }
-  catch (e) {
-    if (e.message ===
-    "Cannot read property 'user' of undefined"){
-      ctx.throw(401, e)
-    }
-    ctx.throw(400, e)
-  }
 
-  /* POST 완료 응답 */
-  ctx.body = document
-  ctx.response.status = 200
-}
-
-/* 해당 게시글 DELETE */
-export const DeleteOne =  async (ctx, next) => {
-  const conn: Connection = getConnection()
-  const leaver: User = await conn.getRepository(User).findOne(0)
-
-  try {
-    /* DB에서 게시글 불러오기 */
-    const document: Document = await conn
-    .getRepository(Document)
-    .findOne(ctx.params.id, {
-      relations: ["author"],
-    })
-
-    /* 게시글 작성자의 게시글 수 1 감소 */
-    --(document.author.documentsCount)
-
-    /* 탈퇴한 유저 relation */
-    document.author = leaver
-    await conn.manager.save(document)
+    /* POST 완료 응답 */
+    ctx.response.status = 200
+    ctx.body = { document }
   }
   catch (e) {
     ctx.throw(400, e)
   }
-
-  /* DELETE 완료 응답 */
-  ctx.response.status = 204
 }
 
 /* 해당 게시글 PATCH */
 export const PatchOne = async (ctx, next) => {
   const conn: Connection = getConnection()
+  const { id, content } = ctx.request.body
 
-  try{
+  try {
     const document: Document = await conn
-    .getRepository(Document)
-    .findOne(ctx.params.id, {
-      relations: [
-        "author",
-        "author.profileImage",
-        "comment",
-        "comment.author",
-        "comment.author.profileImage",
-        "comment.comments",
-        "comment.likedUsers",
-        "likedUsers",
-      ]})
+      .getRepository(Document)
+      .findOne(id, {
+        relations: [
+          "author",
+          "author.profileImage",
+          "comments",
+          "comments.author",
+          "comments.author.profileImage",
+          "comments.comments",
+          "comments.likedUsers",
+          "likedUsers",
+        ]
+      })
 
-    document.content += "\n\n" + ctx.request.body.data
+    document.content += "\n\n" + content
 
     await conn.manager.save(document)
 
     /* PATCH 완료 응답 */
-    ctx.body = document
     ctx.response.status = 200
+    ctx.body = { document }
   }
-  catch (e){
+  catch (e) {
     ctx.throw(400, e)
   }
 }
@@ -127,57 +101,64 @@ export const PatchOne = async (ctx, next) => {
 /* 해당 게시글 좋아요 GET */
 export const GetLikes = async (ctx, next) => {
   const conn: Connection = getConnection()
+  const { id } = ctx.params
 
-  try{
+  try {
     const document: Document = await conn
-    .getRepository(Document)
-    .findOne(ctx.params.id, {
-      relations: [
-        "likedUsers",
-        "likedUsers.profileImage",
-      ]})
+      .getRepository(Document)
+      .findOne(id, {
+        relations: [
+          "likedUsers",
+          "likedUsers.profileImage",
+        ]
+      })
 
-    ctx.body = document.likedUsers
+    /* GET 완료 응답 */
+    ctx.response.status = 200
+    ctx.body = { likedUsers: document.likedUsers }
   }
-  catch (e){
+  catch (e) {
     ctx.throw(400, e)
   }
 
-  /* GET 완료 응답 */
-  ctx.response.status = 200
 }
 
 /* 해당 게시글 좋아요 POST */
 export const PostLikes = async (ctx, next) => {
   const conn: Connection = getConnection()
+  const { id } = ctx.params
+  const tokenUser = ctx.state.token.user
 
   try {
     /* DB에서 게시글 불러오기 */
     const document: Document = await conn
-    .getRepository(Document)
-    .findOne(ctx.params.id, {
-      relations: ["likedUsers"],
-    })
+      .getRepository(Document)
+      .findOne(id, {
+        relations: ["likedUsers"],
+      })
 
-    /* 세션 유저 불러오기 */
-    const user: User = ctx.state.token.user
+    /* 유저 불러오기 */
+    const user: User = await conn
+      .getRepository(User)
+      .findOne(tokenUser.id, {
+        relations: ["profileImage"],
+      })
 
     /* 게시글과 유저의 좋아요 relation 설정 */
-    document.likedUsers.push(user)
     ++(user.likedDocumentsCount)
+    document.likedUsers.push(user)
 
     await conn.manager.save(user)
     await conn.manager.save(document)
 
-    /* POST 완료 응답 */
-    ctx.body = document.likedUsers
+  /* POST 완료 응답 */
     ctx.response.status = 200
+    ctx.body = {
+      likedUsers: document.likedUsers,
+      user,
+    }
   }
   catch (e) {
-    if (e.message ===
-    "Cannot read property 'user' of undefined"){
-      ctx.throw(401, e)
-    }
     ctx.throw(400, e)
   }
 }
@@ -185,35 +166,44 @@ export const PostLikes = async (ctx, next) => {
 /* 해당 게시글 좋아요 DELETE */
 export const CancelLikes = async (ctx, next) => {
   const conn: Connection = getConnection()
+  const { id } = ctx.params
+  const tokenUser = ctx.state.token.user
 
   try {
     /* DB에서 게시글 불러오기 */
     const document: Document = await conn
-    .getRepository(Document)
-    .findOne(ctx.params.id)
+      .getRepository(Document)
+      .findOne(id, {
+        relations: ["likedUsers"],
+      })
 
-    /* 세션 유저 불러오기 */
-    const user: User = ctx.state.token.user
+    /* 유저 불러오기 */
+    const user: User = await conn
+      .getRepository(User)
+      .findOne(tokenUser.id, {
+        relations: ["profileImage"],
+      })
 
     /* 게시글과 유저의 좋아요 relation 해제 */
     await conn
-    .createQueryBuilder()
-    .relation(Document, "likedUsers")
-    .of(document)
-    .remove(user)
+      .createQueryBuilder()
+      .relation(Document, "likedUsers")
+      .of(document)
+      .remove(user)
 
     /* 게시글에 좋아요한 수 1 감소 */
     --(user.likedDocumentsCount)
     await conn.manager.save(user)
+
+    /* DELETE 완료 응답 */
+    ctx.response.status = 200
+    ctx.body = {
+      likedUsers: document.likedUsers.filter(x => x.id != user.id),
+      user,
+    }
   }
   catch (e) {
-    if (e.message ===
-    "Cannot read property 'user' of undefined"){
-      ctx.throw(401, e)
-    }
     ctx.throw(400, e)
   }
 
-  /* DELETE 완료 응답 */
-  ctx.response.status = 204
 }
