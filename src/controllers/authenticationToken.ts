@@ -57,12 +57,11 @@ export const Logout =  async (ctx, next) => {
 
     // 2. Delete access token from user's browser
     ctx.cookies.set('accessToken')
+
+    /* 로그아웃 완료 응답 */
+    ctx.response.status = 204
   }
   catch (e) {
     ctx.throw(400, e)
   }
-
-  /* 로그아웃 완료 응답 */
-  ctx.response.status = 204
-  ctx.redirect("/login")
 }
