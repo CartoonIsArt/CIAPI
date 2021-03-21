@@ -7,7 +7,7 @@ import AuthenticationToken from "../entities/authenticationToken"
 import User from "../entities/user"
 import { Authenticate } from "../auth"
 
-/* 세션 유저 GET */
+/* 인증된 유저 GET */
 export const GetAuthenticated = async (ctx, next) => {
   const conn: Connection = getConnection()
   
