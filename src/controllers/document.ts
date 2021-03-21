@@ -5,12 +5,12 @@ import User from "../entities/user"
 /* 해당 게시글 GET */
 export const GetOne = async (ctx, next) => {
   const conn: Connection = getConnection()
-  const { documentId } = ctx.params
+  const { id } = ctx.params
 
   try {
     const document: Document = await conn
       .getRepository(Document)
-      .findOne(documentId, {
+      .findOne(id, {
         relations: [
           "author",
           "author.profileImage",
@@ -37,6 +37,7 @@ export const Post = async (ctx, next) => {
   const conn: Connection = getConnection()
   const document: Document = new Document()
   const tokenUser = ctx.state.token.user
+  const { content } = ctx.request.body
 
   try {
     document.author = await conn
@@ -44,7 +45,9 @@ export const Post = async (ctx, next) => {
       .findOne(tokenUser.id, {
         relations: ['profileImage']
       })
-    document.content = ctx.request.body.data
+    document.content = content
+    document.comments = []
+    document.likedUsers = []
 
     /* 게시글 작성자의 게시글 수 1 증가 */
     ++(document.author.documentsCount)
@@ -54,7 +57,7 @@ export const Post = async (ctx, next) => {
 
     /* POST 완료 응답 */
     ctx.response.status = 200
-    ctx.body = document
+    ctx.body = { document }
   }
   catch (e) {
     ctx.throw(400, e)
@@ -64,26 +67,26 @@ export const Post = async (ctx, next) => {
 /* 해당 게시글 PATCH */
 export const PatchOne = async (ctx, next) => {
   const conn: Connection = getConnection()
-  const { documentId } = ctx.params
-  const { appendedContent } = ctx.request.body.data
+  const { id, content } = ctx.request.body
 
   try {
     const document: Document = await conn
       .getRepository(Document)
-      .findOne(documentId, {
+      .findOne(id, {
         relations: [
           "author",
           "author.profileImage",
-          "comment",
-          "comment.author",
-          "comment.author.profileImage",
-          "comment.comments",
-          "comment.likedUsers",
+          "comments",
+          "comments.author",
+          "comments.author.profileImage",
+          "comments.comments",
+          "comments.likedUsers",
           "likedUsers",
         ]
       })
+      console.log(id, content, document.content)
 
-    document.content += "\n\n" + appendedContent
+    document.content += "\n\n" + content
 
     await conn.manager.save(document)
 
@@ -99,12 +102,12 @@ export const PatchOne = async (ctx, next) => {
 /* 해당 게시글 좋아요 GET */
 export const GetLikes = async (ctx, next) => {
   const conn: Connection = getConnection()
-  const { documentId } = ctx.params
+  const { id } = ctx.params
 
   try {
     const document: Document = await conn
       .getRepository(Document)
-      .findOne(documentId, {
+      .findOne(id, {
         relations: [
           "likedUsers",
           "likedUsers.profileImage",
@@ -124,14 +127,14 @@ export const GetLikes = async (ctx, next) => {
 /* 해당 게시글 좋아요 POST */
 export const PostLikes = async (ctx, next) => {
   const conn: Connection = getConnection()
-  const { documentId } = ctx.params
+  const { id } = ctx.params
   const tokenUser = ctx.state.token.user
 
   try {
     /* DB에서 게시글 불러오기 */
     const document: Document = await conn
       .getRepository(Document)
-      .findOne(documentId, {
+      .findOne(id, {
         relations: ["likedUsers"],
       })
 
@@ -164,14 +167,14 @@ export const PostLikes = async (ctx, next) => {
 /* 해당 게시글 좋아요 DELETE */
 export const CancelLikes = async (ctx, next) => {
   const conn: Connection = getConnection()
-  const { documentId } = ctx.params
+  const { id } = ctx.params
   const tokenUser = ctx.state.token.user
 
   try {
     /* DB에서 게시글 불러오기 */
     const document: Document = await conn
       .getRepository(Document)
-      .findOne(documentId, {
+      .findOne(id, {
         relations: ["likedUsers"],
       })
 

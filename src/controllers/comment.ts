@@ -6,12 +6,12 @@ import User from "../entities/user"
 /* 해당 댓글 GET */
 export const GetOne = async (ctx, next) => {
   const conn: Connection = getConnection()
-  const { commentId } = ctx.params
+  const { id } = ctx.params
 
   try {
     const comment: Comment = await conn
       .getRepository(Comment)
-      .findOne(commentId, {
+      .findOne(id, {
         relations: [
           "author",
           "author.profileImage",
@@ -24,7 +24,7 @@ export const GetOne = async (ctx, next) => {
 
     /* GET 성공 응답 */
     ctx.response.status = 200
-    ctx.body = comment
+    ctx.body = { comment }
   }
   catch (e) {
     ctx.throw(400, e)
@@ -35,43 +35,37 @@ export const GetOne = async (ctx, next) => {
 export const Post = async (ctx, next) => {
   const conn: Connection = getConnection()
   const comment: Comment = new Comment()
-  const { data } = ctx.request.body
-  let documentId: number = null
   const tokenUser = ctx.state.token.user
+  const { documentId, commentId, content } = ctx.request.body
 
   try {
-    /* 유저 불러오기 */
+    /* 유저와 relation 설정 */
     const user: User = await conn
       .getRepository(User)
-      .findOne(tokenUser.id)
-
-    /* 유저와 relation 설정 */
+      .findOne(tokenUser.id, {
+        relations: ["profileImage"],
+      })
     comment.author = user
 
-    /* commentId를 인자로 전달하면 대댓글 relation 설정 */
-    if (typeof(data.commentId) === "number") {
+    /* 나머지 required 정보 입력 */
+    comment.content = content
+    comment.likedUsers = []
+
+    if (commentId) { // 대댓글인 경우
       const parent: Comment = await conn
         .getRepository(Comment)
-        .findOne(data.commentId, {
+        .findOne(commentId, {
           relations: ["rootDocument"],
         })
-
+      comment.rootDocument = parent.rootDocument
       comment.rootComment = parent
-      documentId = parent.rootDocument.id
     }
-
-    /* 게시글과 relation 설정 */
-    const document: Document = await conn
-      .getRepository(Document)
-      .findOneOrFail(documentId || Number(data.documentId))
-
-    comment.rootDocument = document
-
-    /* 나머지 required 정보 입력 */
-    comment.id = data.id
-    comment.createdAt = data.created_at
-    comment.content = data.text
-    comment.likedUsers = []
+    else if (documentId) {
+      const parent: Document = await conn
+        .getRepository(Document)
+        .findOne(documentId)
+      comment.rootDocument = parent
+    }
 
     /* 댓글 작성자의 댓글 수 1 증가 */
     ++(comment.author.commentsCount)
@@ -81,7 +75,7 @@ export const Post = async (ctx, next) => {
 
     /* POST 성공 응답 */
     ctx.response.status = 200
-    ctx.body = comment
+    ctx.body = { comment }
   }
   catch (e) {
     ctx.throw(400, e)
@@ -91,12 +85,12 @@ export const Post = async (ctx, next) => {
 /* 해당 댓글 좋아요 GET */
 export const GetLikes = async (ctx, next) => {
   const conn: Connection = getConnection()
-  const { commentId } = ctx.params
+  const { id } = ctx.params
 
   try{
     const comment: Comment = await conn
       .getRepository(Comment)
-      .findOne(commentId, {
+      .findOne(id, {
         relations: [
           "likedUsers",
           "likedUsers.profileImage",
@@ -115,14 +109,14 @@ export const GetLikes = async (ctx, next) => {
 /* 해당 댓글 좋아요 POST */
 export const PostLikes = async (ctx, next) => {
   const conn: Connection = getConnection()
-  const { commentId } = ctx.params
+  const { id } = ctx.params
   const tokenUser = ctx.state.token.user
 
   try {
     /* DB에서 댓글 불러오기 */
     const comment: Comment = await conn
       .getRepository(Comment)
-      .findOne(commentId, {
+      .findOne(id, {
         relations: ["likedUsers"],
       })
 
@@ -155,14 +149,14 @@ export const PostLikes = async (ctx, next) => {
 /* 해당 댓글 좋아요 DELETE */
 export const CalcelLikes = async (ctx, next) => {
   const conn: Connection = getConnection()
-  const { commentId } = ctx.params
+  const { id } = ctx.params
   const tokenUser = ctx.state.token.user
 
   try {
     /* DB에서 댓글 불러오기 */
     const comment: Comment = await conn
       .getRepository(Comment)
-      .findOne(commentId, {
+      .findOne(id, {
         relations: ["likedUsers"],
       })
 
