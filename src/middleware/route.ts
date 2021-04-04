@@ -58,7 +58,7 @@ router.get("/user/:id/comment", User.GetComment)
 router.get("/timeline", Timeline.GetTimeline)
 router.get("/timeline/:username", Timeline.GetUserTimeline)
 router.get("/timeline/:username/likes", Timeline.GetLikedTimeline)
-router.get("/timeline/:username/commented", Timeline.GetCommentedTimeline)
+router.get("/timeline/:username/comments", Timeline.GetCommentedTimeline)
 
 router.get("/document/:id", Document.GetOne)
 router.post("/document", Document.Post)
