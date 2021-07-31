@@ -110,7 +110,7 @@ export default class User {
   @Column("boolean", {
     default: false,
   })
-  public isBoardMemeber:	boolean
+  public isBoardMember:	boolean
 
   /* 총무 여부 */
   @Column("boolean", {
