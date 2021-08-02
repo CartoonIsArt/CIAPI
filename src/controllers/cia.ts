@@ -5,21 +5,23 @@ import Cia from "../entities/cia"
 export const GetOne = async (ctx, next) => {
   const conn: Connection = getConnection()
 
-  try{
+  try {
     const cia: Cia = await conn
-    .getRepository(Cia)
-    .createQueryBuilder()
-    .where("cia.title = :title", { title: ctx.params.title })
-    .getOne()
+      .getRepository(Cia)
+      .createQueryBuilder()
+      .where("cia.title = :title", { title: ctx.params.title })
+      .getOne()
 
-    ctx.body = cia
+    /* GET 완료 응답 */
+    ctx.response.status = 200
+    ctx.body = {
+      cia
+    }
   }
-  catch (e){
+  catch (e) {
     ctx.throw(400, e)
   }
 
-  /* GET 완료 응답 */
-  ctx.response.status = 200
 }
 
 /* 모든 동아리 정보 GET - title만 로드 */
@@ -27,10 +29,10 @@ export const GetAll = async (ctx, next) => {
   const conn: Connection = getConnection()
   const responseBody: string[] = []
 
-  try{
+  try {
     const allCia: Cia[] = await conn
-    .getRepository(Cia)
-    .find()
+      .getRepository(Cia)
+      .find()
 
     /* 모든 게시물의 title만 ctx.body에 반환 */
     for (const ciaSet of allCia.entries()) {
@@ -38,13 +40,15 @@ export const GetAll = async (ctx, next) => {
       responseBody.push(cia.title)
     }
   }
-  catch (e){
+  catch (e) {
     ctx.throw(400, e)
   }
 
   /* GET 완료 응답 */
-  ctx.body = responseBody
   ctx.response.status = 200
+  ctx.body = {
+    cias: responseBody
+  }
 }
 
 /* 동아리 정보 POST */
@@ -56,16 +60,18 @@ export const Post = async (ctx, next) => {
   cia.title = data.title
   cia.content = data.content
 
-  try{
+  try {
     await conn.manager.save(cia)
   }
-  catch (e){
+  catch (e) {
     ctx.throw(400, e)
   }
 
   /* POST 완료 응답 */
-  ctx.body = cia
   ctx.response.status = 200
+  ctx.body = {
+    cia
+  }
 }
 
 /* 해당 동아리 정보 PATCH */
@@ -73,29 +79,31 @@ export const PatchOne = async (ctx, next) => {
   const conn: Connection = getConnection()
   const data = ctx.request.body
 
-  try{
+  try {
     /* name 문서를 찾아서 가져옴 */
     const cia: Cia = await conn
-    .getRepository(Cia)
-    .createQueryBuilder()
-    .where("cia.title = :title", { title: ctx.params.title })
-    .getOne()
+      .getRepository(Cia)
+      .createQueryBuilder()
+      .where("cia.title = :title", { title: ctx.params.title })
+      .getOne()
 
     /* 입력받은 값으로 수정 */
-    if (data.title !== undefined){
+    if (data.title !== undefined) {
       cia.title = data.title
     }
-    if (data.text !== undefined){
+    if (data.text !== undefined) {
       cia.content = data.content
     }
 
     await conn.manager.save(cia)
-    ctx.body = cia
+
+    /* PATCH 완료 응답 */
+    ctx.response.status = 200
+    ctx.body = {
+      cia
+    }
   }
-  catch (e){
+  catch (e) {
     ctx.throw(400, e)
   }
-
-  /* PATCH 완료 응답 */
-  ctx.response.status = 200
 }

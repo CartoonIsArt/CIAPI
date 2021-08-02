@@ -9,9 +9,7 @@ import Comment from "./comment"
 import Content from "./content"
 import User from "./user"
 
-/* 게시글 테이블 스키마 */
-@Entity()
-export default class Document extends Content {
+export class IDocument extends Content {
   /* 작성자 */
   @ManyToOne(type => User, author => author.documents, {
     nullable : false,
@@ -26,4 +24,9 @@ export default class Document extends Content {
   @ManyToMany(type => User)
   @JoinTable()
   public likedUsers: User[]
+}
+
+@Entity()
+export default class Document extends IDocument {
+  // IDocument와 동일
 }

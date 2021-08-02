@@ -34,7 +34,7 @@ export const Login = async (ctx, next) => {
 
     await conn.manager.save(authenticationToken)
   }
-  catch (e){
+  catch (e) {
     ctx.throw(400, e)
   }
 
