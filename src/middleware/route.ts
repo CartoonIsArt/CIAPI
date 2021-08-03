@@ -54,6 +54,7 @@ router.patch("/user/:id", User.PatchOne)
 router.patch("/user", User.PatchAll)
 router.get("/user/:id/document", User.GetDocuments)
 router.get("/user/:id/comment", User.GetComment)
+router.post("/user/confirmPW", User.ConfirmPW)
 
 router.get("/timeline", Timeline.GetTimeline)
 router.get("/timeline/:username", Timeline.GetUserTimeline)
