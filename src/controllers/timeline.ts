@@ -36,14 +36,16 @@ export const GetTimeline = async (ctx, next) => {
     }
 
     const timeline: Document[] = await queryBuilder.getMany()
-    ctx.body = timeline
+
+    /* GET 완료 응답 */
+    ctx.response.status = 200
+    ctx.body = {
+      timeline
+    }
   }
-  catch (e){
+  catch (e) {
     ctx.throw(400, e)
   }
-
-  /* GET 완료 응답 */
-  ctx.response.status = 200
 }
 
 export const GetUserTimeline = async (ctx, next) => {
@@ -81,14 +83,16 @@ export const GetUserTimeline = async (ctx, next) => {
     }
 
     const timeline: Document[] = await queryBuilder.getMany()
-    ctx.body = timeline
+
+    /* GET 완료 응답 */
+    ctx.response.status = 200
+    ctx.body = {
+      timeline
+    }
   }
-  catch (e){
+  catch (e) {
     ctx.throw(400, e)
   }
-
-  /* GET 완료 응답 */
-  ctx.response.status = 200
 }
 
 export const GetLikedTimeline = async (ctx, next) => {
@@ -126,14 +130,16 @@ export const GetLikedTimeline = async (ctx, next) => {
     }
 
     const timeline: Document[] = await queryBuilder.getMany()
-    ctx.body = timeline
+
+    /* GET 완료 응답 */
+    ctx.response.status = 200
+    ctx.body = {
+      timeline
+    }
   }
-  catch (e){
+  catch (e) {
     ctx.throw(400, e)
   }
-
-  /* GET 완료 응답 */
-  ctx.response.status = 200
 }
 
 export const GetCommentedTimeline = async (ctx, next) => {
@@ -173,12 +179,14 @@ export const GetCommentedTimeline = async (ctx, next) => {
     }
 
     const timeline: Document[] = await queryBuilder.getMany()
-    ctx.body = timeline
+    
+    /* GET 완료 응답 */
+    ctx.response.status = 200
+    ctx.body = {
+      timeline
+    }
   }
-  catch (e){
+  catch (e) {
     ctx.throw(400, e)
   }
-
-  /* GET 완료 응답 */
-  ctx.response.status = 200
 }

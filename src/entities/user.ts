@@ -110,6 +110,7 @@ export default class User {
   @Column("boolean", {
     default: false,
   })
+  // public isBoardMember:	boolean
   public isBoardMemeber:	boolean
 
   /* 총무 여부 */
@@ -175,4 +176,7 @@ export default class User {
   /* 좋아요한 댓글 리스트 */
   @ManyToMany(type => Comment, comment => comment.likedUsers)
   public likedComments: Comment[]
+
+  // 미확인 공지 리스트
+  // @OneToMany(type => Document, document => document.)
 }
