@@ -312,12 +312,11 @@ export const PatchOne = async (ctx, next) => {
   const data = ctx.request.body
 
   try{
-    const user: User = await conn
-    .getRepository(User)
-    .findOne(ctx.params.id, {
-      relations: ["profileImage"],
+      const user: User = await conn
+      .getRepository(User)
+      .findOne(ctx.params.id, {
+        relations: ["profileImage"],
     })
-    //const user = await Authenticate(ctx.state.token.user.username, data.password)
 
     if (data.fullname !== undefined) {
       user.fullname = data.fullname
@@ -394,14 +393,12 @@ export const PatchAll = async (ctx, next) => {
   ctx.response.status = 200
 }
 
-export const ConfirmPW = async (ctx, next) => {
+export const CheckPassword = async (ctx, next) => {
   const conn: Connection = getConnection()
   const data = ctx.request.body
 
   try{
-    const user = await Authenticate(ctx.state.token.user.username, data.password)
-
-    ctx.body = user
+    await Authenticate(ctx.state.token.user.username, data.password)
   }
   catch (e) {
     ctx.throw(400, e)
