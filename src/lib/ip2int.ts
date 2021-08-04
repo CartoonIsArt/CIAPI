@@ -54,7 +54,7 @@ const ipv6ToInt = (ip: string): number => {
 }
 
 /* https://stackoverflow.com/a/8105740 */
-function intToIpv4 (num: number): string {
+export function intToIpv4 (num: number): string {
   const octet0 = ((num >> 24) & 255)
   const octet1 = ((num >> 16) & 255)
   const octet2 = ((num >> 8) & 255)

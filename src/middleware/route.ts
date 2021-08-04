@@ -1,10 +1,18 @@
 import * as Router from "koa-router"
+import * as Multer from "@koa/multer"
 import * as Comment from "../controllers/comment"
 import * as Document from "../controllers/document"
 import * as File from "../controllers/file"
 import * as AuthenticationToken from "../controllers/authenticationToken"
 import * as Timeline from "../controllers/timeline"
 import * as User from "../controllers/user"
+
+const path = require("path")
+
+const storage = Multer.diskStorage({
+  destination: path.join(__dirname, '../../../images/')
+})
+const upload = Multer({ storage })
 
 export var router = new Router({ prefix: '/api' })
 // export var router = new Router()
@@ -59,7 +67,7 @@ router.post("/user/checkPassword", User.CheckPassword)
 router.get("/timeline", Timeline.GetTimeline)
 router.get("/timeline/:username", Timeline.GetUserTimeline)
 router.get("/timeline/:username/likes", Timeline.GetLikedTimeline)
-router.get("/timeline/:username/commented", Timeline.GetCommentedTimeline)
+router.get("/timeline/:username/comments", Timeline.GetCommentedTimeline)
 
 router.get("/document/:id", Document.GetOne)
 router.post("/document", Document.Post)
@@ -76,7 +84,8 @@ router.delete("/comment/:id/likeIt", Comment.CalcelLikes)
 
 router.get("/file/:id", File.GetOne)
 router.get("/file", File.GetAll)
-router.post("/file", File.Post)
+router.post("/file", upload.single('avatar'), File.PostOne)
+router.post("/files", upload.array('photo', 10), File.PostAll)
 router.delete("/file/:id", File.DeleteOne)
 
 router.get("/logout", AuthenticationToken.Logout)

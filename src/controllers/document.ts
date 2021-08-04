@@ -25,7 +25,9 @@ export const GetOne = async (ctx, next) => {
 
     /* GET 완료 응답 */
     ctx.response.status = 200
-    ctx.body = { document }
+    ctx.body = {
+      document
+    }
   }
   catch (e) {
     ctx.throw(400, e)
@@ -57,7 +59,9 @@ export const Post = async (ctx, next) => {
 
     /* POST 완료 응답 */
     ctx.response.status = 200
-    ctx.body = { document }
+    ctx.body = {
+      document
+    }
   }
   catch (e) {
     ctx.throw(400, e)
@@ -91,7 +95,9 @@ export const PatchOne = async (ctx, next) => {
 
     /* PATCH 완료 응답 */
     ctx.response.status = 200
-    ctx.body = { document }
+    ctx.body = {
+      document
+    }
   }
   catch (e) {
     ctx.throw(400, e)
@@ -115,7 +121,9 @@ export const GetLikes = async (ctx, next) => {
 
     /* GET 완료 응답 */
     ctx.response.status = 200
-    ctx.body = { likedUsers: document.likedUsers }
+    ctx.body = {
+      likedUsers: document.likedUsers
+    }
   }
   catch (e) {
     ctx.throw(400, e)
@@ -205,5 +213,4 @@ export const CancelLikes = async (ctx, next) => {
   catch (e) {
     ctx.throw(400, e)
   }
-
 }

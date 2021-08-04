@@ -24,7 +24,9 @@ export const GetOne = async (ctx, next) => {
 
     /* GET 성공 응답 */
     ctx.response.status = 200
-    ctx.body = { comment }
+    ctx.body = {
+      comment
+    }
   }
   catch (e) {
     ctx.throw(400, e)
@@ -75,7 +77,9 @@ export const Post = async (ctx, next) => {
 
     /* POST 성공 응답 */
     ctx.response.status = 200
-    ctx.body = { comment }
+    ctx.body = {
+      comment
+    }
   }
   catch (e) {
     ctx.throw(400, e)
@@ -87,7 +91,7 @@ export const GetLikes = async (ctx, next) => {
   const conn: Connection = getConnection()
   const { id } = ctx.params
 
-  try{
+  try {
     const comment: Comment = await conn
       .getRepository(Comment)
       .findOne(id, {
@@ -99,7 +103,9 @@ export const GetLikes = async (ctx, next) => {
 
     /* GET 성공 응답 */
     ctx.response.status = 200
-    ctx.body = { likedUsers: comment.likedUsers }
+    ctx.body = {
+      likedUsers: comment.likedUsers
+    }
   }
   catch (e) {
     ctx.throw(400, e)
