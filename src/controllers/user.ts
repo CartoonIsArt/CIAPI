@@ -317,8 +317,12 @@ export const PatchOne = async (ctx, next) => {
   const conn: Connection = getConnection()
   const data = ctx.request.body
 
-  try {
-    const user = await Authenticate(ctx.state.token.user.username, data.password)
+  try{
+      const user: User = await conn
+      .getRepository(User)
+      .findOne(ctx.params.id, {
+        relations: ["profileImage"],
+    })
 
     if (data.fullname !== undefined) {
       user.fullname = data.fullname
@@ -400,4 +404,19 @@ export const PatchAll = async (ctx, next) => {
   catch (e) {
     ctx.throw(400, e)
   }
+}
+
+export const CheckPassword = async (ctx, next) => {
+  const conn: Connection = getConnection()
+  const data = ctx.request.body
+
+  try{
+    await Authenticate(ctx.state.token.user.username, data.password)
+  }
+  catch (e) {
+    ctx.throw(400, e)
+  }
+
+  /* PATCH 완료 응답 */
+  ctx.response.status = 200
 }
