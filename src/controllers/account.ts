@@ -98,12 +98,15 @@ export const Post = async (ctx, next) => {
   profile.favoriteComic = data.favoriteComic
   profile.favoriteCharacter = data.favoriteCharacter
   profile.profileText = data.profileText
-  profile.profileImage = `/images/${data.profileImage.savedPath}`
+  profile.profileImage = `/images/${data.profileImage}`
 
   /* 학생 정보 생성 */
   const student: Student = new Student()
-  student.major = data.major
   student.studentNumber = data.studentNumber
+  student.name = data.name
+  student.nTh = data.nTh
+  student.birthdate = data.birthdate
+  student.major = data.major
   student.email = data.email
   student.phoneNumber = data.phoneNumber
 
@@ -112,7 +115,7 @@ export const Post = async (ctx, next) => {
 
   try {
     /* 데이터 저장 */
-      await conn.manager.save([account, student, profile])
+    await conn.manager.save([account, student, profile])
 
     /* POST 완료 응답 */
     ctx.response.status = 201

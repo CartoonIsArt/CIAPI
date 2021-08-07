@@ -38,16 +38,16 @@ export default class Profile {
   @Column({
     name: "profile_image",
     type: "char",
-    length: 32,
-    default: "default_profile_image",
+    length: 40,
+    default: "/images/default_profile_image",
   })
   public profileImage: string       // 프로필 이미지 경로
 
   @Column({
     name: "profile_banner_image",
     type: "char",
-    length: 32,
-    default: "default_profile_banner_image",
+    length: 40,
+    default: "/images/default_profile_banner_image",
   })
   public profileBannerImage: string // 프로필 배너 이미지 경로
   
