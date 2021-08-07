@@ -149,7 +149,6 @@ export const MakeResponseAccount = ({
   documentsCount,
   commentsCount,
   likedDocumentsCount,
-  permission,
   profile,
   student,
 }) => {
@@ -161,7 +160,6 @@ export const MakeResponseAccount = ({
     documentsCount,
     commentsCount,
     likedDocumentsCount,
-    permission,
     profile,
     _student,
   }

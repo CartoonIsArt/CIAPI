@@ -14,7 +14,6 @@ export const GetOne = async (ctx, next) => {
       .findOne(id, {
         relations: [
           "author",
-          "author.permission",
           "author.profile",
           "author.student",
           "root_document",
@@ -47,7 +46,7 @@ export const Post = async (ctx, next) => {
     const account: Account = await conn
       .getRepository(Account)
       .findOne(user.id, {
-        relations: ["permission", "profile", "student"],
+        relations: ["profile", "student"],
       })
       
     const comment: Comment = new Comment()
@@ -134,7 +133,7 @@ export const PostLikes = async (ctx, next) => {
     const account: Account = await conn
       .getRepository(Account)
       .findOne(tokenUser.id, {
-        relations: ["permission", "profile", "student"],
+        relations: ["profile", "student"],
       })
 
     /* 계정과 좋아요 relation 설정 */
@@ -174,7 +173,7 @@ export const CalcelLikes = async (ctx, next) => {
     const user: Account = await conn
       .getRepository(Account)
       .findOne(tokenUser.id, {
-        relations: ["permission", "profile", "student"],
+        relations: ["profile", "student"],
       })
 
     /* 계정과 좋아요 relation 해제 */

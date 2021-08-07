@@ -4,7 +4,6 @@ import { Authenticate } from "../auth"
 import Account, { MakeResponseAccount } from "../entities/account"
 import Comment from "../entities/comment"
 import Document from "../entities/document"
-import Permission from "../entities/permission"
 import Profile from "../entities/profile"
 import Student from "../entities/student"
 
@@ -17,7 +16,7 @@ export const GetAuthenticated = async (ctx, next) => {
     const account: Account = await conn
       .getRepository(Account)
       .findOne(user.id, {
-        relations: ["permission", "profile", "student"],
+        relations: ["profile", "student"],
       })
 
     /* GET 완료 응답 */
@@ -41,7 +40,7 @@ export const GetOne = async (ctx, next) => {
     const account: Account = await conn
       .getRepository(Account)
       .findOne(id, {
-        relations: ["permission", "profile", "student"],
+        relations: ["profile", "student"],
       })
 
     /* GET 완료 응답 */
@@ -64,7 +63,7 @@ export const GetAll = async (ctx, next) => {
     const accounts: Account[] = await conn
       .getRepository(Account)
       .find({
-        relations: ["permission", "profile", "student"],
+        relations: ["profile", "student"],
       })
 
     /* GET 완료 응답 */
@@ -94,9 +93,6 @@ export const Post = async (ctx, next) => {
   const derivedKey: Buffer = crypto.pbkdf2Sync(data.password, account.salt, 131071, 64, 'sha512')
   account.password = derivedKey.toString('hex')
 
-  /* 권한 정보 생성 */
-  const permission: Permission = new Permission()
-  
   /* 프로필 정보 생성 */
   const profile: Profile = new Profile()
   profile.favoriteComic = data.favoriteComic
@@ -111,13 +107,12 @@ export const Post = async (ctx, next) => {
   student.email = data.email
   student.phoneNumber = data.phoneNumber
 
-  account.permission = permission
   account.profile = profile
   account.student = student
 
   try {
     /* 데이터 저장 */
-      await conn.manager.save([account, permission, student, profile])
+      await conn.manager.save([account, student, profile])
 
     /* POST 완료 응답 */
     ctx.response.status = 201
@@ -150,13 +145,12 @@ export const DeleteOne =  async (ctx, next) => {
     const account: Account = await conn
       .getRepository(Account)
       .findOne(id, {
-        relations: ["permission", "profile", "student"],
+        relations: ["profile", "student"],
       })
 
     /* 해당 계정 정보를 탈퇴한 계정 정보로 덮어쓰기 */
     await conn.manager.transaction(async manager => {
       await manager.update(Account, account, leaver)
-      await manager.update(Permission, account.permission, leaver.permission)
       await manager.update(Profile, account.profile, leaver.profile)
       await manager.update(Student, account.student, leaver.student)
     })
@@ -224,25 +218,23 @@ export const GetComment = async (ctx, next) => {
 export const PatchOne = async (ctx, next) => {
   const conn: Connection = getConnection()
   const { id } = ctx.params
-  const { permission, profile, student } = ctx.request.body
+  const { profile, student } = ctx.request.body
 
   try {
     const account: Account = await conn
       .getRepository(Account)
       .findOne(id, {
-        relations: ["permission", "profile", "student"],
+        relations: ["profile", "student"],
       })
 
     /* 계정 정보 업데이트 */
     await conn.manager.transaction(async manager => {
-      await manager.update(Permission, account.permission, permission)
       await manager.update(Profile, account.profile, profile)
       await manager.update(Student, account.student, student)
     })
-    // permission.account = profile.account = student.account = account
-    // await conn.manager.save([permission, profile, student])
+    // profile.account = student.account = account
+    // await conn.manager.save([profile, student])
 
-    account.permission = permission
     account.profile = profile
     account.student = student
     

@@ -10,7 +10,7 @@ export async function Authenticate (username: string, password: string): Promise
       where: {
         username
       },
-      relations: ["permission", "profile", "student"],
+      relations: ["profile", "student"],
     })
   const derivedKey = crypto.pbkdf2Sync(password, account.salt, 131071, 64, 'sha512')
 
