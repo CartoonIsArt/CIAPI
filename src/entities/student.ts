@@ -54,8 +54,8 @@ export default class Student {
 
   @Column({
     name: "phone_number",
-    type: "nchar",
-    width: 13,
+    type: "char",
+    length: 13,
     unique: true,
   })
   public phoneNumber: string    // 핸드폰 번호

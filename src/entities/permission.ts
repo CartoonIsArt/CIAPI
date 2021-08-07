@@ -29,7 +29,7 @@ export default class Permission {
     // type: "enum",
     // enum: UserRole,
     // default: UserRole.NON_REGULAR,
-    type: "nvarchar",
+    type: "varchar",
     unique: true,
   })
   public level: string    // 권한 수준

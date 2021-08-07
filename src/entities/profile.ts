@@ -16,14 +16,14 @@ export default class Profile {
 
   @Column({
     name: "favorite_comic",
-    type: "nvarchar",
+    type: "varchar",
     default: "",
   })
   public favoriteComic:	string      // 좋아하는 만화
 
   @Column({
     name: "favorite_character",
-    type: "nvarchar",
+    type: "varchar",
     default: "",
   })
   public favoriteCharacter:	string  // 좋아하는 캐릭터
@@ -37,16 +37,16 @@ export default class Profile {
 
   @Column({
     name: "profile_image",
-    type: "nchar",
-    width: 32,
+    type: "char",
+    length: 32,
     default: "/images/default_profile_image",
   })
   public profileImage: string       // 프로필 이미지 경로
 
   @Column({
     name: "profile_banner_image",
-    type: "nchar",
-    width: 32,
+    type: "char",
+    length: 32,
     default: "/images/default_profile_banner_image",
   })
   public profileBannerImage: string // 프로필 배너 이미지 경로

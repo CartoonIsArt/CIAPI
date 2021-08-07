@@ -38,7 +38,7 @@ export default class Account {
 
   @Column({
     name: "salt",
-    type: "nchar",
+    type: "char",
     length: 64,
   })
   public salt: string                 // 비밀번호 솔트
