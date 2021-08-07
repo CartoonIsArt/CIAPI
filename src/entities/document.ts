@@ -33,7 +33,7 @@ export default class Document {
 
   @Column({
     name: "is_notification",
-    type: "boolean",
+    type: "tinyint",
     default: false,
   })
   public isNotification: boolean  // 공지글 여부

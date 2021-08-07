@@ -62,7 +62,7 @@ export default class Student {
 
   @Column({
     name: "has_graduated",
-    type: "boolean",
+    type: "tinyint",
     default: false,
   })
   public hasGraduated: boolean  // 졸업 여부

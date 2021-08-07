@@ -50,14 +50,14 @@ export default class Account {
 
   @Column({
     name: "is_approved",
-    type: "boolean",
+    type: "tinyint",
     default: false,
   })
   public isApproved: boolean          // 가입 승인 여부
 
   @Column({
     name: "is_active",
-    type: "boolean",
+    type: "tinyint",
     default: false,
   })
   public isActive:	boolean           // 활동인구 여부
