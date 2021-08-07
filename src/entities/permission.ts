@@ -13,6 +13,7 @@ import Account from "./account"
 //   MANAGER = "manager",
 //   REGULAR = "regular",
 //   NON_REGULAR = "non-regular",
+//   LEAVER = "leaver",
 // }
 
 @Entity()

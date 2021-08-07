@@ -13,7 +13,7 @@ import Comment from "./comment"
 import Document from "./document"
 import Permission from "./permission"
 import Profile from "./profile"
-import Student from "./student"
+import Student, { MakeResponseStudent } from "./student"
 
 @Entity()
 export default class Account {
@@ -124,13 +124,38 @@ export default class Account {
   })
   public comments: Comment[]          // 작성 댓글 목록
 
-  @ManyToMany(() => Document, document => document.likedUsers, {
+  @ManyToMany(() => Document, document => document.likedAccounts, {
     nullable: false,
   })
   public likedDocuments: Document[]   // 좋아요한 게시글 목록
 
-  @ManyToMany(() => Comment, comment => comment.likedUsers, {
+  @ManyToMany(() => Comment, comment => comment.likedAccounts, {
     nullable: false,
   })
   public likedComments: Comment[]     // 좋아요한 댓글 목록
+}
+
+export const MakeResponseAccount = ({
+  id,
+  username,
+  isActive,
+  documentsCount,
+  commentsCount,
+  likedDocumentsCount,
+  permission,
+  profile,
+  student,
+}) => {
+  const _student = MakeResponseStudent(student)
+  return {
+    id,
+    username,
+    isActive,
+    documentsCount,
+    commentsCount,
+    likedDocumentsCount,
+    permission,
+    profile,
+    _student,
+  }
 }

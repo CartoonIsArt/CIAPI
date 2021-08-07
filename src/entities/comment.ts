@@ -55,7 +55,7 @@ export default class Comment {
       referencedColumnName: "id",
     },
   })
-  public likedUsers: Account[]  // 좋아요한 유저들
+  public likedAccounts: Account[]  // 좋아요한 유저들
 
   @ManyToOne(() => Document, documents => documents.comments, {
     nullable: false,

@@ -62,7 +62,7 @@ export default class Document {
       referencedColumnName: "id",
     },
   })
-  public likedUsers: Account[]    // 좋아요한 유저들
+  public likedAccounts: Account[]    // 좋아요한 유저들
 
   @OneToMany(() => Comment, comment => comment.rootDocument, {
     eager: true,

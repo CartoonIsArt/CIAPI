@@ -70,3 +70,21 @@ export default class Student {
   @OneToOne(() => Account, account => account.student)
   public account: Account       // 학생 정보
 }
+
+export const MakeResponseStudent = ({
+  id,
+  name,
+  nTh,
+  birthdate,
+  major,
+  email,
+  phoneNumber,
+}) => ({
+  id,
+  name,
+  nTh,
+  birthdate,
+  major,
+  email,
+  phoneNumber,
+})

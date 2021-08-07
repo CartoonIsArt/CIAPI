@@ -1,8 +1,8 @@
 import { Connection, getConnection } from "typeorm"
-import AuthenticationToken from "../entities/authenticationToken"
-import { ipToInt } from "../lib/ip2int"
-import { cookieExpirationDate } from "../lib/date"
 import { Authenticate } from "../auth"
+import { cookieExpirationDate } from "../lib/date"
+import { ipToInt } from "../lib/ip2int"
+import AuthenticationToken from "../entities/authenticationToken"
 
 const jwt = require('jsonwebtoken')
 
@@ -33,13 +33,14 @@ export const Login = async (ctx, next) => {
     authenticationToken.accessIp = ipToInt(ctx.ip)
 
     await conn.manager.save(authenticationToken)
+
+    /* 로그인 완료 응답 */
+    ctx.response.status = 204
   }
   catch (e) {
     ctx.throw(400, e)
   }
-
-  /* 로그인 완료 응답 */
-  ctx.response.status = 200
+  next()
 }
 
 /* 로그아웃 */
@@ -64,4 +65,5 @@ export const Logout =  async (ctx, next) => {
   catch (e) {
     ctx.throw(400, e)
   }
+  next()
 }
