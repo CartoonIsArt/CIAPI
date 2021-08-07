@@ -4,16 +4,23 @@ import {
   Entity,
   JoinColumn,
   ManyToMany,
-  ManyToOne,
   OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
 } from "typeorm"
 import Comment from "./comment"
 import Document from "./document"
-import Permission from "./permission"
 import Profile from "./profile"
 import Student, { MakeResponseStudent } from "./student"
+
+export enum UserRole {
+  SUPERUSER = "superuser",
+  BOARD_MANAGER = "board manager",
+  MANAGER = "manager",
+  REGULAR = "regular",
+  NON_REGULAR = "non-regular",
+  LEAVER = "leaver",
+}
 
 @Entity()
 export default class Account {
@@ -106,13 +113,13 @@ export default class Account {
   })
   public student: Student             // 학생 정보
   
-  @ManyToOne(() => Permission, permission => permission.account, {
-    nullable: false,
+  @Column({
+    name: "role",
+    type: "enum",
+    enum: UserRole,
+    default: UserRole.NON_REGULAR,
   })
-  @JoinColumn({
-    name: "permission_id",
-  })
-  public permission: Permission       // 접근 권한
+  public role: UserRole               // 접근 권한
 
   @OneToMany(() => Document, document => document.author, {
     nullable: false,
