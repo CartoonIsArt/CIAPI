@@ -14,13 +14,13 @@ export default class AuthenticationToken {
 
   @Column({
     name: "access_token",
-    type: "varchar",
+    type: "text",
   })
   public accessToken: string  // 로그인 여부 확인용 JWT 액세스 토큰
 
   @Column({
     name: "refresh_token",
-    type: "varchar",
+    type: "text",
     unique: true,
   })
   public refreshToken: string // 액세스 토큰 재발급용 리프레시 토큰
