@@ -27,7 +27,8 @@ export default class AuthenticationToken {
   
   @Column({
     name: "access_ip",
-    type: "int",
+    type: "varbinary",
+    length: 45,
   })
-  public accessIp: number     // 접속 아이피
+  public accessIp: string     // 접속 아이피
 }
