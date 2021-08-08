@@ -1,7 +1,6 @@
 import { Connection, getConnection } from "typeorm"
 import { Authenticate } from "../auth"
 import { cookieExpirationDate } from "../lib/date"
-import { ipToInt } from "../lib/ip2int"
 import AuthenticationToken from "../entities/authenticationToken"
 
 const jwt = require('jsonwebtoken')
@@ -30,7 +29,7 @@ export const Login = async (ctx, next) => {
     // 4. Save refresh token to database 
     authenticationToken.accessToken = accessToken
     authenticationToken.refreshToken = refreshToken
-    authenticationToken.accessIp = ipToInt(ctx.ip)
+    authenticationToken.accessIp = ctx.ip
 
     await conn.manager.save(authenticationToken)
 
