@@ -32,7 +32,6 @@ export const GetOne = async (ctx, next) => {
   catch (e) {
     ctx.throw(400, e)
   }
-  next()
 }
 
 /* 댓글 POST */
@@ -84,7 +83,6 @@ export const Post = async (ctx, next) => {
   catch (e) {
     ctx.throw(400, e)
   }
-  next()
 }
 
 /* 해당 댓글 좋아요 GET */
@@ -112,7 +110,6 @@ export const GetLikes = async (ctx, next) => {
   catch (e) {
     ctx.throw(400, e)
   }
-  next()
 }
 
 /* 해당 댓글 좋아요 POST */
@@ -152,7 +149,6 @@ export const PostLikes = async (ctx, next) => {
   catch (e) {
     ctx.throw(400, e)
   }
-  next()
 }
 
 /* 해당 댓글 좋아요 DELETE */

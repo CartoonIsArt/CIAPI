@@ -41,6 +41,5 @@ export default async function refresher(ctx, next) {
     }
     ctx.throw(401, e)
   }
-
   await next()
 }

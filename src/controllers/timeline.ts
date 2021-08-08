@@ -48,7 +48,6 @@ export const GetTimeline = async (ctx, next) => {
   catch (e) {
     ctx.throw(400, e)
   }
-  next()
 }
 
 export const GetUserTimeline = async (ctx, next) => {
@@ -98,7 +97,6 @@ export const GetUserTimeline = async (ctx, next) => {
   catch (e) {
     ctx.throw(400, e)
   }
-  next()
 }
 
 export const GetLikedTimeline = async (ctx, next) => {
@@ -148,7 +146,6 @@ export const GetLikedTimeline = async (ctx, next) => {
   catch (e) {
     ctx.throw(400, e)
   }
-  next()
 }
 
 export const GetCommentedTimeline = async (ctx, next) => {
@@ -200,5 +197,4 @@ export const GetCommentedTimeline = async (ctx, next) => {
   catch (e) {
     ctx.throw(400, e)
   }
-  next()
 }

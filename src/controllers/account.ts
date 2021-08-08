@@ -18,7 +18,7 @@ export const GetAuthenticated = async (ctx, next) => {
       .findOne(user.id, {
         relations: ["profile", "student"],
       })
-
+    
     /* GET 완료 응답 */
     ctx.response.status = 200
     ctx.body = {
@@ -28,7 +28,6 @@ export const GetAuthenticated = async (ctx, next) => {
   catch (e) {
     ctx.throw(401, e)
   }
-  next()
 }
 
 /* 해당 계정 GET */
@@ -52,7 +51,6 @@ export const GetOne = async (ctx, next) => {
   catch (e) {
     ctx.throw(400, e)
   }
-  next()
 }
 
 /* 모든 계정 GET */
@@ -75,7 +73,6 @@ export const GetAll = async (ctx, next) => {
   catch (e) {
     ctx.throw(400, e)
   }
-  next()
 }
 
 /* 계정 POST */
@@ -131,7 +128,6 @@ export const Post = async (ctx, next) => {
     }
     ctx.throw(400, e)
   }
-  next()
 }
 
 /* 해당 계정 DELETE */
@@ -164,7 +160,6 @@ export const DeleteOne =  async (ctx, next) => {
   catch (e) {
     ctx.throw(400, e)
   }
-  next()
 }
 
 /* 해당 계정 게시글 GET */
@@ -189,7 +184,6 @@ export const GetDocuments = async (ctx, next) => {
   catch (e) {
     ctx.throw(400, e)
   }
-  next()
 }
 
 /* 해당 계정 댓글 GET */
@@ -214,7 +208,6 @@ export const GetComment = async (ctx, next) => {
   catch (e) {
     ctx.throw(400, e)
   }
-  next()
 }
 
 /* 해당 계정 PATCH */
@@ -247,7 +240,6 @@ export const PatchOne = async (ctx, next) => {
   catch (e) {
     ctx.throw(400, e)
   }
-  next()
 }
 
 /* 모든 계정 PATCH (활동인구 여부 수정) */
@@ -264,7 +256,6 @@ export const PatchAll = async (ctx, next) => {
   catch (e) {
     ctx.throw(400, e)
   }
-  next()
 }
 
 export const CheckPassword = async (ctx, next) => {
@@ -280,5 +271,4 @@ export const CheckPassword = async (ctx, next) => {
   catch (e) {
     ctx.throw(400, e)
   }
-  next()
 }

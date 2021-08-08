@@ -15,7 +15,6 @@ export const GetOne = async (ctx, next) => {
   catch (e) {
     ctx.throw(400, e)
   }
-  next()
 }
 
 /* 모든 파일 GET */
@@ -30,7 +29,6 @@ export const GetAll = async (ctx, next) => {
   catch (e) {
     ctx.throw(400, e)
   }
-  next()
 }
 
 /* 파일 POST */

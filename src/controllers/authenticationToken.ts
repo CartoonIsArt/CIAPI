@@ -39,7 +39,6 @@ export const Login = async (ctx, next) => {
   catch (e) {
     ctx.throw(400, e)
   }
-  next()
 }
 
 /* 로그아웃 */
@@ -64,5 +63,4 @@ export const Logout =  async (ctx, next) => {
   catch (e) {
     ctx.throw(400, e)
   }
-  next()
 }

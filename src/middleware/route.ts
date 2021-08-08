@@ -1,6 +1,6 @@
 import * as Router from "koa-router"
 import * as Multer from "@koa/multer"
-import * as User from "../controllers/account"
+import * as Account from "../controllers/account"
 import * as AuthenticationToken from "../controllers/authenticationToken"
 import * as Comment from "../controllers/comment"
 import * as Document from "../controllers/document"
@@ -29,7 +29,7 @@ export var router = new Router({ prefix: '/api' })
          실행하고 싶은 다른 미들웨어가 있을 경우 사용.
          async (ctx, next) => {
            // app.use에 등록한 순서대로 실행
-           await next()
+           await 
            // 역순으로 실행
          }
 */
@@ -46,19 +46,19 @@ export var router = new Router({ prefix: '/api' })
 
 // public API
 router.post("/public/login", AuthenticationToken.Login)
-router.post("/public/user", User.Post)
+router.post("/public/account", Account.Post)
 router.post("/public/file", upload.single('avatar'), File.PostOne)
 
 // authorization required API
-router.get("/user/authenticated", User.GetAuthenticated)
-router.get("/user/:id", User.GetOne)
-router.get("/user", User.GetAll)
-router.delete("/user/:id", User.DeleteOne)
-router.patch("/user/:id", User.PatchOne)
-router.patch("/user", User.PatchAll)
-router.get("/user/:id/document", User.GetDocuments)
-router.get("/user/:id/comment", User.GetComment)
-router.post("/user/checkPassword", User.CheckPassword)
+router.get("/account/authenticated", Account.GetAuthenticated)
+router.get("/account/:id", Account.GetOne)
+router.get("/account", Account.GetAll)
+router.delete("/account/:id", Account.DeleteOne)
+router.patch("/account/:id", Account.PatchOne)
+router.patch("/account", Account.PatchAll)
+router.get("/account/:id/document", Account.GetDocuments)
+router.get("/account/:id/comment", Account.GetComment)
+router.post("/account/checkPassword", Account.CheckPassword)
 
 router.get("/timeline", Timeline.GetTimeline)
 router.get("/timeline/:username", Timeline.GetUserTimeline)
