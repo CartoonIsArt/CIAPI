@@ -78,10 +78,10 @@ jobs:
               --name cia-back \
               --network cia-net \
               --ip ${{ secrets.DOCKER_CONTAINER_IP }} \
-              --env TYPEORM_HOST=${{ secrets.MARIADB_HOST }} \
-              --env TYPEORM_DATABASE=${{ secrets.MARIADB_DATABASE }} \
-              --env TYPEORM_PORT=${{ secrets.MARIADB_PORT }} \
-              --env TYPEORM_USERNAME=${{ secrets.MARIADB_USERNAME }} \
-              --env TYPEORM_PASSWORD=${{ secrets.MARIADB_PASSWORD }} \
+              --env MARIADB_HOST=${{ secrets.MARIADB_HOST }} \
+              --env MARIADB_DATABASE=${{ secrets.MARIADB_DATABASE }} \
+              --env MARIADB_PORT=${{ secrets.MARIADB_PORT }} \
+              --env MARIADB_USERNAME=${{ secrets.MARIADB_USERNAME }} \
+              --env MARIADB_PASSWORD=${{ secrets.MARIADB_PASSWORD }} \
               ${{ secrets.DOCKER_HUB_REPOSITORY }} \
           && docker image prune -af"
