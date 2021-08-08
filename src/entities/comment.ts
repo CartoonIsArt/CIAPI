@@ -1,41 +1,81 @@
 import {
+  Column,
+  CreateDateColumn,
   Entity,
+  JoinColumn,
   JoinTable,
   ManyToMany,
   ManyToOne,
   OneToMany,
+  PrimaryGeneratedColumn,
 } from "typeorm"
-import Content from "./content"
+import Account from "./account"
 import Document from "./document"
-import User from "./user"
 
-/* 댓글 테이블 스키마 */
 @Entity()
-export default class Comment extends Content {
-  /* 작성자 */
-  @ManyToOne(type => User, author => author.comments, {
+export default class Comment {
+  @PrimaryGeneratedColumn({
+    name: "id",
+    type: "int",
+  })
+  public id: number
+
+  @CreateDateColumn({
+    name: "created_at",
+  })
+  public createdAt: Date        // 작성일
+
+  @Column({
+    name: "content",
+    type: "text",
+  })
+  public content: string        // 내용
+
+  @ManyToOne(() => Account, author => author.comments, {
+    eager: true,
     nullable : false,
   })
-  public author: User
+  @JoinColumn({
+    name: "author_id",
+  })
+  public author: Account        // 작성자
 
-  /* 댓글이 달린 게시물 */
-  @ManyToOne(type => Document, documents => documents.comments, {
+  @ManyToMany(() => Account, {
+    eager: true,
     nullable: false,
   })
-  public rootDocument: Document
+  @JoinTable({
+    name: "comments_accounts",
+    joinColumn: {
+      name: "comment_id",
+      referencedColumnName: "id",
+    },
+    inverseJoinColumn: {
+      name: "account_id",
+      referencedColumnName: "id",
+    },
+  })
+  public likedAccounts: Account[]  // 좋아요한 유저들
 
-  /* 좋아요한 유저들 */
-  @ManyToMany(type => User)
-  @JoinTable()
-  public likedUsers: User[]
+  @ManyToOne(() => Document, documents => documents.comments, {
+    nullable: false,
+  })
+  @JoinColumn({
+    name: "root_document_id",
+  })
+  public rootDocument: Document // 본 글
 
-  // 이하 대댓글 옵션
+  @ManyToOne(() => Comment, comment => comment.comments, {
+    nullable: true,
+  })
+  @JoinColumn({
+    name: "root_comment_id",
+  })
+  public rootComment: Comment   // 본 댓글 
 
-  /* 이 대댓글이 달린 댓글 */
-  @ManyToOne(type => Comment, comment => comment.comments)
-  public rootComment: Comment
-
-  /* 가지고 있는 대댓글 리스트 */
-  @OneToMany(type => Comment, comment => comment.rootComment)
-  public comments: Comment[]
+  @OneToMany(() => Comment, comment => comment.rootComment, {
+    eager: true,
+    nullable: false,
+  })
+  public comments: Comment[]    // 댓글들
 }

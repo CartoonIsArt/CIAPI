@@ -12,14 +12,16 @@ export const GetTimeline = async (ctx, next) => {
       .getRepository(Document)
       .createQueryBuilder('document')
       .leftJoinAndSelect('document.author', 'author')
-      .leftJoinAndSelect('author.profileImage', 'profileImage')
+      .leftJoinAndSelect('author.profile', 'profile')
+      .leftJoinAndSelect('author.student', 'student')
       .leftJoinAndSelect('document.comments', 'comments')
       .leftJoinAndSelect('comments.author', 'commentAuthor')
-      .leftJoinAndSelect('commentAuthor.profileImage', 'commentAuthorProfileImage')
+      .leftJoinAndSelect('commentAuthor.profile', 'commentAuthorProfile')
+      .leftJoinAndSelect('commentAuthor.student', 'commentAuthorStudent')
       .leftJoinAndSelect('comments.comments', 'replies')
       .leftJoinAndSelect('replies.author', 'repliyAuthor')
-      .leftJoinAndSelect('document.likedUsers', 'likedUsers')
-      .leftJoinAndSelect('comments.likedUsers', 'commentsLikedUsers')
+      .leftJoinAndSelect('document.likedAccounts', 'likedAccounts')
+      .leftJoinAndSelect('comments.likedAccounts', 'commentslikedAccounts')
       .orderBy('document.id', 'DESC')
       .skip((page - 1) * 5)
       .take(5)
@@ -40,7 +42,7 @@ export const GetTimeline = async (ctx, next) => {
     /* GET 완료 응답 */
     ctx.response.status = 200
     ctx.body = {
-      timeline
+      timeline,
     }
   }
   catch (e) {
@@ -59,14 +61,16 @@ export const GetUserTimeline = async (ctx, next) => {
       .getRepository(Document)
       .createQueryBuilder('document')
       .leftJoinAndSelect('document.author', 'author')
-      .leftJoinAndSelect('author.profileImage', 'profileImage')
+      .leftJoinAndSelect('author.profile', 'profile')
+      .leftJoinAndSelect('author.student', 'student')
       .leftJoinAndSelect('document.comments', 'comments')
       .leftJoinAndSelect('comments.author', 'commentAuthor')
-      .leftJoinAndSelect('commentAuthor.profileImage', 'commentAuthorProfileImage')
+      .leftJoinAndSelect('commentAuthor.profile', 'commentAuthorProfile')
+      .leftJoinAndSelect('commentAuthor.student', 'commentAuthorStudent')
       .leftJoinAndSelect('comments.comments', 'replies')
       .leftJoinAndSelect('replies.author', 'repliyAuthor')
-      .leftJoinAndSelect('document.likedUsers', 'likedUsers')
-      .leftJoinAndSelect('comments.likedUsers', 'commentsLikedUsers')
+      .leftJoinAndSelect('document.likedAccounts', 'likedAccounts')
+      .leftJoinAndSelect('comments.likedAccounts', 'commentslikedAccounts')
       .orderBy('document.id', 'DESC')
       .skip((page - 1) * 5)
       .take(5)
@@ -87,7 +91,7 @@ export const GetUserTimeline = async (ctx, next) => {
     /* GET 완료 응답 */
     ctx.response.status = 200
     ctx.body = {
-      timeline
+      timeline,
     }
   }
   catch (e) {
@@ -106,18 +110,20 @@ export const GetLikedTimeline = async (ctx, next) => {
       .getRepository(Document)
       .createQueryBuilder('document')
       .leftJoinAndSelect('document.author', 'author')
-      .leftJoinAndSelect('author.profileImage', 'profileImage')
+      .leftJoinAndSelect('author.profile', 'profile')
+      .leftJoinAndSelect('author.student', 'student')
       .leftJoinAndSelect('document.comments', 'comments')
       .leftJoinAndSelect('comments.author', 'commentAuthor')
-      .leftJoinAndSelect('commentAuthor.profileImage', 'commentAuthorProfileImage')
+      .leftJoinAndSelect('commentAuthor.profile', 'commentAuthorProfile')
+      .leftJoinAndSelect('commentAuthor.student', 'commentAuthorStudent')
       .leftJoinAndSelect('comments.comments', 'replies')
       .leftJoinAndSelect('replies.author', 'repliyAuthor')
-      .leftJoinAndSelect('document.likedUsers', 'likedUsers')
-      .leftJoinAndSelect('comments.likedUsers', 'commentsLikedUsers')
+      .leftJoinAndSelect('document.likedAccounts', 'likedAccounts')
+      .leftJoinAndSelect('comments.likedAccounts', 'commentslikedAccounts')
       .orderBy('document.id', 'DESC')
       .skip((page - 1) * 5)
       .take(5)
-      .where('likedUsers.username = :username', { username })
+      .where('likedAccounts.username = :username', { username })
     
     if (keyword) {
       queryBuilder = queryBuilder
@@ -134,7 +140,7 @@ export const GetLikedTimeline = async (ctx, next) => {
     /* GET 완료 응답 */
     ctx.response.status = 200
     ctx.body = {
-      timeline
+      timeline,
     }
   }
   catch (e) {
@@ -153,14 +159,16 @@ export const GetCommentedTimeline = async (ctx, next) => {
       .getRepository(Document)
       .createQueryBuilder('document')
       .leftJoinAndSelect('document.author', 'author')
-      .leftJoinAndSelect('author.profileImage', 'profileImage')
+      .leftJoinAndSelect('author.profile', 'profile')
+      .leftJoinAndSelect('author.student', 'student')
       .leftJoinAndSelect('document.comments', 'comments')
       .leftJoinAndSelect('comments.author', 'commentAuthor')
-      .leftJoinAndSelect('commentAuthor.profileImage', 'commentAuthorProfileImage')
+      .leftJoinAndSelect('commentAuthor.profile', 'commentAuthorProfile')
+      .leftJoinAndSelect('commentAuthor.student', 'commentAuthorStudent')
       .leftJoinAndSelect('comments.comments', 'replies')
       .leftJoinAndSelect('replies.author', 'repliyAuthor')
-      .leftJoinAndSelect('document.likedUsers', 'likedUsers')
-      .leftJoinAndSelect('comments.likedUsers', 'commentsLikedUsers')
+      .leftJoinAndSelect('document.likedAccounts', 'likedAccounts')
+      .leftJoinAndSelect('comments.likedAccounts', 'commentslikedAccounts')
       .orderBy('document.id', 'DESC')
       .skip((page - 1) * 5)
       .take(5)
@@ -183,7 +191,7 @@ export const GetCommentedTimeline = async (ctx, next) => {
     /* GET 완료 응답 */
     ctx.response.status = 200
     ctx.body = {
-      timeline
+      timeline,
     }
   }
   catch (e) {

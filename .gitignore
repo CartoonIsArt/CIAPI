@@ -1,5 +1,5 @@
 node_modules
-*.js
+src/**/*.js
 *.js.map
 .vscode
 yarn-error.log

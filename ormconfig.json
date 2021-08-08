@@ -1,8 +1,15 @@
 {
-  "type": "sqlite",
-  "database": "db/test.sqlite",
+  "type": "mariadb",
+  "host": "localhost",
+  "port": 3306,
+  "username": "cia",
+  "password": "password",
+  "database": "cia",
   "synchronize": true,
   "logging": false,
+  "extra": {
+    "charset": "utf8mb4_unicode_ci"
+  },
   "entities": [ 
     "src/entities/*.js"
   ],

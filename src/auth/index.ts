@@ -1,21 +1,20 @@
-import { Connection, getConnection } from "typeorm"
 import * as crypto from "crypto"
-import User from "../entities/user"
+import { Connection, getConnection } from "typeorm"
+import Account from "../entities/account"
 
-export async function Authenticate (username: string, password: string): Promise<User> {
+export async function Authenticate (username: string, password: string): Promise<Account> {
   const conn: Connection = getConnection()
-  const users: User[] = await conn
-    .getRepository(User)
-    .find({
+  const account: Account = await conn
+    .getRepository(Account)
+    .findOne({
       where: {
-        username,
+        username
       },
-      relations: ['profileImage']
+      relations: ["profile", "student"],
     })
-  const user = users[0]
-  const derivedKey = crypto.pbkdf2Sync(password, user.salt, 131071, 64, 'sha512')
+  const derivedKey = crypto.pbkdf2Sync(password, account.salt, 131071, 64, 'sha512')
 
-  if (derivedKey.toString('hex') !== user.password)
+  if (derivedKey.toString('hex') !== account.password)
     throw new Error('password mismatch')
-  return user
+  return account
 }

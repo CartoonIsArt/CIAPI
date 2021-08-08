@@ -1,7 +1,7 @@
 import { Connection, getConnection } from "typeorm"
+import Account, { MakeResponseAccount } from "../entities/account"
 import Comment from "../entities/comment"
 import Document from "../entities/document"
-import User from "../entities/user"
 
 /* 해당 댓글 GET */
 export const GetOne = async (ctx, next) => {
@@ -14,18 +14,19 @@ export const GetOne = async (ctx, next) => {
       .findOne(id, {
         relations: [
           "author",
-          "author.profileImage",
-          "rootDocument",
-          "likedUsers",
+          "author.profile",
+          "author.student",
+          "root_document",
+          "liked_users",
           "comments",
-          "rootComment",
+          "root_comment",
         ]
       })
 
     /* GET 성공 응답 */
     ctx.response.status = 200
     ctx.body = {
-      comment
+      comment,
     }
   }
   catch (e) {
@@ -36,28 +37,27 @@ export const GetOne = async (ctx, next) => {
 /* 댓글 POST */
 export const Post = async (ctx, next) => {
   const conn: Connection = getConnection()
-  const comment: Comment = new Comment()
-  const tokenUser = ctx.state.token.user
+  const { user } = ctx.state.token
   const { documentId, commentId, content } = ctx.request.body
 
   try {
-    /* 유저와 relation 설정 */
-    const user: User = await conn
-      .getRepository(User)
-      .findOne(tokenUser.id, {
-        relations: ["profileImage"],
+    /* 계정과 relation 설정 */
+    const account: Account = await conn
+      .getRepository(Account)
+      .findOne(user.id, {
+        relations: ["profile", "student"],
       })
-    comment.author = user
-
-    /* 나머지 required 정보 입력 */
+      
+    const comment: Comment = new Comment()
+    comment.author = account
     comment.content = content
-    comment.likedUsers = []
+    comment.likedAccounts = []
 
     if (commentId) { // 대댓글인 경우
       const parent: Comment = await conn
         .getRepository(Comment)
         .findOne(commentId, {
-          relations: ["rootDocument"],
+          relations: ["root_document"],
         })
       comment.rootDocument = parent.rootDocument
       comment.rootComment = parent
@@ -72,13 +72,12 @@ export const Post = async (ctx, next) => {
     /* 댓글 작성자의 댓글 수 1 증가 */
     ++(comment.author.commentsCount)
 
-    await conn.manager.save(comment.author)
-    await conn.manager.save(comment)
+    await conn.manager.save([comment, comment.author])
 
     /* POST 성공 응답 */
-    ctx.response.status = 200
+    ctx.response.status = 201
     ctx.body = {
-      comment
+      comment,
     }
   }
   catch (e) {
@@ -96,15 +95,16 @@ export const GetLikes = async (ctx, next) => {
       .getRepository(Comment)
       .findOne(id, {
         relations: [
-          "likedUsers",
-          "likedUsers.profileImage",
+          "likedAccounts",
+          "likedAccounts.profile",
+          "likedAccounts.student",
         ]
       })
 
     /* GET 성공 응답 */
     ctx.response.status = 200
     ctx.body = {
-      likedUsers: comment.likedUsers
+      likedAccounts: comment.likedAccounts.map(account => MakeResponseAccount(account)),
     }
   }
   catch (e) {
@@ -123,28 +123,27 @@ export const PostLikes = async (ctx, next) => {
     const comment: Comment = await conn
       .getRepository(Comment)
       .findOne(id, {
-        relations: ["likedUsers"],
+        relations: ["likedAccounts"],
       })
 
-    /* 유저 불러오기 */
-    const user: User = await conn
-      .getRepository(User)
+    /* 계정 불러오기 */
+    const account: Account = await conn
+      .getRepository(Account)
       .findOne(tokenUser.id, {
-        relations: ["profileImage"],
+        relations: ["profile", "student"],
       })
 
-    /* 유저와 좋아요 relation 설정 */
-    ++(user.likedCommentsCount)
-    comment.likedUsers.push(user)
+    /* 계정과 좋아요 relation 설정 */
+    ++(account.likedCommentsCount)
+    comment.likedAccounts.push(account)
 
-    await conn.manager.save(comment)
-    await conn.manager.save(user)
+    await conn.manager.save([comment, account])
 
     /* POST 성공 응답 */
-    ctx.response.status = 200
+    ctx.response.status = 201
     ctx.body = {
-      likedUsers: comment.likedUsers,
-      user,
+      account,
+      likedAccounts: comment.likedAccounts.map(account => MakeResponseAccount(account)),
     }
   }
   catch (e) {
@@ -163,33 +162,29 @@ export const CalcelLikes = async (ctx, next) => {
     const comment: Comment = await conn
       .getRepository(Comment)
       .findOne(id, {
-        relations: ["likedUsers"],
+        relations: ["likedAccounts"],
       })
 
-    /* 유저 불러오기 */
-    const user: User = await conn
-      .getRepository(User)
+    /* 계정 불러오기 */
+    const user: Account = await conn
+      .getRepository(Account)
       .findOne(tokenUser.id, {
-        relations: ["profileImage"],
+        relations: ["profile", "student"],
       })
 
-    /* 유저와 좋아요 relation 해제 */
+    /* 계정과 좋아요 relation 해제 */
     await conn
       .createQueryBuilder()
-      .relation(Comment, "likedUsers")
+      .relation(Comment, "likedAccounts")
       .of(comment)
       .remove(user)
 
-    /* 유저의 댓글 좋아요 수 1 감소 */
+    /* 계정의 댓글 좋아요 수 1 감소 */
     --(user.likedCommentsCount)
     await conn.manager.save(user)
 
     /* DELETE 성공 응답 */
-    ctx.response.status = 200
-    ctx.body = {
-      likedUsers: comment.likedUsers.filter(x => x.id != user.id),
-      user,
-    }
+    ctx.response.status = 204
   }
   catch (e) {
     ctx.throw(400, e)
