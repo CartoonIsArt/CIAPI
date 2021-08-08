@@ -151,16 +151,13 @@ export const MakeResponseAccount = ({
   likedDocumentsCount,
   profile,
   student,
-}) => {
-  const _student = MakeResponseStudent(student)
-  return {
-    id,
-    username,
-    isActive,
-    documentsCount,
-    commentsCount,
-    likedDocumentsCount,
-    profile,
-    _student,
-  }
-}
+}) => ({
+  id,
+  username,
+  isActive,
+  documentsCount,
+  commentsCount,
+  likedDocumentsCount,
+  profile,
+  student: MakeResponseStudent(student),
+})
