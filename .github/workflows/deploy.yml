@@ -69,4 +69,19 @@ jobs:
       run: ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
     
     - name: Pull and rerun docker
-      run: ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "docker pull ${{ secrets.DOCKER_HUB_REPOSITORY }} && docker rm -f cia-back && docker run -d --name cia-back -v todo-db:/usr/src/app/db --network cia-net --ip ${{ secrets.DOCKER_CONTAINER_IP }} ${{ secrets.DOCKER_HUB_REPOSITORY }} && docker image prune -a"
+      run: |
+        ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} \
+          "docker pull ${{ secrets.DOCKER_HUB_REPOSITORY }} \
+          && docker rm -f cia-back \
+          && docker run \
+              --detach \
+              --name cia-back \
+              --network cia-net \
+              --ip ${{ secrets.DOCKER_CONTAINER_IP }} \
+              --env TYPEORM_HOST=${{ secrets.MARIADB_HOST }} \
+              --env TYPEORM_DATABASE=${{ secrets.MARIADB_DATABASE }} \
+              --env TYPEORM_PORT=${{ secrets.MARIADB_PORT }} \
+              --env TYPEORM_USERNAME=${{ secrets.MARIADB_USERNAME }} \
+              --env TYPEORM_PASSWORD=${{ secrets.MARIADB_PASSWORD }} \
+              ${{ secrets.DOCKER_HUB_REPOSITORY }} \
+          && docker image prune -af"
