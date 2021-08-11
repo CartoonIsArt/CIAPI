@@ -109,7 +109,7 @@ export default class Account {
     nullable: false,
   })
   @JoinColumn({
-    name: "student_number",
+    name: "student_id",
   })
   public student: Student             // 학생 정보
   
