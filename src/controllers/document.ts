@@ -196,16 +196,10 @@ export const CancelLikes = async (ctx, next) => {
         relations: ["profile", "student"],
       })
 
-    /* 게시글과 계정의 좋아요 relation 해제 */
-    await conn
-      .createQueryBuilder()
-      .relation(Document, "likedAccounts")
-      .of(document)
-      .remove(account)
-
-    /* 게시글에 좋아요한 수 1 감소 */
+    /* 게시글 좋아요 제거 */
+    document.likedAccounts = document.likedAccounts.filter(likedAccount => likedAccount.id !== account.id)
     --(account.likedDocumentsCount)
-    await conn.manager.save(account)
+    await conn.manager.save([account, document])
 
     /* DELETE 완료 응답 */
     ctx.response.status = 200

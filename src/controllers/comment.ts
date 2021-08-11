@@ -177,16 +177,10 @@ export const CalcelLikes = async (ctx, next) => {
         relations: ["profile", "student"],
       })
 
-    /* 계정과 좋아요 relation 해제 */
-    await conn
-      .createQueryBuilder()
-      .relation(Comment, "likedAccounts")
-      .of(comment)
-      .remove(account)
-
-    /* 계정의 댓글 좋아요 수 1 감소 */
+    /* 댓글 좋아요 제거 */
+    comment.likedAccounts = comment.likedAccounts.filter(likedAccount => likedAccount.id !== account.id)
     --(account.likedCommentsCount)
-    await conn.manager.save(account)
+    await conn.manager.save([account, comment])
 
     /* DELETE 성공 응답 */
     ctx.response.status = 200
