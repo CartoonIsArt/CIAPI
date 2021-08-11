@@ -216,6 +216,12 @@ export const PatchOne = async (ctx, next) => {
   const { id } = ctx.params
   const { profile, student } = ctx.request.body
 
+  if (!profile.profileImage.startsWith('/images/'))
+    profile.profileImage = `/images/${profile.profileImage}`
+
+  if (!profile.profileBannerImage.startsWith('/images/'))
+    profile.profileBannerImage = `/images/${profile.profileBannerImage}`
+
   try {
     const account: Account = await conn
       .getRepository(Account)
