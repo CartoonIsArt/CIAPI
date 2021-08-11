@@ -49,3 +49,5 @@ app.use(router.routes())
 
 /* 3000번 포트에서 서비스 시작 */
 app.listen(3000)
+
+console.log('CIAPI is opened!')

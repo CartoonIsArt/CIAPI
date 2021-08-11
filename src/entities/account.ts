@@ -109,7 +109,7 @@ export default class Account {
     nullable: false,
   })
   @JoinColumn({
-    name: "student_number",
+    name: "student_id",
   })
   public student: Student             // 학생 정보
   
@@ -159,5 +159,23 @@ export const MakeResponseAccount = ({
   commentsCount,
   likedDocumentsCount,
   profile,
+  student: MakeResponseStudent(student),
+})
+
+export const MakeMinimizedResponseAccount = ({
+  id,
+  username,
+  isActive,
+  documentsCount,
+  commentsCount,
+  likedDocumentsCount,
+  student,
+}) => ({
+  id,
+  username,
+  isActive,
+  documentsCount,
+  commentsCount,
+  likedDocumentsCount,
   student: MakeResponseStudent(student),
 })

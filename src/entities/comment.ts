@@ -32,7 +32,6 @@ export default class Comment {
   public content: string        // 내용
 
   @ManyToOne(() => Account, author => author.comments, {
-    eager: true,
     nullable : false,
   })
   @JoinColumn({
@@ -41,7 +40,6 @@ export default class Comment {
   public author: Account        // 작성자
 
   @ManyToMany(() => Account, {
-    eager: true,
     nullable: false,
   })
   @JoinTable({
@@ -74,7 +72,6 @@ export default class Comment {
   public rootComment: Comment   // 본 댓글 
 
   @OneToMany(() => Comment, comment => comment.rootComment, {
-    eager: true,
     nullable: false,
   })
   public comments: Comment[]    // 댓글들
