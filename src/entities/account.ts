@@ -161,3 +161,21 @@ export const MakeResponseAccount = ({
   profile,
   student: MakeResponseStudent(student),
 })
+
+export const MakeMinimizedResponseAccount = ({
+  id,
+  username,
+  isActive,
+  documentsCount,
+  commentsCount,
+  likedDocumentsCount,
+  student,
+}) => ({
+  id,
+  username,
+  isActive,
+  documentsCount,
+  commentsCount,
+  likedDocumentsCount,
+  student: MakeResponseStudent(student),
+})

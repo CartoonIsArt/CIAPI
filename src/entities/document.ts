@@ -39,7 +39,6 @@ export default class Document {
   public isNotification: boolean  // 공지글 여부
 
   @ManyToOne(() => Account, author => author.documents, {
-    eager: true,
     nullable : false,
   })
   @JoinColumn({
@@ -48,7 +47,6 @@ export default class Document {
   public author: Account          // 작성자
 
   @ManyToMany(() => Account, {
-    eager: true,
     nullable: false,
   })
   @JoinTable({
@@ -65,7 +63,6 @@ export default class Document {
   public likedAccounts: Account[]    // 좋아요한 유저들
 
   @OneToMany(() => Comment, comment => comment.rootDocument, {
-    eager: true,
     nullable: false,
   })
   public comments: Comment[]      // 댓글들

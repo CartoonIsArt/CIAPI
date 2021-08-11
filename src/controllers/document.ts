@@ -1,5 +1,5 @@
 import { Connection, getConnection } from "typeorm"
-import Account, { MakeResponseAccount } from "../entities/account"
+import Account, { MakeMinimizedResponseAccount } from "../entities/account"
 import Document from "../entities/document"
 
 /* 해당 게시글 GET */
@@ -115,7 +115,6 @@ export const GetLikes = async (ctx, next) => {
       .findOne(id, {
         relations: [
           "likedAccounts",
-          "likedAccounts.profile",
           "likedAccounts.student",
         ]
       })
@@ -123,7 +122,7 @@ export const GetLikes = async (ctx, next) => {
     /* GET 완료 응답 */
     ctx.response.status = 200
     ctx.body = {
-      likedAccounts: document.likedAccounts.map(account => MakeResponseAccount(account)),
+      likedAccounts: document.likedAccounts.map(account => MakeMinimizedResponseAccount(account)),
     }
   }
   catch (e) {
@@ -142,7 +141,10 @@ export const PostLikes = async (ctx, next) => {
     const document: Document = await conn
       .getRepository(Document)
       .findOne(id, {
-        relations: ["likedAccounts"],
+        relations: [
+          "likedAccounts",
+          "likedAccounts.student",
+        ]
       })
 
     /* 계정 불러오기 */
@@ -162,7 +164,7 @@ export const PostLikes = async (ctx, next) => {
     ctx.response.status = 201
     ctx.body = {
       account,
-      likedAccounts: document.likedAccounts.map(account => MakeResponseAccount(account)),
+      likedAccounts: document.likedAccounts.map(account => MakeMinimizedResponseAccount(account)),
     }
   }
   catch (e) {
@@ -181,14 +183,17 @@ export const CancelLikes = async (ctx, next) => {
     const document: Document = await conn
       .getRepository(Document)
       .findOne(id, {
-        relations: ["likedAccounts"],
+        relations: [
+          "likedAccounts",
+          "likedAccounts.student",
+        ]
       })
 
     /* 계정 불러오기 */
     const account: Account = await conn
       .getRepository(Account)
       .findOne(user.id, {
-        relations: ["profileImage"],
+        relations: ["profile", "student"],
       })
 
     /* 게시글과 계정의 좋아요 relation 해제 */
@@ -203,7 +208,11 @@ export const CancelLikes = async (ctx, next) => {
     await conn.manager.save(account)
 
     /* DELETE 완료 응답 */
-    ctx.response.status = 204
+    ctx.response.status = 200
+    ctx.body = {
+      account,
+      likedAccounts: document.likedAccounts.map(account => MakeMinimizedResponseAccount(account)),
+    }
   }
   catch (e) {
     ctx.throw(400, e)

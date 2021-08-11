@@ -1,5 +1,5 @@
 import { Connection, getConnection } from "typeorm"
-import Account, { MakeResponseAccount } from "../entities/account"
+import Account, { MakeMinimizedResponseAccount } from "../entities/account"
 import Comment from "../entities/comment"
 import Document from "../entities/document"
 
@@ -96,7 +96,6 @@ export const GetLikes = async (ctx, next) => {
       .findOne(id, {
         relations: [
           "likedAccounts",
-          "likedAccounts.profile",
           "likedAccounts.student",
         ]
       })
@@ -104,7 +103,7 @@ export const GetLikes = async (ctx, next) => {
     /* GET 성공 응답 */
     ctx.response.status = 200
     ctx.body = {
-      likedAccounts: comment.likedAccounts.map(account => MakeResponseAccount(account)),
+      likedAccounts: comment.likedAccounts.map(account => MakeMinimizedResponseAccount(account)),
     }
   }
   catch (e) {
@@ -123,7 +122,10 @@ export const PostLikes = async (ctx, next) => {
     const comment: Comment = await conn
       .getRepository(Comment)
       .findOne(id, {
-        relations: ["likedAccounts"],
+        relations: [
+          "likedAccounts",
+          "likedAccounts.student",
+        ]
       })
 
     /* 계정 불러오기 */
@@ -143,7 +145,7 @@ export const PostLikes = async (ctx, next) => {
     ctx.response.status = 201
     ctx.body = {
       account,
-      likedAccounts: comment.likedAccounts.map(account => MakeResponseAccount(account)),
+      likedAccounts: comment.likedAccounts.map(account => MakeMinimizedResponseAccount(account)),
     }
   }
   catch (e) {
@@ -155,20 +157,23 @@ export const PostLikes = async (ctx, next) => {
 export const CalcelLikes = async (ctx, next) => {
   const conn: Connection = getConnection()
   const { id } = ctx.params
-  const tokenUser = ctx.state.token.user
+  const user = ctx.state.token.user
 
   try {
     /* DB에서 댓글 불러오기 */
     const comment: Comment = await conn
       .getRepository(Comment)
       .findOne(id, {
-        relations: ["likedAccounts"],
+        relations: [
+          "likedAccounts",
+          "likedAccounts.student",
+        ]
       })
 
     /* 계정 불러오기 */
-    const user: Account = await conn
+    const account: Account = await conn
       .getRepository(Account)
-      .findOne(tokenUser.id, {
+      .findOne(user.id, {
         relations: ["profile", "student"],
       })
 
@@ -177,14 +182,18 @@ export const CalcelLikes = async (ctx, next) => {
       .createQueryBuilder()
       .relation(Comment, "likedAccounts")
       .of(comment)
-      .remove(user)
+      .remove(account)
 
     /* 계정의 댓글 좋아요 수 1 감소 */
-    --(user.likedCommentsCount)
-    await conn.manager.save(user)
+    --(account.likedCommentsCount)
+    await conn.manager.save(account)
 
     /* DELETE 성공 응답 */
-    ctx.response.status = 204
+    ctx.response.status = 200
+    ctx.body = {
+      account,
+      likedAccounts: comment.likedAccounts.map(account => MakeMinimizedResponseAccount(account)),
+    }
   }
   catch (e) {
     ctx.throw(400, e)
