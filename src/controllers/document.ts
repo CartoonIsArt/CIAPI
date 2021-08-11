@@ -172,7 +172,7 @@ export const PostLikes = async (ctx, next) => {
   }
 }
 
-/* 해당 게시글 좋아요 DELETE */
+/* 해당 게시글 좋아요 PATCH */
 export const CancelLikes = async (ctx, next) => {
   const conn: Connection = getConnection()
   const { id } = ctx.params
@@ -201,7 +201,7 @@ export const CancelLikes = async (ctx, next) => {
     --(account.likedDocumentsCount)
     await conn.manager.save([account, document])
 
-    /* DELETE 완료 응답 */
+    /* PATCH 완료 응답 */
     ctx.response.status = 200
     ctx.body = {
       account,
