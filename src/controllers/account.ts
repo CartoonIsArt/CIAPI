@@ -95,7 +95,9 @@ export const Post = async (ctx, next) => {
   profile.favoriteComic = data.favoriteComic
   profile.favoriteCharacter = data.favoriteCharacter
   profile.profileText = data.profileText
-  profile.profileImage = `/images/${data.profileImage}`
+
+  if (data.profileImage)
+    profile.profileImage = `/images/${data.profileImage}`
 
   /* 학생 정보 생성 */
   const student: Student = new Student()
@@ -121,12 +123,13 @@ export const Post = async (ctx, next) => {
     }
   }
   catch (e) {
-    console.log(e)
-    if (e.message ===
-      "SQLITE_CONSTRAINT: UNIQUE constraint failed: user.username") {
-      ctx.throw(409, e)
-    }
-    ctx.throw(400, e)
+    if (e.errno === 1062) // ER_DUP_ENTRY
+      ctx.throw(400, {
+        name: '중복 데이터입니다',
+        message: e.sqlMessage,
+      })
+    else
+      ctx.throw(400, e)
   }
 }
 
