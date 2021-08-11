@@ -1,4 +1,12 @@
-import axios from 'axios'
+import Axios from 'axios'
+import * as FormData from 'form-data'
+
+const axios = Axios.create({
+  baseURL: "http://localhost:30300",
+  headers: {
+    withCredentials: true
+  }
+})
 
 /* 해당 파일 GET */
 export const GetOne = async (ctx, next) => {
@@ -33,31 +41,39 @@ export const GetAll = async (ctx, next) => {
 
 /* 파일 POST */
 export const PostOne = async (ctx) => {
+  const formData = new FormData()
+  formData.append('avatar', ctx.file.buffer, ctx.file.originalname)
+  const config = {
+    headers: formData.getHeaders()
+  }
+
   try {
-    await axios.post(ctx.request.originalUrl, ctx.request.body)
+    const r = await axios.post('/images/upload-single', formData, config)
+    
+    /* POST 완료 응답 */
+    ctx.response.status = 201
+    ctx.body = r.data
   }
   catch (e) {
     ctx.throw(400, e)
-  }
-
-  /* POST 완료 응답 */
-  ctx.response.status = 200
-  ctx.body = {
-    avatar: ctx.file.filename,
   }
 }
 
 export const PostAll = async (ctx) => {
+  const formData = new FormData()
+  ctx.files.forEach(photo => formData.append('photo', photo.buffer, photo.originalname))
+  const config = {
+    headers: formData.getHeaders()
+  }
+
   try {
-    await axios.post(ctx.request.originalUrl, ctx.request.body)
+    const r = await axios.post('/images/upload-single', formData, config)
+    
+    /* POST 완료 응답 */
+    ctx.response.status = 201
+    ctx.body = r.data
   }
   catch (e) {
     ctx.throw(400, e)
-  }
-  
-  /* POST 완료 응답 */
-  ctx.response.status = 200
-  ctx.body = {
-    photos: ctx.files.map(file => file.filename),
   }
 }
