@@ -154,7 +154,7 @@ export const PostLikes = async (ctx, next) => {
 }
 
 /* 해당 댓글 좋아요 PATCH */
-export const CalcelLikes = async (ctx, next) => {
+export const CancelLikes = async (ctx, next) => {
   const conn: Connection = getConnection()
   const { id } = ctx.params
   const user = ctx.state.token.user

@@ -81,7 +81,7 @@ router.get("/comment/:id", Comment.GetOne)
 router.post("/comment", Comment.Post)
 router.get("/comment/:id/likeIt", Comment.GetLikes)
 router.post("/comment/:id/likeIt", Comment.PostLikes)
-router.patch("/comment/:id/likeIt", Comment.CalcelLikes)
+router.patch("/comment/:id/likeIt", Comment.CancelLikes)
 
 router.get("/file/:id", File.GetOne)
 router.get("/file", File.GetAll)
