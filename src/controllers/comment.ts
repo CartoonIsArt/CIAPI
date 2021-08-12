@@ -144,7 +144,6 @@ export const PostLikes = async (ctx, next) => {
     /* POST 성공 응답 */
     ctx.response.status = 201
     ctx.body = {
-      account,
       likedAccounts: comment.likedAccounts.map(account => MakeMinimizedResponseAccount(account)),
     }
   }
@@ -185,7 +184,6 @@ export const CancelLikes = async (ctx, next) => {
     /* PATCH 성공 응답 */
     ctx.response.status = 200
     ctx.body = {
-      account,
       likedAccounts: comment.likedAccounts.map(account => MakeMinimizedResponseAccount(account)),
     }
   }
