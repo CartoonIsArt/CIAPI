@@ -16,10 +16,10 @@ export const GetOne = async (ctx, next) => {
           "author",
           "author.profile",
           "author.student",
-          "root_document",
-          "liked_users",
+          "likedAccounts",
+          "rootDocument",
+          "rootComment",
           "comments",
-          "root_comment",
         ]
       })
 
@@ -57,7 +57,7 @@ export const Post = async (ctx, next) => {
       const parent: Comment = await conn
         .getRepository(Comment)
         .findOne(commentId, {
-          relations: ["root_document"],
+          relations: ["rootDocument"],
         })
       comment.rootDocument = parent.rootDocument
       comment.rootComment = parent
