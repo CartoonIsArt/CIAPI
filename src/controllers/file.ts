@@ -1,13 +1,18 @@
-import axios from 'axios'
+import Axios from 'axios'
 import * as FormData from 'form-data'
+import * as https from 'https'
+
+const axios = Axios.create({
+  withCredentials: true,
+  httpsAgent: new https.Agent({
+    rejectUnauthorized: false,
+  }),
+})
 
 /* 해당 파일 GET */
 export const GetOne = async (ctx, next) => {
   const config = {
     baseURL: `https://${ctx.request.hostname}`,
-    headers: {
-      withCredentials: true
-    }
   }
   try {
     const r = await axios.get(ctx.request.originalUrl, config)
@@ -45,10 +50,7 @@ export const PostOne = async (ctx) => {
 
   const config = {
     baseURL: `https://${ctx.request.hostname}`,
-    headers: {
-      ...formData.getHeaders(),
-      withCredentials: true
-    }
+    headers: formData.getHeaders(),
   }
 
   try {
@@ -69,10 +71,7 @@ export const PostAll = async (ctx) => {
   
   const config = {
     baseURL: `https://${ctx.request.hostname}`,
-    headers: {
-      ...formData.getHeaders(),
-      withCredentials: true
-    }
+    headers: formData.getHeaders(),
   }
 
   try {
