@@ -4,7 +4,7 @@ import * as FormData from 'form-data'
 /* 해당 파일 GET */
 export const GetOne = async (ctx, next) => {
   const config = {
-    baseURL: `${ctx.request.origin}/images`,
+    baseURL: `https://${ctx.request.hostname}`,
     headers: {
       withCredentials: true
     }
@@ -44,7 +44,7 @@ export const PostOne = async (ctx) => {
   formData.append('avatar', ctx.file.buffer, ctx.file.originalname)
 
   const config = {
-    baseURL: `${ctx.request.origin}/images`,
+    baseURL: `https://${ctx.request.hostname}`,
     headers: {
       ...formData.getHeaders(),
       withCredentials: true
@@ -68,7 +68,7 @@ export const PostAll = async (ctx) => {
   ctx.files.forEach(photo => formData.append('photo', photo.buffer, photo.originalname))
   
   const config = {
-    baseURL: `${ctx.request.origin}/images`,
+    baseURL: `https://${ctx.request.hostname}`,
     headers: {
       ...formData.getHeaders(),
       withCredentials: true
