@@ -1,20 +1,16 @@
-import Axios from 'axios'
+import axios from 'axios'
 import * as FormData from 'form-data'
-
-const hostname = require("os").hostname()
-const baseURL = `https://${hostname}/images`
-
-const axios = Axios.create({
-  baseURL,
-  headers: {
-    withCredentials: true
-  }
-})
 
 /* 해당 파일 GET */
 export const GetOne = async (ctx, next) => {
+  const config = {
+    baseURL: `${ctx.request.origin}/images`,
+    headers: {
+      withCredentials: true
+    }
+  }
   try {
-    const r = await axios.get(ctx.request.originalUrl)
+    const r = await axios.get(ctx.request.originalUrl, config)
     const { file } = r.data
 
     /* GET 완료 응답 */
@@ -46,8 +42,13 @@ export const GetAll = async (ctx, next) => {
 export const PostOne = async (ctx) => {
   const formData = new FormData()
   formData.append('avatar', ctx.file.buffer, ctx.file.originalname)
+
   const config = {
-    headers: formData.getHeaders()
+    baseURL: `${ctx.request.origin}/images`,
+    headers: {
+      ...formData.getHeaders(),
+      withCredentials: true
+    }
   }
 
   try {
@@ -65,8 +66,13 @@ export const PostOne = async (ctx) => {
 export const PostAll = async (ctx) => {
   const formData = new FormData()
   ctx.files.forEach(photo => formData.append('photo', photo.buffer, photo.originalname))
+  
   const config = {
-    headers: formData.getHeaders()
+    baseURL: `${ctx.request.origin}/images`,
+    headers: {
+      ...formData.getHeaders(),
+      withCredentials: true
+    }
   }
 
   try {
