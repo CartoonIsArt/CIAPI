@@ -7,7 +7,12 @@ import * as Document from "../controllers/document"
 import * as File from "../controllers/file"
 import * as Timeline from "../controllers/timeline"
 
-const upload = Multer({ storage: Multer.memoryStorage() })
+const upload = Multer({
+  storage: Multer.memoryStorage(),
+  limits: {
+    fileSize: 10 * 1024 * 1024  // 10MB
+  }
+})
 
 export var router = new Router({ prefix: '/api' })
 // export var router = new Router()
