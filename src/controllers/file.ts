@@ -1,8 +1,11 @@
 import Axios from 'axios'
 import * as FormData from 'form-data'
 
+const hostname = require("os").hostname()
+const baseURL = `https://${hostname}/images`
+
 const axios = Axios.create({
-  baseURL: "http://localhost:30300",
+  baseURL,
   headers: {
     withCredentials: true
   }
