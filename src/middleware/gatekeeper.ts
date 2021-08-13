@@ -6,7 +6,7 @@ export default function gatekeeper(ctx, next) {
 
   const { user } = ctx.state.token
 
-  if (!user.isActive)
+  if (!user.isApproved)
     ctx.throw(403, '승인이 완료될 때까지 기다려주세요.', { user })
 
   /*  user.role이 UserRole.LEAVER인 경우는 물론이고
