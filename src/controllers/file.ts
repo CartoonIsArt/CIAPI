@@ -1,17 +1,21 @@
 import Axios from 'axios'
 import * as FormData from 'form-data'
+import * as https from 'https'
 
 const axios = Axios.create({
-  baseURL: "http://localhost:30300",
-  headers: {
-    withCredentials: true
-  }
+  withCredentials: true,
+  httpsAgent: new https.Agent({
+    rejectUnauthorized: false,
+  }),
 })
 
 /* 해당 파일 GET */
 export const GetOne = async (ctx, next) => {
+  const config = {
+    baseURL: `https://${ctx.request.hostname}`,
+  }
   try {
-    const r = await axios.get(ctx.request.originalUrl)
+    const r = await axios.get(ctx.request.originalUrl, config)
     const { file } = r.data
 
     /* GET 완료 응답 */
@@ -43,8 +47,10 @@ export const GetAll = async (ctx, next) => {
 export const PostOne = async (ctx) => {
   const formData = new FormData()
   formData.append('avatar', ctx.file.buffer, ctx.file.originalname)
+
   const config = {
-    headers: formData.getHeaders()
+    baseURL: `https://${ctx.request.hostname}`,
+    headers: formData.getHeaders(),
   }
 
   try {
@@ -62,8 +68,10 @@ export const PostOne = async (ctx) => {
 export const PostAll = async (ctx) => {
   const formData = new FormData()
   ctx.files.forEach(photo => formData.append('photo', photo.buffer, photo.originalname))
+  
   const config = {
-    headers: formData.getHeaders()
+    baseURL: `https://${ctx.request.hostname}`,
+    headers: formData.getHeaders(),
   }
 
   try {

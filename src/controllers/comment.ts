@@ -16,10 +16,10 @@ export const GetOne = async (ctx, next) => {
           "author",
           "author.profile",
           "author.student",
-          "root_document",
-          "liked_users",
+          "likedAccounts",
+          "rootDocument",
+          "rootComment",
           "comments",
-          "root_comment",
         ]
       })
 
@@ -57,7 +57,7 @@ export const Post = async (ctx, next) => {
       const parent: Comment = await conn
         .getRepository(Comment)
         .findOne(commentId, {
-          relations: ["root_document"],
+          relations: ["rootDocument"],
         })
       comment.rootDocument = parent.rootDocument
       comment.rootComment = parent
@@ -144,7 +144,6 @@ export const PostLikes = async (ctx, next) => {
     /* POST 성공 응답 */
     ctx.response.status = 201
     ctx.body = {
-      account,
       likedAccounts: comment.likedAccounts.map(account => MakeMinimizedResponseAccount(account)),
     }
   }
@@ -154,7 +153,7 @@ export const PostLikes = async (ctx, next) => {
 }
 
 /* 해당 댓글 좋아요 PATCH */
-export const CalcelLikes = async (ctx, next) => {
+export const CancelLikes = async (ctx, next) => {
   const conn: Connection = getConnection()
   const { id } = ctx.params
   const user = ctx.state.token.user
@@ -185,7 +184,6 @@ export const CalcelLikes = async (ctx, next) => {
     /* PATCH 성공 응답 */
     ctx.response.status = 200
     ctx.body = {
-      account,
       likedAccounts: comment.likedAccounts.map(account => MakeMinimizedResponseAccount(account)),
     }
   }

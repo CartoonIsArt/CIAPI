@@ -7,7 +7,12 @@ import * as Document from "../controllers/document"
 import * as File from "../controllers/file"
 import * as Timeline from "../controllers/timeline"
 
-const upload = Multer({ storage: Multer.memoryStorage() })
+const upload = Multer({
+  storage: Multer.memoryStorage(),
+  limits: {
+    fileSize: 10 * 1024 * 1024  // 10MB
+  }
+})
 
 export var router = new Router({ prefix: '/api' })
 // export var router = new Router()
@@ -76,7 +81,7 @@ router.get("/comment/:id", Comment.GetOne)
 router.post("/comment", Comment.Post)
 router.get("/comment/:id/likeIt", Comment.GetLikes)
 router.post("/comment/:id/likeIt", Comment.PostLikes)
-router.patch("/comment/:id/likeIt", Comment.CalcelLikes)
+router.patch("/comment/:id/likeIt", Comment.CancelLikes)
 
 router.get("/file/:id", File.GetOne)
 router.get("/file", File.GetAll)

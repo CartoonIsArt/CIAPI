@@ -151,6 +151,7 @@ export const MakeResponseAccount = ({
   likedDocumentsCount,
   profile,
   student,
+  role,
 }) => ({
   id,
   username,
@@ -160,6 +161,7 @@ export const MakeResponseAccount = ({
   likedDocumentsCount,
   profile,
   student: MakeResponseStudent(student),
+  role,
 })
 
 export const MakeMinimizedResponseAccount = ({

@@ -124,10 +124,7 @@ export const Post = async (ctx, next) => {
   }
   catch (e) {
     if (e.errno === 1062) // ER_DUP_ENTRY
-      ctx.throw(400, {
-        name: '중복 데이터입니다',
-        message: e.sqlMessage,
-      })
+      ctx.throw(400, { message: e.sqlMessage })
     else
       ctx.throw(400, e)
   }
@@ -218,6 +215,12 @@ export const PatchOne = async (ctx, next) => {
   const conn: Connection = getConnection()
   const { id } = ctx.params
   const { profile, student } = ctx.request.body
+
+  if (!profile.profileImage.startsWith('/images/'))
+    profile.profileImage = `/images/${profile.profileImage}`
+
+  if (!profile.profileBannerImage.startsWith('/images/'))
+    profile.profileBannerImage = `/images/${profile.profileBannerImage}`
 
   try {
     const account: Account = await conn
