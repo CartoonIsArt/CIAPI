@@ -6,6 +6,7 @@ import * as Comment from "../controllers/comment"
 import * as Document from "../controllers/document"
 import * as File from "../controllers/file"
 import * as Timeline from "../controllers/timeline"
+import * as Notification from "../controllers/notification"
 
 const upload = Multer({
   storage: Multer.memoryStorage(),
@@ -65,6 +66,8 @@ router.get("/account/:id/document", Account.GetDocuments)
 router.get("/account/:id/comment", Account.GetComment)
 router.post("/account/checkPassword", Account.CheckPassword)
 
+router.get("/notification", Notification.GetAllFrom)
+
 router.get("/timeline", Timeline.GetTimeline)
 router.get("/timeline/:username", Timeline.GetUserTimeline)
 router.get("/timeline/:username/likes", Timeline.GetLikedTimeline)
@@ -81,7 +84,7 @@ router.get("/comment/:id", Comment.GetOne)
 router.post("/comment", Comment.Post)
 router.get("/comment/:id/likeIt", Comment.GetLikes)
 router.post("/comment/:id/likeIt", Comment.PostLikes)
-router.patch("/comment/:id/likeIt", Comment.CalcelLikes)
+router.patch("/comment/:id/likeIt", Comment.CancelLikes)
 
 router.get("/file/:id", File.GetOne)
 router.get("/file", File.GetAll)

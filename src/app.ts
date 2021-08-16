@@ -7,6 +7,7 @@ import "reflect-metadata"
 import { createConnection } from "typeorm"
 import { router } from "./middleware/route"
 import refresher from "./middleware/refresher"
+import gatekeeper from "./middleware/gatekeeper"
 
 const cors = require('@koa/cors')
 const jwt = require('koa-jwt')
@@ -30,7 +31,7 @@ if (process.env.NODE_ENV !== "production") {
   app.use(Serve(path.join("test-restful", "dist")))
 }
 
-/* authentication */
+/* Authentication */
 app.use(jwt({
     secret: 'secretKey',
     cookie: 'accessToken',
@@ -42,7 +43,11 @@ app.use(jwt({
   })
 )
 
+/* Reissue accessToken */
 app.use(refresher)
+
+/* Authorization */
+app.use(gatekeeper)
 
 /* 라우팅 */
 app.use(router.routes())

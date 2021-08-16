@@ -15,13 +15,12 @@ export const GetOne = async (ctx, next) => {
           "author",
           "author.profile",
           "author.student",
-          "comment",
-          "comment.author",
-          "comment.author.profile",
-          "comment.author.student",
-          "comment.comments",
-          "comment.likedAccounts",
           "likedAccounts",
+          "comments",
+          "comments.author",
+          "comments.author.profile",
+          "comments.author.student",
+          "comments.likedAccounts",
         ]
       })
 
@@ -41,7 +40,7 @@ export const Post = async (ctx, next) => {
   const conn: Connection = getConnection()
   const document: Document = new Document()
   const { user } = ctx.state.token
-  const { content } = ctx.request.body
+  const { content, isNotification } = ctx.request.body
 
   try {
     document.author = await conn
@@ -50,6 +49,7 @@ export const Post = async (ctx, next) => {
         relations: ["profile", "student"],
       })
     document.content = content
+    document.isNotification = isNotification
     document.comments = []
     document.likedAccounts = []
 
@@ -73,7 +73,7 @@ export const Post = async (ctx, next) => {
 /* 해당 게시글 PATCH */
 export const PatchOne = async (ctx, next) => {
   const conn: Connection = getConnection()
-  const { id, content } = ctx.request.body
+  const { id, content, isNotification } = ctx.request.body
 
   try {
     const document: Document = await conn
@@ -83,21 +83,25 @@ export const PatchOne = async (ctx, next) => {
           "author",
           "author.profile",
           "author.student",
-          "comment",
-          "comment.author",
-          "comment.author.profile",
-          "comment.author.student",
-          "comment.comments",
-          "comment.likedAccounts",
           "likedAccounts",
+          "comments",
+          "comments.author",
+          "comments.author.profile",
+          "comments.author.student",
+          "comments.likedAccounts",
         ]
       })
-    document.content += "\n\n" + content
+    if (content)
+      document.content += "\n\n" + content
+    document.isNotification = isNotification
 
     await conn.manager.save(document)
 
     /* PATCH 완료 응답 */
-    ctx.response.status = 204
+    ctx.response.status = 200
+    ctx.body = {
+      document,
+    }
   }
   catch (e) {
     ctx.throw(400, e)
