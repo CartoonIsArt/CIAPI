@@ -1,0 +1,38 @@
+import { Connection, getConnection, MoreThan } from "typeorm"
+import Document from "../entities/document"
+
+export const GetAllFrom = async (ctx, next) => {
+  const conn: Connection = getConnection()
+  const { from } = ctx.query
+
+  try {
+    const documents: Document[] = await conn
+      .getRepository(Document)
+      .find({
+        relations: [
+          "author",
+          "author.profile",
+          "author.student",
+          "likedAccounts",
+          "comments",
+          "comments.author",
+          "comments.author.profile",
+          "comments.author.student",
+          "comments.likedAccounts",
+        ],
+        where: {
+          createdAt: MoreThan(from),
+          isNotification: true,
+        }
+      })
+
+    /* GET 완료 응답 */
+    ctx.response.status = 200
+    ctx.body = {
+      notifications: documents,
+    }
+  }
+  catch (e) {
+    ctx.throw(400, e)
+  }
+}
