@@ -1,6 +1,7 @@
 import Axios from 'axios'
 import * as FormData from 'form-data'
 import * as https from 'https'
+import { isSafe } from '../lib/nsfw'
 
 const axios = Axios.create({
   withCredentials: true,
@@ -45,6 +46,14 @@ export const GetAll = async (ctx, next) => {
 
 /* 파일 POST */
 export const PostOne = async (ctx) => {
+  try {
+    if (!await isSafe(ctx.file.buffer))
+      throw new Error('야한 건 안된다고 생각해요!')
+  }
+  catch (e) {
+    ctx.throw(400, e)
+  }
+
   const formData = new FormData()
   formData.append('avatar', ctx.file.buffer, ctx.file.originalname)
 
@@ -66,20 +75,39 @@ export const PostOne = async (ctx) => {
 }
 
 export const PostAll = async (ctx) => {
+  const safes = []
+  const unsafes = []
   const formData = new FormData()
-  ctx.files.forEach(photo => formData.append('photo', photo.buffer, photo.originalname))
   
+  const r = await Promise.all(ctx.files.map(photo => isSafe(photo.buffer)))
+  r.forEach((isSafe, idx) => {
+    isSafe
+      ? safes.push(ctx.files[idx])
+      : unsafes.push(ctx.files[idx].originalname)
+  })
+  safes.forEach(photo => formData.append('photo', photo.buffer, photo.originalname))
+
   const config = {
     baseURL: `https://${ctx.request.hostname}`,
     headers: formData.getHeaders(),
   }
 
   try {
+    if (unsafes.length === ctx.files.length)
+      throw new Error('야한 건 안된다고 생각해요!')
+
     const r = await axios.post('/images/upload-multiple', formData, config)
-    
+
     /* POST 완료 응답 */
     ctx.response.status = 201
-    ctx.body = r.data
+    if (unsafes.length > 0)
+      ctx.body = {
+        ...r.data,
+        warning: '야한 건 안된다고 생각해요!',
+        unsafes,
+      }
+    else
+      ctx.body = r.data
   }
   catch (e) {
     ctx.throw(400, e)
