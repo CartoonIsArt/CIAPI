@@ -75,7 +75,7 @@ export const PostAll = async (ctx) => {
   }
 
   try {
-    const r = await axios.post('/images/upload-single', formData, config)
+    const r = await axios.post('/images/upload-multiple', formData, config)
     
     /* POST 완료 응답 */
     ctx.response.status = 201
