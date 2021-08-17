@@ -13,7 +13,7 @@ const axios = Axios.create({
 /* 해당 파일 GET */
 export const GetOne = async (ctx, next) => {
   const config = {
-    baseURL: `https://${ctx.request.hostname}:30300`,
+    baseURL: `https://${ctx.request.hostname}`,
   }
   try {
     const r = await axios.get(ctx.request.originalUrl, config)
@@ -58,7 +58,7 @@ export const PostOne = async (ctx) => {
   formData.append('avatar', ctx.file.buffer, ctx.file.originalname)
 
   const config = {
-    baseURL: `https://${ctx.request.hostname}:30300`,
+    baseURL: `https://${ctx.request.hostname}`,
     headers: formData.getHeaders(),
   }
 
@@ -88,7 +88,7 @@ export const PostAll = async (ctx) => {
   safes.forEach(photo => formData.append('photo', photo.buffer, photo.originalname))
 
   const config = {
-    baseURL: `https://${ctx.request.hostname}:30300`,
+    baseURL: `https://${ctx.request.hostname}`,
     headers: formData.getHeaders(),
   }
 
