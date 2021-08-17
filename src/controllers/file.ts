@@ -13,11 +13,8 @@ const axios = Axios.create({
 
 /* 해당 파일 GET */
 export const GetOne = async (ctx, next) => {
-  const config = {
-    // baseURL: `https://${ctx.request.hostname}`,
-  }
   try {
-    const r = await axios.get(ctx.request.originalUrl, config)
+    const r = await axios.get(ctx.request.originalUrl)
     const { file } = r.data
 
     /* GET 완료 응답 */
@@ -48,7 +45,7 @@ export const GetAll = async (ctx, next) => {
 /* 파일 POST */
 export const PostOne = async (ctx) => {
   try {
-    if (!await isSafe(ctx.file.buffer))
+    if (!await isSafe(ctx.file.buffer, ctx.file.mimetype))
       throw new Error('야한 건 안된다고 생각해요!')
   }
   catch (e) {
@@ -59,7 +56,6 @@ export const PostOne = async (ctx) => {
   formData.append('avatar', ctx.file.buffer, ctx.file.originalname)
 
   const config = {
-    // baseURL: `https://${ctx.request.hostname}`,
     headers: formData.getHeaders(),
   }
 
@@ -80,7 +76,7 @@ export const PostAll = async (ctx) => {
   const unsafes = []
   const formData = new FormData()
   
-  const r = await Promise.all(ctx.files.map(photo => isSafe(photo.buffer)))
+  const r = await Promise.all(ctx.files.map(photo => isSafe(photo.buffer, photo.mimetype)))
   r.forEach((isSafe, idx) => {
     isSafe
       ? safes.push(ctx.files[idx])
@@ -89,7 +85,6 @@ export const PostAll = async (ctx) => {
   safes.forEach(photo => formData.append('photo', photo.buffer, photo.originalname))
 
   const config = {
-    // baseURL: `https://${ctx.request.hostname}`,
     headers: formData.getHeaders(),
   }
 
