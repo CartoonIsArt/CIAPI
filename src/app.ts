@@ -8,6 +8,7 @@ import { createConnection } from "typeorm"
 import { router } from "./middleware/route"
 import refresher from "./middleware/refresher"
 import gatekeeper from "./middleware/gatekeeper"
+import { loadModel } from "./lib/nsfw"
 
 const cors = require('@koa/cors')
 const jwt = require('koa-jwt')
@@ -53,6 +54,9 @@ app.use(gatekeeper)
 app.use(router.routes())
 
 /* 3000번 포트에서 서비스 시작 */
-app.listen(3000)
 
-console.log('CIAPI is opened!')
+loadModel().then(() => {
+  app.listen(3000)
+  console.log('CIAPI is opened!')
+  console.log(`localhost:3000`)
+})
