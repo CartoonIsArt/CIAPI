@@ -28,7 +28,6 @@ jobs:
   push-to-docker-hub:
     name: Push Docker image to Docker Hub
     needs: test
-    if: github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     steps:
       - name: Check out the repo
