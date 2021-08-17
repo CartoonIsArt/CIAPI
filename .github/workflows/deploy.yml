@@ -28,6 +28,7 @@ jobs:
   push-to-docker-hub:
     name: Push Docker image to Docker Hub
     needs: test
+    if: github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     steps:
       - name: Check out the repo
@@ -83,5 +84,6 @@ jobs:
               --env MARIADB_PORT=${{ secrets.MARIADB_PORT }} \
               --env MARIADB_USERNAME=${{ secrets.MARIADB_USERNAME }} \
               --env MARIADB_PASSWORD=${{ secrets.MARIADB_PASSWORD }} \
+              --add-host ${{ secrets.ADD_HOST }} \
               ${{ secrets.DOCKER_HUB_REPOSITORY }} \
           && docker image prune -af"
