@@ -4,7 +4,7 @@ import * as https from 'https'
 import { isSafe } from '../lib/nsfw'
 
 const axios = Axios.create({
-  baseURL: 'https://cia-file.server',
+  baseURL: (process.env.NODE_ENV === 'production') ? 'https://cia-file.server' : 'https://localhost',
   withCredentials: true,
   httpsAgent: new https.Agent({
     rejectUnauthorized: false,
