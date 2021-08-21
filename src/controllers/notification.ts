@@ -25,6 +25,9 @@ export const GetAllFrom = async (ctx, next) => {
         where: {
           createdAt: MoreThan(from),
           isNotification: true,
+        },
+        order: {
+          id: 'DESC',
         }
       })
 
