@@ -16,11 +16,13 @@ export const GetOne = async (ctx, next) => {
           "author.profile",
           "author.student",
           "likedAccounts",
+          "likedAccounts.student",
           "comments",
           "comments.author",
           "comments.author.profile",
           "comments.author.student",
           "comments.likedAccounts",
+          "comments.likedAccounts.student",
         ]
       })
 
