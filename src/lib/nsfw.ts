@@ -1,13 +1,18 @@
 import * as jpeg from 'jpeg-js'
 import * as tf from '@tensorflow/tfjs-node'
 import * as nsfw from 'nsfwjs'
+import * as Jimp from 'jimp'
+import { MIME_JPEG } from 'jimp'
 
 // https://github.com/infinitered/nsfwjs
 let model
 
-const convert = async (img) => {
+const convert = async (buffer, mimetype) => {
   // Decoded image in UInt8 Byte array
-  const image = await jpeg.decode(img, { useTArray: true })
+  const buf = mimetype === 'image/jpeg'
+    ? buffer
+    : await (await Jimp.read(buffer)).getBufferAsync(MIME_JPEG)
+  const image = await jpeg.decode(buf, { useTArray: true })
 
   const numChannels = 3
   const numPixels = image.width * image.height
@@ -43,8 +48,8 @@ export const loadModel = async () => {
   model = await nsfw.load()
 }
 
-export const isSafe = async (buffer) => {
-  const image = await convert(buffer)
+export const isSafe = async (buffer, mimetype) => {
+  const image = await convert(buffer, mimetype)
   const predictions = await model.classify(image)
   image.dispose()
   return (predictions.reduce(reducer, 0) < 0.4)
