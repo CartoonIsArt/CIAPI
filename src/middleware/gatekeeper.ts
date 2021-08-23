@@ -6,9 +6,6 @@ export default function gatekeeper(ctx, next) {
 
   const { user } = ctx.state.token
 
-  if (!user.isApproved)
-    ctx.throw(403, '승인이 완료될 때까지 기다려주세요.', { user })
-
   /*  user.role이 UserRole.LEAVER인 경우는 물론이고
       null인 경우, undefined인 경우, 심지어 이상한 값을 달고 오는 경우에도 403을 주어야 하기 때문에
       아래와 같은 whitelist 형식으로 작성해야 합니다

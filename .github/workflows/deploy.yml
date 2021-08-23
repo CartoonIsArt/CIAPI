@@ -83,5 +83,6 @@ jobs:
               --env MARIADB_PORT=${{ secrets.MARIADB_PORT }} \
               --env MARIADB_USERNAME=${{ secrets.MARIADB_USERNAME }} \
               --env MARIADB_PASSWORD=${{ secrets.MARIADB_PASSWORD }} \
+              --add-host ${{ secrets.ADD_HOST }} \
               ${{ secrets.DOCKER_HUB_REPOSITORY }} \
           && docker image prune -af"

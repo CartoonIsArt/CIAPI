@@ -5,6 +5,12 @@ import AuthenticationToken from "../entities/authenticationToken"
 
 const jwt = require('jsonwebtoken')
 
+class NotApprovedError extends Error {
+  constructor(message: string) {
+    super(message)
+  }
+}
+
 /* 로그인 */
 export const Login = async (ctx, next) => {
   const authenticationToken: AuthenticationToken = new AuthenticationToken()
@@ -18,6 +24,9 @@ export const Login = async (ctx, next) => {
     } = ctx.request.body
 
     const user = await Authenticate(username, password)
+
+    if (!user.isApproved)
+      throw new NotApprovedError('승인이 완료될 때까지 기다려 주세요.')
 
     // 2. Issue access token and refresh token
     const accessToken = jwt.sign({ user }, 'secretKey', { expiresIn: '1h' })
@@ -37,7 +46,10 @@ export const Login = async (ctx, next) => {
     ctx.response.status = 204
   }
   catch (e) {
-    ctx.throw(400, e)
+    if (e instanceof NotApprovedError)
+      ctx.throw(403, e)
+    else
+      ctx.throw(400, e)
   }
 }
 
