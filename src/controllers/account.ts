@@ -1,5 +1,5 @@
 import * as crypto from "crypto"
-import { Connection, getConnection, In } from "typeorm"
+import { Connection, getConnection } from "typeorm"
 import { Authenticate } from "../auth"
 import Account, { MakeResponseAccount } from "../entities/account"
 import Comment from "../entities/comment"
@@ -251,13 +251,20 @@ export const PatchOne = async (ctx, next) => {
 /* 모든 계정 PATCH (활동인구 여부 수정) */
 export const PatchAll = async (ctx, next) => {
   const conn: Connection = getConnection()
-  const data = ctx.request.body
+  const { actives, inactives }: { actives: number[], inactives: number[] } = ctx.request.body
 
   try {
-    await conn.manager.update(Account, { id: In(data.ids) }, { isActive: data.isActive })
+    await conn.manager.transaction(async manager => {
+      actives.length && await manager.update(Account, actives, { isActive: true })
+      inactives.length && await manager.update(Account, inactives, { isActive: false })
+    })
 
     /* PATCH 완료 응답 */
-    ctx.response.status = 204
+    ctx.response.status = 200
+    ctx.body = {
+      actives,
+      inactives,
+    }
   }
   catch (e) {
     ctx.throw(400, e)
