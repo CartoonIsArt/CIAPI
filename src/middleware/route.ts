@@ -4,6 +4,7 @@ import * as Account from "../controllers/account"
 import * as AuthenticationToken from "../controllers/authenticationToken"
 import * as Comment from "../controllers/comment"
 import * as Document from "../controllers/document"
+import * as Enrollment from "../controllers/enrollment"
 import * as File from "../controllers/file"
 import * as Timeline from "../controllers/timeline"
 import * as Notification from "../controllers/notification"
@@ -89,5 +90,8 @@ router.patch("/comment/:id/likeIt", Comment.CancelLikes)
 router.get("/file/:id", File.GetOne)
 router.get("/file", File.GetAll)
 router.post("/files", upload.array('photo', 10), File.PostAll)
+
+router.get("/enrollment", Enrollment.GetAll)
+router.post("/enrollment", Enrollment.Post)
 
 router.get("/logout", AuthenticationToken.Logout)

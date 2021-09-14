@@ -10,6 +10,7 @@ import {
 } from "typeorm"
 import Comment from "./comment"
 import Document from "./document"
+import Enrollment from "./enrollment"
 import Profile from "./profile"
 import Student, { MakeResponseStudent } from "./student"
 
@@ -140,6 +141,11 @@ export default class Account {
     nullable: false,
   })
   public likedComments: Comment[]     // 좋아요한 댓글 목록
+
+  @ManyToMany(() => Enrollment, enrollment => enrollment.enrollees, {
+    nullable: false,
+  })
+  public enrollments: Enrollment[]
 }
 
 export const MakeResponseAccount = ({
