@@ -23,6 +23,11 @@ export const GetOne = async (ctx, next) => {
           "comments.author.student",
           "comments.likedAccounts",
           "comments.likedAccounts.student",
+          "comments.comments",
+          "comments.comments.author",
+          "comments.comments.author.profile",
+          "comments.comments.author.student",
+          "comments.comments.likedAccounts",
         ]
       })
 
@@ -91,6 +96,11 @@ export const PatchOne = async (ctx, next) => {
           "comments.author.profile",
           "comments.author.student",
           "comments.likedAccounts",
+          "comments.comments",
+          "comments.comments.author",
+          "comments.comments.author.profile",
+          "comments.comments.author.student",
+          "comments.comments.likedAccounts",
         ]
       })
     if (content)
