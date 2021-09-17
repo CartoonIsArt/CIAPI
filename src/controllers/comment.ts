@@ -59,7 +59,6 @@ export const Post = async (ctx, next) => {
         .findOne(commentId, {
           relations: ["rootDocument"],
         })
-      comment.rootDocument = parent.rootDocument
       comment.rootComment = parent
     }
     else if (documentId) {

@@ -7,11 +7,22 @@ import { MIME_JPEG } from 'jimp'
 // https://github.com/infinitered/nsfwjs
 let model
 
+const convertToJpeg = async (buffer) => {
+  try {
+    return await (await Jimp.read(buffer)).getBufferAsync(MIME_JPEG)
+  }
+  catch (e) {
+    const message = e.message.replace(/Unsupported MIME type/, '지원하지 않는 파일 형식입니다')
+    if (message !== e.message) throw new Error(message)
+    else throw new Error('지원하지 않는 파일 형식입니다')
+  }
+}
+
 const convert = async (buffer, mimetype) => {
   // Decoded image in UInt8 Byte array
-  const buf = mimetype === 'image/jpeg'
+  const buf = (mimetype === 'image/jpeg')
     ? buffer
-    : await (await Jimp.read(buffer)).getBufferAsync(MIME_JPEG)
+    : await convertToJpeg(buffer)
   const image = await jpeg.decode(buf, { useTArray: true })
 
   const numChannels = 3
