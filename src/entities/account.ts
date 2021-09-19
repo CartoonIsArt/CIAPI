@@ -13,6 +13,8 @@ import Document from "./document"
 import Enrollment from "./enrollment"
 import Profile from "./profile"
 import Student, { MakeResponseStudent } from "./student"
+import Poll from "./poll"
+import BoolBitTransformer from "../transformer/BoolBitTransformer"
 
 export enum UserRole {
   SUPERUSER = "superuser",
@@ -58,14 +60,16 @@ export default class Account {
 
   @Column({
     name: "is_approved",
-    type: "tinyint",
+    type: "bit",
+    transformer: new BoolBitTransformer(),
     default: false,
   })
   public isApproved: boolean          // 가입 승인 여부
 
   @Column({
     name: "is_active",
-    type: "tinyint",
+    type: "bit",
+    transformer: new BoolBitTransformer(),
     default: false,
   })
   public isActive:	boolean           // 활동인구 여부
@@ -145,7 +149,12 @@ export default class Account {
   @ManyToMany(() => Enrollment, enrollment => enrollment.enrollees, {
     nullable: false,
   })
-  public enrollments: Enrollment[]
+  public enrollments: Enrollment[]    // 활동인구 신청 목록
+
+  @OneToMany(() => Poll, poll => poll.account, {
+    nullable: false,
+  })
+  public polls: Poll[]                // 투표 목록
 }
 
 export const MakeResponseAccount = ({
