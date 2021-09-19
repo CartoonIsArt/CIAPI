@@ -52,6 +52,7 @@ export const Post = async (ctx, next) => {
     comment.author = account
     comment.content = content
     comment.likedAccounts = []
+    comment.comments = []
 
     if (commentId) { // 대댓글인 경우
       const parent: Comment = await conn
