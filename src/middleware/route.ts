@@ -8,6 +8,7 @@ import * as Enrollment from "../controllers/enrollment"
 import * as File from "../controllers/file"
 import * as Timeline from "../controllers/timeline"
 import * as Notification from "../controllers/notification"
+import * as Vote from "../controllers/vote"
 
 const upload = Multer({
   storage: Multer.memoryStorage(),
@@ -91,7 +92,14 @@ router.get("/file/:id", File.GetOne)
 router.get("/file", File.GetAll)
 router.post("/files", upload.array('photo', 10), File.PostAll)
 
+router.get("/enrollment/current", Enrollment.GetOne)
 router.get("/enrollment", Enrollment.GetAll)
 router.post("/enrollment", Enrollment.Post)
+router.patch("/enrollment/:id", Enrollment.Patch)
+
+router.get("/vote/:id", Vote.GetOne)
+router.get("/vote", Vote.GetAll)
+router.post("/vote", Vote.Post)
+router.post("/vote/:id", Vote.Cast)
 
 router.get("/logout", AuthenticationToken.Logout)

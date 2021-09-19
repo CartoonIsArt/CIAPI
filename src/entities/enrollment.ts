@@ -16,16 +16,16 @@ export default class Enrollment {
   })
   public id: number
 
+  @CreateDateColumn({
+    name: "created_at",
+  })
+  public createdAt: Date
+
   @Column({
     name: "title",
     type: "varchar",
   })
   public title: string          // 활동인구 신청 제목 (e.g., 2021학년도 1학기 활동인구 신청)
-
-  @CreateDateColumn({
-    name: "created_at",
-  })
-  public createdAt: Date
 
   @Column({
     name: "start_date",
