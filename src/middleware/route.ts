@@ -59,6 +59,7 @@ router.post("/public/file", upload.single('avatar'), File.PostOne)
 
 // authorization required API
 router.get("/account/authenticated", Account.GetAuthenticated)
+router.get("/account/birthdayMembers", Account.GetBirthdayMembers)
 router.get("/account/:id", Account.GetOne)
 router.get("/account", Account.GetAll)
 router.delete("/account/:id", Account.DeleteOne)
