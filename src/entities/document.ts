@@ -34,8 +34,7 @@ export default class Document {
 
   @Column({
     name: "is_notification",
-    type: "bit",
-    transformer: new BoolBitTransformer(),
+    type: "tinyint",
     default: false,
   })
   public isNotification: boolean  // 공지글 여부
