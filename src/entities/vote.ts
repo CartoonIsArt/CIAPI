@@ -75,5 +75,46 @@ export default class Vote {
     nullable: false,
   })
   public polls: Poll[]          // 투표들
-
 }
+
+export const MakeResponseVoteItems = ({ item1, item2, item3, item4 }) => 
+  [item1, item2, item3, item4].filter(item => !!item)
+
+export const MakeResponseVoteResult = (result, items) => {
+  if (result.length === 0)
+    return []
+
+  const total = result.reduce((prev, cur) => (prev + cur))
+
+  return result
+    .slice(0, items.length)
+    .map((x, idx) => ({
+      item: items[idx],
+      count: x,
+      percent: (total > 0) ? (x / total * 100) : 0,
+    }))
+    .sort((lhs, rhs) => rhs.count - lhs.count)
+}
+
+export const MakeResponseVote = ({
+  id,
+  title,
+  endTime,
+  hasMultiple,
+  item1,
+  item2,
+  item3,
+  item4,
+  polls,
+},
+selections = [],
+result = []) => ({
+  id,
+  title,
+  endTime,
+  hasMultiple,
+  items: MakeResponseVoteItems({ item1, item2, item3, item4 }),
+  selections: hasMultiple ? selections : selections[0],
+  result: MakeResponseVoteResult(result, MakeResponseVoteItems({ item1, item2, item3, item4 })),
+  polls,
+})
