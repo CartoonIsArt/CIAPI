@@ -1,24 +1,22 @@
 // https://stackoverflow.com/questions/55224483/loading-a-bit-mysql-field-from-typeorm
 import { ValueTransformer } from 'typeorm'
 
-class BoolBitTransformer implements ValueTransformer {
+class BitTransformer<T extends number | boolean> implements ValueTransformer {
   // From db to typeorm
-  from(value: Buffer): boolean | null {
+  from(value: Buffer): T | null {
     if (value === null) {
       return null
     }
-    return value[0] === 1
+    return value[0] as T
   }
 
   // To db from typeorm
-  to(value: boolean | null): Buffer | null {
+  to(value: T | null): Buffer | null {
     if (value === null) {
       return null
     }
-    const res = new Buffer(1)
-    res[0] = value ? 1 : 0
-    return res
+    return Buffer.alloc(1, value as number)
   }
 }
 
-export default BoolBitTransformer
+export default BitTransformer

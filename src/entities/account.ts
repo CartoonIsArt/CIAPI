@@ -14,7 +14,7 @@ import Enrollment from "./enrollment"
 import Profile from "./profile"
 import Student, { MakeResponseStudent } from "./student"
 import Poll from "./poll"
-import BoolBitTransformer from "../transformer/BoolBitTransformer"
+import BitTransformer from "../transformer/BitTransformer"
 
 export enum UserRole {
   SUPERUSER = "superuser",
@@ -61,7 +61,7 @@ export default class Account {
   @Column({
     name: "is_approved",
     type: "bit",
-    transformer: new BoolBitTransformer(),
+    transformer: new BitTransformer<boolean>(),
     default: false,
   })
   public isApproved: boolean          // 가입 승인 여부
@@ -69,7 +69,7 @@ export default class Account {
   @Column({
     name: "is_active",
     type: "bit",
-    transformer: new BoolBitTransformer(),
+    transformer: new BitTransformer<boolean>(),
     default: false,
   })
   public isActive:	boolean           // 활동인구 여부
