@@ -8,7 +8,7 @@ import {
 } from "typeorm"
 import Account from "./account"
 import Vote from "./vote"
-import BitTransformer from "../transformer/BitTransformer"
+import { BitTransformer } from "../transformer/BitTransformer"
 
 @Entity()
 export default class Poll {
@@ -43,7 +43,7 @@ export default class Poll {
     name: "selection",
     type: "bit",
     width: 4,
-    transformer: new BitTransformer<number>(),
+    transformer: new BitTransformer(),
     nullable: false,
   })
   public selection: number  // 선택

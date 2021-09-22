@@ -11,7 +11,7 @@ import {
 } from "typeorm"
 import Account from "./account"
 import Comment from "./comment"
-import BitTransformer from "../transformer/BitTransformer"
+import { BoolBitTransformer } from "../transformer/BitTransformer"
 
 @Entity()
 export default class Document {
@@ -35,7 +35,7 @@ export default class Document {
   @Column({
     name: "is_notification",
     type: "bit",
-    transformer: new BitTransformer<boolean>(),
+    transformer: new BoolBitTransformer(),
     default: false,
   })
   public isNotification: boolean  // 공지글 여부

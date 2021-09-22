@@ -31,6 +31,8 @@ export const GetAllFrom = async (ctx, next) => {
         }
       })
 
+    console.log(documents)
+
     /* GET 완료 응답 */
     ctx.response.status = 200
     ctx.body = {
