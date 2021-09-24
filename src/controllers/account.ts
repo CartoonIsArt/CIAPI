@@ -288,20 +288,14 @@ export const CheckPassword = async (ctx, next) => {
 
 export const GetBirthdayMembers = async (ctx, next) => {
   const conn: Connection = getConnection()
-
-  let today = new Date()   
-  let month = (today.getMonth() + 1).toString() // 월
-  let day = (today.getDate()).toString()        // 일
-
-  if (month.length === 1) month = `0${month}`
-  if (day.length ===  1)  day =   `0${day}`
+  const today = (new Date()).toISOString().slice(5, 10)
 
   try {
     const accounts: Account[] = await conn
       .getRepository(Account)
       .find({
         where: {
-          student: { birthdate: Like(`____-${month}-${day}`)}
+          student: { birthdate: Like(`____-${today}`)}
         },
         relations: ["profile", "student"], //profile 지워도 되겠지? 지운다면 MakeResponseAccount말고 다른거 만들어 써야겠지?
       })
