@@ -1,5 +1,5 @@
 import * as crypto from "crypto"
-import { Connection, getConnection } from "typeorm"
+import { Connection, getConnection, Like } from "typeorm"
 import { Authenticate } from "../auth"
 import Account, { MakeResponseAccount } from "../entities/account"
 import Comment from "../entities/comment"
@@ -280,6 +280,30 @@ export const CheckPassword = async (ctx, next) => {
 
     /* 완료 응답 */
     ctx.response.status = 204
+  }
+  catch (e) {
+    ctx.throw(400, e)
+  }
+}
+
+export const GetBirthdayMembers = async (ctx, next) => {
+  const conn: Connection = getConnection()
+  const today = (new Date()).toISOString().slice(5, 10)
+
+  try {
+    const accounts: Account[] = await conn
+      .getRepository(Account)
+      .find({
+        where: {
+          student: { birthdate: Like(`____-${today}`)}
+        },
+        relations: ["profile", "student"], //profile 지워도 되겠지? 지운다면 MakeResponseAccount말고 다른거 만들어 써야겠지?
+      })
+    /* GET 완료 응답 */
+    ctx.response.status = 200
+    ctx.body = {
+      accounts: accounts.map(account => MakeResponseAccount(account)),
+    }
   }
   catch (e) {
     ctx.throw(400, e)
