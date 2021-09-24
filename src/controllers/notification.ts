@@ -1,4 +1,4 @@
-import { Connection, getConnection, MoreThan } from "typeorm"
+import { Connection, Equal, getConnection, MoreThan } from "typeorm"
 import Document from "../entities/document"
 
 export const GetAllFrom = async (ctx, next) => {
@@ -24,7 +24,7 @@ export const GetAllFrom = async (ctx, next) => {
         ],
         where: {
           createdAt: MoreThan(from),
-          isNotification: true,
+          isNotification: Equal(true),
         },
         order: {
           id: 'DESC',

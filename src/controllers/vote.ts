@@ -1,29 +1,57 @@
-import { Connection, getConnection, LessThan, MoreThan } from "typeorm"
+import { Connection, EntityManager, getConnection, LessThan, MoreThan } from "typeorm"
 import Account from "../entities/account"
-import Vote from "../entities/vote"
+import Vote, { MakeResponseVote, MakeResponseVoteItems, MakeResponseVoteResult } from "../entities/vote"
 import Poll from "../entities/poll"
+
+const SelectionQueryBuilder = (manager: EntityManager, id: number, userId: number, selection: number) => (
+  ResultQueryBuilder(manager, id, selection)
+    .innerJoinAndSelect('poll.account', 'account')
+    .andWhere('account.id = :userId', { userId })
+)
+
+const ResultQueryBuilder = (manager: EntityManager, id: number, selection: number) => (
+  manager
+    .createQueryBuilder(Poll, 'poll')
+    .innerJoinAndSelect('poll.vote', 'vote')
+    .where('vote.id = :id', { id })
+    .andWhere('poll.selection & :selection', { selection })
+)
 
 export const GetOne = async (ctx, next) => {
   const conn: Connection = getConnection()
   const { id } = ctx.params
+  const { user } = ctx.state.token
 
   try {
-    const vote: Vote = await conn
-      .getRepository(Vote)
-      .findOne(id, {
-        relations: [
-          "polls",
-          "polls.account",
-          "polls.account.profile",
-          "polls.account.student",
-        ]
-      })
+    await conn.manager.transaction(async manager => {
+      const vote: Vote = await manager
+        .getRepository(Vote)
+        .findOne(id, {
+          relations: [
+            "polls",
+            "polls.account",
+            "polls.account.profile",
+            "polls.account.student",
+          ]
+        })
+      const selections = []
+      await SelectionQueryBuilder(manager, id, user.id, 1).getCount() && selections.push(0)
+      await SelectionQueryBuilder(manager, id, user.id, 2).getCount() && selections.push(1)
+      await SelectionQueryBuilder(manager, id, user.id, 4).getCount() && selections.push(2)
+      await SelectionQueryBuilder(manager, id, user.id, 8).getCount() && selections.push(3)
+      const result = [
+        await ResultQueryBuilder(manager, id, 1).getCount(),
+        await ResultQueryBuilder(manager, id, 2).getCount(),
+        await ResultQueryBuilder(manager, id, 4).getCount(),
+        await ResultQueryBuilder(manager, id, 8).getCount(),
+      ]
 
-    /* GET 완료 응답 */
-    ctx.response.status = 200
-    ctx.body = {
-      vote,
-    }
+      /* GET 완료 응답 */
+      ctx.response.status = 200
+      ctx.body = {
+        vote: MakeResponseVote(vote, selections, result),
+      }
+    })
   }
   catch (e) {
     ctx.throw(400, e)
@@ -32,6 +60,7 @@ export const GetOne = async (ctx, next) => {
 
 export const GetAll = async (ctx, next) => {
   const conn: Connection = getConnection()
+  const { user } = ctx.state.token
 
   try {
     const votes: Vote[] = await conn
@@ -42,13 +71,32 @@ export const GetAll = async (ctx, next) => {
           "polls.account",
           "polls.account.profile",
           "polls.account.student",
-        ]
+        ],
+        order: {
+          id: "DESC",
+        }
       })
 
     /* GET 완료 응답 */
     ctx.response.status = 200
     ctx.body = {
-      votes,
+      votes: await Promise.all(votes.map(async vote => {
+        const [selections, result] = await conn.manager.transaction(async manager => {
+          const selections = []
+          await SelectionQueryBuilder(manager, vote.id, user.id, 1).getCount() && selections.push(0)
+          await SelectionQueryBuilder(manager, vote.id, user.id, 2).getCount() && selections.push(1)
+          await SelectionQueryBuilder(manager, vote.id, user.id, 4).getCount() && selections.push(2)
+          await SelectionQueryBuilder(manager, vote.id, user.id, 8).getCount() && selections.push(3)
+          const result = [
+            await ResultQueryBuilder(manager, vote.id, 1).getCount(),
+            await ResultQueryBuilder(manager, vote.id, 2).getCount(),
+            await ResultQueryBuilder(manager, vote.id, 4).getCount(),
+            await ResultQueryBuilder(manager, vote.id, 8).getCount(),
+          ]
+          return [selections, result]
+        })
+        return MakeResponseVote(vote, selections, result)
+      })),
     }
   }
   catch (e) {
@@ -74,7 +122,7 @@ export const Post = async (ctx) => {
     /* GET 완료 응답 */
     ctx.response.status = 201
     ctx.body = {
-      vote,
+      vote: MakeResponseVote(vote),
     }
   }
   catch (e) {
@@ -111,6 +159,8 @@ export const Cast = async (ctx) => {
       .find({
         relations: [
           "vote",
+          "vote.polls",
+          "vote.polls.account",
           "account",
           "account.profile",
           "account.student",
@@ -127,22 +177,32 @@ export const Cast = async (ctx) => {
     
     let poll: Poll
     
-    if (polls.length === 1) {
-      poll = polls[0]
-    }
-    else {
+    if (polls.length === 0) {
       poll = new Poll()
       poll.vote = vote
       poll.account = account
+    }
+    else {
+      poll = polls[0]
     }
     poll.selection = selection
 
     await conn.manager.save(poll)
 
+    const result = await conn.manager.transaction(async manager => {
+      return [
+        await ResultQueryBuilder(manager, id, 1).getCount(),
+        await ResultQueryBuilder(manager, id, 2).getCount(),
+        await ResultQueryBuilder(manager, id, 4).getCount(),
+        await ResultQueryBuilder(manager, id, 8).getCount(),
+      ]
+    })
+
     /* GET 완료 응답 */
     ctx.response.status = 201
     ctx.body = {
       poll,
+      result: MakeResponseVoteResult(result, MakeResponseVoteItems(vote)),
     }
   }
   catch (e) {
