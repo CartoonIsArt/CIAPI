@@ -14,7 +14,7 @@ import Enrollment from "./enrollment"
 import Profile from "./profile"
 import Student, { MakeResponseStudent } from "./student"
 import Poll from "./poll"
-import BoolBitTransformer from "../transformer/BoolBitTransformer"
+import { BoolBitTransformer } from "../transformer/BitTransformer"
 
 export enum UserRole {
   SUPERUSER = "superuser",

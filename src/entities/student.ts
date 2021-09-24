@@ -5,7 +5,7 @@ import {
   PrimaryGeneratedColumn,
 } from "typeorm"
 import Account from "./account"
-import BoolBitTransformer from "../transformer/BoolBitTransformer"
+import { BoolBitTransformer } from "../transformer/BitTransformer"
 
 /* 유저 테이블 스키마 */
 @Entity()

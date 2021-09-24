@@ -3,13 +3,12 @@ import {
   CreateDateColumn,
   Entity,
   JoinColumn,
-  JoinTable,
-  ManyToMany,
   ManyToOne,
   PrimaryGeneratedColumn,
 } from "typeorm"
 import Account from "./account"
 import Vote from "./vote"
+import { BitTransformer } from "../transformer/BitTransformer"
 
 @Entity()
 export default class Poll {
@@ -44,6 +43,7 @@ export default class Poll {
     name: "selection",
     type: "bit",
     width: 4,
+    transformer: new BitTransformer(),
     nullable: false,
   })
   public selection: number  // 선택

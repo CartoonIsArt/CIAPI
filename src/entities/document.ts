@@ -11,7 +11,7 @@ import {
 } from "typeorm"
 import Account from "./account"
 import Comment from "./comment"
-import BoolBitTransformer from "../transformer/BoolBitTransformer"
+import { BoolBitTransformer } from "../transformer/BitTransformer"
 
 @Entity()
 export default class Document {
@@ -34,8 +34,7 @@ export default class Document {
 
   @Column({
     name: "is_notification",
-    type: "bit",
-    transformer: new BoolBitTransformer(),
+    type: "tinyint",
     default: false,
   })
   public isNotification: boolean  // 공지글 여부
