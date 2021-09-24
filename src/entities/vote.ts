@@ -6,7 +6,6 @@ import {
   PrimaryGeneratedColumn,
 } from "typeorm"
 import Poll from "./poll"
-import { BoolBitTransformer } from "../transformer/BitTransformer"
 
 @Entity()
 export default class Vote {
@@ -37,8 +36,7 @@ export default class Vote {
 
   @Column({
     name: "has_multiple",
-    type: "bit",
-    transformer: new BoolBitTransformer(),
+    type: "tinyint",
     default: false,
   })
   public hasMultiple: boolean   // 다중 항목 투표 가능 여부

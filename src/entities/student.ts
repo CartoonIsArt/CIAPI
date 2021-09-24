@@ -5,7 +5,6 @@ import {
   PrimaryGeneratedColumn,
 } from "typeorm"
 import Account from "./account"
-import { BoolBitTransformer } from "../transformer/BitTransformer"
 
 /* 유저 테이블 스키마 */
 @Entity()
@@ -63,8 +62,7 @@ export default class Student {
 
   @Column({
     name: "has_graduated",
-    type: "bit",
-    transformer: new BoolBitTransformer(),
+    type: "tinyint",
     default: false,
   })
   public hasGraduated: boolean  // 졸업 여부
