@@ -97,7 +97,7 @@ export const Post = async (ctx, next) => {
   profile.profileText = data.profileText
 
   if (data.profileImage)
-    profile.profileImage = `/images/${data.profileImage}`
+    profile.profileImage = data.profileImage
 
   /* 학생 정보 생성 */
   const student: Student = new Student()

@@ -11,7 +11,6 @@ import {
 } from "typeorm"
 import Account from "./account"
 import Comment from "./comment"
-import { BoolBitTransformer } from "../transformer/BitTransformer"
 
 @Entity()
 export default class Document {
