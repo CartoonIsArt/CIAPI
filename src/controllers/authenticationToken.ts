@@ -30,7 +30,7 @@ export const Login = async (ctx, next) => {
 
     // 2. Issue access token and refresh token
     const accessToken = jwt.sign({ user }, 'secretKey', { expiresIn: '1h' })
-    const refreshToken = jwt.sign({ user }, 'secretKey', { expiresIn: '14d' })                      
+    const refreshToken = jwt.sign({ user }, 'secretKey', { expiresIn: '14d' })
 
     // 3. Set authentication token cookie
     ctx.cookies.set('accessToken', accessToken, { expires: cookieExpirationDate() })
