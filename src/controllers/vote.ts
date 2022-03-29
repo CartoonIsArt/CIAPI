@@ -1,4 +1,4 @@
-import { Connection, EntityManager, getConnection, LessThan, MoreThan } from "typeorm"
+import { Connection, EntityManager, getConnection } from "typeorm"
 import Account from "../entities/account"
 import Vote, { MakeResponseVote, MakeResponseVoteItems, MakeResponseVoteResult } from "../entities/vote"
 import Poll from "../entities/poll"
