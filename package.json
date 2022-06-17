@@ -14,7 +14,7 @@
     "axios": "^0.21.1",
     "form-data": "^4.0.0",
     "jimp": "^0.16.1",
-    "jpeg-js": "^0.4.3",
+    "jpeg-js": "^0.4.4",
     "jsonwebtoken": "^8.5.1",
     "koa": "^2.13.1",
     "koa-bodyparser": "^4.2.0",
